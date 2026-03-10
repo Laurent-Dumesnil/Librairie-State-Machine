@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.1">
+<title>tracking_device API documentation</title>
+<meta name="description" content="Module de gestion de dispositifs de suivi basé sur l&#39;approche de programmation
+en flux tiré (_pull-based programming_) …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tracking_device</code></h1>
+</header>
+<section id="section-intro">
+<p>Module de gestion de dispositifs de suivi basé sur l'approche de programmation
+en flux tiré (<em>pull-based programming</em>). </p>
+<p>Ce module permet le développement d'une application exploitant une architecture
+de suivi de composants utilisant un double paradigme de programmation :</p>
+<ul>
+<li>Programmation orientée objet (<em>OOP</em>) : Les composants respectent une
+interface de programmation polymorphisme permettant une généralisation et une
+simplification du développement logiciel. </li>
+<li>Programmation en flux tiré : À la différence de la programmation
+évènementielle, le suivi de l'état est initié de manière explicite par des
+appels réguliers aux méthodes de suivi réalisé dans une boucle de contrôle
+principale. </li>
+</ul>
+<p>L'architecture du module repose sur ces trois classes fondamentales :</p>
+<ul>
+<li><code><a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a></code> : Une classe abstraite représentant un dispositif de suivi
+générique. Elle gère l'état, les sous-dispositifs et la logique de suivi.</li>
+<li><code><a title="tracking_device.TrackingManager" href="#tracking_device.TrackingManager">TrackingManager</a></code> : Une classe permettant la gestion de plusieurs dispositifs
+de suivi.</li>
+<li><code><a title="tracking_device.TrackingApplication" href="#tracking_device.TrackingApplication">TrackingApplication</a></code> : Une classe spécialisée de <code><a title="tracking_device.TrackingManager" href="#tracking_device.TrackingManager">TrackingManager</a></code> qui
+permet de gérer l'application de suivi dans son ensemble en réalisant la
+boucle principale et la synchronisation des dispositifs.</li>
+</ul>
+<p>Utilitaire :</p>
+<ul>
+<li><code><a title="tracking_device.TriggerDevice" href="#tracking_device.TriggerDevice">TriggerDevice</a></code> : Une classe concrète dérivée de <code><a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a></code> permettant
+le déclanchement une action périodique à un intervalle spécifié, facilitant
+ainsi la gestion d'actions automatiques basées sur le temps. En fait, cette
+classe est très intéressante car &hellip; <em>à trouver par l'étudiant</em>.</li>
+</ul>
+<p>Exemple minimaliste :</p>
+<pre><code class="language-python">from trigger_device import TriggerDevice
+
+# Création d'un dispositif de suivi simple avec une action périodique
+def action_1():
+    print(&quot;Action 1 déclenchée!&quot;)
+
+device_1 = TriggerDevice(duration=5.0, action=action_1, name=&quot;MyDevice1&quot;)
+device_2 = TriggerDevice(duration=12.5, action=lambda : print(&quot;Action 2 déclenchée!&quot;), name=&quot;MyDevice2&quot;)
+
+# Simulation du suivi
+app = TrackingApplication()
+app.add_device(device_1)
+app.add_device(device_2)
+
+# Exécution de l'application
+app.run_forever()
+</code></pre>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tracking_device.TrackingApplication"><code class="flex name class">
+<span>class <span class="ident">TrackingApplication</span></span>
+<span>(</span><span>device: OptionalOneOrMany[<a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a>] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Une classe représentant une application exploitant les dispositifs
+<code><a title="tracking_device.TrackingManager" href="#tracking_device.TrackingManager">TrackingManager</a></code>.</p>
+<p>Cette classe a pour objectif de fournir un cadre permettant de créer des
+applications qui effectuent des opérations de suivi en continu. Elle peut
+être utilisée pour gérer des <code><a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a></code> qui doivent fonctionner de
+manière ininterrompue tout en les synchronisant. </p>
+<p>Cela permet de développer des solutions de suivi robustes capables de
+répondre à des besoins divers.</p>
+<p>Elle hérite de <code><a title="tracking_device.TrackingManager" href="#tracking_device.TrackingManager">TrackingManager</a></code> et utilise un <code>ElapsedTimer</code> pour établire
+le temps écoulé.</p>
+<p>Initialise l'application de suivi.</p>
+<p>Args :</p>
+<ul>
+<li><code>device</code> (<code>OptionalOneOrMany[<a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a>]</code>) : Le ou
+les dispositifs à ajouter au gestionnaire. Si <code>None</code>, aucun
+dispositif n'est ajouté. Par défaut, <code>None</code>.</li>
+</ul></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="tracking_device.TrackingManager" href="#tracking_device.TrackingManager">TrackingManager</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="tracking_device.TrackingApplication.RunningCondition"><code class="name">var <span class="ident">RunningCondition</span> : TypeAlias</code></dt>
+<dd>
+<div class="desc"><p>Un alias représentant une condition déterminant si la boucle de
+l'application doit cesser ou se poursuivre.</p>
+<p>Cet alias est utilisé pour définir une objet exécutable (<code>callable</code>)
+déterminant la condition d'arrêt de la boucle principale réalisée par
+<code>run_until</code>. La fonction détermine si l'application termine ou non selon
+l'une de ces deux valeurs possibles :</p>
+<ul>
+<li><code>None</code> : L'application continue de s'exécuter (<code>None</code>, on ne s'arrête
+pas).</li>
+<li><code>Any</code> : Dès qu'une veleur différente de <code>None</code> est retournée, la boucle
+termine et l'application s'arrête. Dans ce cas, la valeur retournée est
+renvoyée par la méthode <code>run_until</code>.</li>
+</ul>
+<p>Cet alias est défini par <code>Callable[[], Any | None]</code>, un exécutable qui ne
+prend aucun argument et renvoie une valeur arbitraire ou <code>None</code>.</p>
+<p>Cette approche permet de définir des conditions d'arrêt dynamiques et
+flexibles pour les applications de suivi.</p>
+<p>Voici deux fonctions simples qui illustrent l'utilisation de cet alias :</p>
+<pre><code>```python
+# Exemple d'utilisation de l'alias RunningCondition
+
+from time import perf_counter
+from tracking_application import TrackingApplication
+
+# Exemple 1 : Arrêt après un nombre d'itérations
+current_iteration: int = 0
+max_iteration: int = 10000
+def max_iteration_reached() -&gt; Any | None:
+    nonlocal current_iteration
+    current_iteration += 1
+    return f'{max_iteration} reached!' if current_iteration &gt;= max_iteration else None
+
+app = TrackingApplication()
+# ...
+app.run_until(max_iteration_reached)
+
+# Exemple 2 : Arrêt après une durée prédéfinie
+reference_counter: float = perf_counter()
+duration: float = 120.0 # seconds
+def total_duration_reached() -&gt; Any | None:
+    nonlocal reference_counter, duration
+    return f'{duration} reached' if perf_counter() - reference_counter &gt;= duration else None
+
+app = TrackingApplication()
+# ...
+app.run_until(total_duration_reached)
+```
+</code></pre></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tracking_device.TrackingApplication.run_forever"><code class="name flex">
+<span>def <span class="ident">run_forever</span></span>(<span>self) ‑> NoReturn</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Exécute l'application indéfiniment.</p>
+<p>Cette méthode exécute une boucle infinie qui suit le temps et appelle
+la méthode <code>track</code> de tous les dispositifs.</p></div>
+</dd>
+<dt id="tracking_device.TrackingApplication.run_until"><code class="name flex">
+<span>def <span class="ident">run_until</span></span>(<span>self, running_condition: RunningCondition)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Exécute l'application jusqu'à ce que la condition fournie soit
+remplie.</p>
+<p>La boucle continue jusqu'à ce que la condition renvoie une valeur
+autre que <code>None</code>. Chaque itération suit le temps et appelle la méthode
+<code>track</code> de tous les dispositifs. </p>
+<p>Une fois la condition remplie (retour d'une valeur différente de
+<code>None</code>), elle arrête l'exécution et renvoie le résultat reçu par la
+condition.</p>
+<p>Args :</p>
+<ul>
+<li><code>running_condition</code> (<code>Callable[[], Any | None]</code>) :
+La condition à remplir pour arrêter l'itération.</li>
+</ul>
+<p>Returns :</p>
+<ul>
+<li><code>Any</code> : Le résultat renvoyé par la condition lorsqu'elle est remplie.</li>
+</ul></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="tracking_device.TrackingManager" href="#tracking_device.TrackingManager">TrackingManager</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tracking_device.TrackingManager.add_device" href="#tracking_device.TrackingManager.add_device">add_device</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.clear_devices" href="#tracking_device.TrackingManager.clear_devices">clear_devices</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.device_count" href="#tracking_device.TrackingManager.device_count">device_count</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.devices_names" href="#tracking_device.TrackingManager.devices_names">devices_names</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.remove_device" href="#tracking_device.TrackingManager.remove_device">remove_device</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.reset" href="#tracking_device.TrackingManager.reset">reset</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.track" href="#tracking_device.TrackingManager.track">track</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.valid" href="#tracking_device.TrackingManager.valid">valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="tracking_device.TrackingDevice"><code class="flex name class">
+<span>class <span class="ident">TrackingDevice</span></span>
+<span>(</span><span>name: str | None = None, enabled: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Classe de base représentant un dispositif de suivi.</p>
+<p>Pour maintenir son état, le dispositif doit être mis-à-jour par un appel
+formel de la méthode <code>track</code>. Ainsi, tous les dispositifs restent
+synchronisés les uns avec les autres s'ils sont tous maintenu à jour
+<em>simultanément</em>.</p>
+<p>Un dispositif peut posséder des sous-dispositifs. Le patron de conception
+composite est utilisé pour que chaque dispositif puisse posséder et gérer
+des sous-dispositifs.</p>
+<p>Un dispositif offre plusieurs outils de gestion :
+- un nom unique
+- la notion de validité/conformité
+- la notion de d'activation/désactivation
+- la possibilité de se réinitialiser
+- le suivi de son état
+- la gestion de ses sous-dispositifs.</p>
+<p>Attributs :
+name (str | None) : Le nom du dispositif de suivi.
+enabled (bool) : Indique si le dispositif est activé.
+sub_devices_count (int) : Le nombre de sous-dispositifs gérés par ce dispositif de suivi.</p>
+<p>Initialise une nouvelle instance de la classe <code><a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a></code>.</p>
+<p>Args :
+name (str | None) : Le nom du dispositif de suivi. Par défaut, None.
+enabled (bool, optionnel) : Indique si le dispositif est activé. Par défaut, True.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+<li>base_component.BaseComponent</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="tracking_device.TriggerDevice" href="#tracking_device.TriggerDevice">TriggerDevice</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tracking_device.TrackingDevice.sub_devices_count"><code class="name">prop <span class="ident">sub_devices_count</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Le nombre de sous-dispositifs présents.</p></div>
+</dd>
+<dt id="tracking_device.TrackingDevice.valid"><code class="name">prop <span class="ident">valid</span> : bool | str</code></dt>
+<dd>
+<div class="desc"><p>Établie la validation/conformité du dispositif conditionnel à tous
+ses sous-dispositifs.</p>
+<p>Le rôle de cette propriété a été modifié à cause de l'approche
+composite. Maintenant, pour être valide/conforme, un dispositif doit
+<strong>lui-même</strong> être valide ainsi que <strong>tous</strong> ses sous-dispositifs. Afin
+de rester le plus générique possible et d'éviter les répétitions de
+parcours, on rend cette substitution finale et on délègue la logique
+de validation locale à une autre fonction polymorphique : <code>_do_valid</code>.</p>
+<p>Returns :
+bool | str : Le statut de validation. Si valide, retourne True.
+Sinon, retourne une chaîne décrivant le problème.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tracking_device.TrackingDevice._do_reset"><code class="name flex">
+<span>def <span class="ident">_do_reset</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Réinitialise l'état du dispositif de suivi. </p>
+<p>Ne fait rien par défaut. Les classes dérivées doivent substituer cette
+méthode par les sous-classes si nécessaire.</p>
+<p>Cette méthode devient le point d'entrée polymorphique de la
+réinitialisation. Le rôle de la méthode <code>reset</code> ayant changé, on
+<strong>délègue</strong> la réinitialisation du dispositif à <code>_do_reset</code>.</p></div>
+</dd>
+<dt id="tracking_device.TrackingDevice._do_tracking"><code class="name flex">
+<span>def <span class="ident">_do_tracking</span></span>(<span>self, elapsed_time: float) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Effectue la logique de suivi du dispositif.</p>
+<p>Ne fait rien par défaut. Les classes dérivées doivent substituer cette
+méthode par les sous-classes si nécessaire.</p>
+<p>Cette méthode devient le point d'entrée polymorphique du suivi. Le
+rôle de la méthode <code>track</code> ayant changé, on <strong>délègue</strong> le suivi du
+dispositif à <code>_do_tracking.</code></p>
+<p>Args :
+elapsed_time (float) : Le temps écoulé depuis la dernière mise à jour du suivi.</p></div>
+</dd>
+<dt id="tracking_device.TrackingDevice._do_valid"><code class="name flex">
+<span>def <span class="ident">_do_valid</span></span>(<span>self) ‑> bool | str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Effectue la logique de validation spécifique au dispositif.</p>
+<p>Retourne <code>True</code> par défaut. Les classes dérivées doivent substituer cette
+méthode pour effectuer leur propre logique de validation si nécessaire.</p>
+<p>Cette méthode devient le point d'entrée polymorphique de la validation.
+Le rôle de la propriété <code>valid</code> ayant changé, on <strong>délègue</strong> la
+validation du dispositif à <code>_do_valid</code>.</p>
+<p>Returns :
+bool | str : Le statut de validation. Si valide, retourne True. Sinon, retourne une chaîne décrivant le problème.</p></div>
+</dd>
+<dt id="tracking_device.TrackingDevice.add_sub_device"><code class="name flex">
+<span>def <span class="ident">add_sub_device</span></span>(<span>self, device: OneOrMany[<a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a>]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ajoute un ou plusieurs sous-dispositifs.</p>
+<p>Args :
+device (OneOrMany[TrackingDevice]) : Le ou les
+sous-dispositifs à ajouter.</p>
+<p>Raises :
+ValueError : Si un sous-dispositif portant le même nom existe déjà.</p></div>
+</dd>
+<dt id="tracking_device.TrackingDevice.clear_sub_devices"><code class="name flex">
+<span>def <span class="ident">clear_sub_devices</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Supprime tous les sous-dispositifs.</p></div>
+</dd>
+<dt id="tracking_device.TrackingDevice.remove_sub_device"><code class="name flex">
+<span>def <span class="ident">remove_sub_device</span></span>(<span>self, name: OneOrMany[str]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Supprime un ou plusieurs sous-dispositifs.</p>
+<p>Args :
+name (OneOrMany[str]) : Le ou les noms des sous-dispositifs à supprimer.</p>
+<p>Raises :
+ValueError : Si un sous-dispositif portant le nom spécifié n'existe pas.</p></div>
+</dd>
+<dt id="tracking_device.TrackingDevice.reset"><code class="name flex">
+<span>def <span class="ident">reset</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Réinitialise l'état du dispositif de suivi et de tous ses
+sous-dispositifs.</p>
+<p>Le rôle de cette méthode a été modifié à cause de l'approche composite.
+Maintenant, la réinitialisation d'un dispositif doit passer par
+<strong>lui-même</strong> et par <strong>tous</strong> ses sous-dispositifs. Afin de rester le
+plus générique possible et d'éviter les répétitions de parcours, on rend
+cette substitution finale et on délègue la logique de réinitialisation
+locale à une autre fonction polymorphique : <code>_do_reset</code>.</p></div>
+</dd>
+<dt id="tracking_device.TrackingDevice.track"><code class="name flex">
+<span>def <span class="ident">track</span></span>(<span>self, elapsed_time: float) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Suit l'état du dispositif et de tous ses sous-dispositifs.</p>
+<p>Le rôle de cette méthode a été modifié à cause de l'approche composite.
+Maintenant, le suivi d'un dispositif constitue le suivi de <strong>lui-même</strong>
+et de <strong>tous</strong> ses sous-dispositifs. Afin de rester le plus générique
+possible et d'éviter les répétitions de parcours, on rend cette
+substitution finale et on délègue la logique de suivi locale à une
+autre fonction polymorphique : <code>_do_tracking</code>.</p>
+<p>Args :
+elapsed_time (float) : Le temps écoulé depuis la dernière mise à jour du suivi.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="tracking_device.TrackingManager"><code class="flex name class">
+<span>class <span class="ident">TrackingManager</span></span>
+<span>(</span><span>device: OptionalOneOrMany[<a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a>] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>La classe TrackingManager gère une collection d'instances de
+<code><a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a></code>, fournissant une interface pour ajouter, supprimer et
+gérer ces dispositifs collectivement. Elle permet de suivre, réinitialiser,
+et valider plusieurs dispositifs de manière synchronisée.</p>
+<p>Attributs :
+device_count (int) : Le nombre de dispositifs de suivi actuellement gérés.
+valid (bool | str) : Indique si tous les dispositifs sont valides. Renvoie le message de validité
+du premier dispositif invalide, le cas échéant.</p>
+<p>Méthodes :
+devices_names() -&gt; Iterable[str] :
+Renvoie un itérable contenant tous les noms des dispositifs.
+clear_devices() -&gt; None :
+Supprime tous les dispositifs de suivi du gestionnaire.
+add_device(device: TrackingDevice | Iterable[TrackingDevice]) -&gt; None :
+Ajoute un ou plusieurs dispositifs de suivi au gestionnaire. Lève une ValueError si le nom
+du dispositif existe déjà.
+remove_device(device: str | TrackingDevice | Iterable[str] | Iterable[TrackingDevice]) -&gt; None :
+Supprime un ou plusieurs dispositifs de suivi par nom ou par instance.
+track(elapsed_time: float) -&gt; None :
+Met à jour l'état de suivi de tous les dispositifs en fonction du temps écoulé.
+reset() -&gt; None :
+Réinitialise tous les dispositifs de suivi à leur état initial.</p>
+<p>Initialise une nouvelle instance de <code><a title="tracking_device.TrackingManager" href="#tracking_device.TrackingManager">TrackingManager</a></code>.</p>
+<p>Args :</p>
+<ul>
+<li><code>device</code> (<code>OptionalOneOrMany[<a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a>]</code>) : Le ou
+les dispositifs à ajouter au gestionnaire. Si <code>None</code>, aucun
+dispositif n'est ajouté. Par défaut, <code>None</code>.</li>
+</ul></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="tracking_device.TrackingApplication" href="#tracking_device.TrackingApplication">TrackingApplication</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tracking_device.TrackingManager.device_count"><code class="name">prop <span class="ident">device_count</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Le nombre de dispositifs actuellement gérés.</p></div>
+</dd>
+<dt id="tracking_device.TrackingManager.valid"><code class="name">prop <span class="ident">valid</span> : bool | str</code></dt>
+<dd>
+<div class="desc"><p>Indique si tous les dispositifs sont valides. </p>
+<p>Renvoie le message de validité du premier dispositif invalide, le cas échéant.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tracking_device.TrackingManager.add_device"><code class="name flex">
+<span>def <span class="ident">add_device</span></span>(<span>self, device: OneOrMany[<a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a>]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ajoute un ou plusieurs dispositifs de suivi au gestionnaire.</p>
+<p>Args :
+device (OneOrMany[TrackingDevice]) : Le ou les dispositifs à ajouter.</p>
+<p>Raises :
+ValueError : Si le nom du dispositif existe déjà.</p></div>
+</dd>
+<dt id="tracking_device.TrackingManager.clear_devices"><code class="name flex">
+<span>def <span class="ident">clear_devices</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Supprime tous les dispositifs de suivi du gestionnaire.</p></div>
+</dd>
+<dt id="tracking_device.TrackingManager.devices_names"><code class="name flex">
+<span>def <span class="ident">devices_names</span></span>(<span>self) ‑> Iterable[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retourne un itérable contenant les noms de tous les dispositifs.</p></div>
+</dd>
+<dt id="tracking_device.TrackingManager.remove_device"><code class="name flex">
+<span>def <span class="ident">remove_device</span></span>(<span>self, device: OneOrMany[str] | OneOrMany[<a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a>]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Supprime un ou plusieurs dispositifs de suivi par nom ou par instance.</p>
+<p>Args :
+device (str | TrackingDevice | Iterable[str] | Iterable[TrackingDevice]) : Le ou les dispositifs à supprimer.</p></div>
+</dd>
+<dt id="tracking_device.TrackingManager.reset"><code class="name flex">
+<span>def <span class="ident">reset</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Réinitialise tous les dispositifs de suivi à leur état initial.</p></div>
+</dd>
+<dt id="tracking_device.TrackingManager.track"><code class="name flex">
+<span>def <span class="ident">track</span></span>(<span>self, elapsed_time: float) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Met à jour l'état de suivi de tous les dispositifs en fonction du temps écoulé.</p>
+<p>Args :
+elapsed_time (float) : Le temps écoulé depuis la dernière mise à jour.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="tracking_device.TriggerDevice"><code class="flex name class">
+<span>class <span class="ident">TriggerDevice</span></span>
+<span>(</span><span>duration: int | float, action: GenericCallback, /, name: str | None = None, enabled: bool = True, *, initial_time: float = 0.0, auto_reset_when_enabling: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Classe représentant un dispositif déclencheur qui exécute une action
+après une certaine durée.</p>
+<p>Hérite de :
+TrackingDevice</p>
+<p>Attributs :
+duration (float): La durée après laquelle l'action est déclenchée.
+action (GenericCallback): L'action à exécuter lorsque la durée est atteinte.
+name (str | None): Le nom du dispositif.
+enabled (bool): Indique si le dispositif est activé.
+initial_time (float): Le temps initial accumulé.
+auto_reset_when_enabling (bool): Indique si le compteur doit être réinitialisé lors de l'activation.</p>
+<p>Initialise un nouveau <code><a title="tracking_device.TriggerDevice" href="#tracking_device.TriggerDevice">TriggerDevice</a></code>.</p>
+<p>Paramètres :
+duration (int | float): La durée après laquelle l'action est déclenchée.
+action (GenericCallback): L'action à exécuter lorsque la durée est atteinte.
+name (str | None, optionnel): Le nom du dispositif. Par défaut None.
+enabled (bool, optionnel): Indique si le dispositif est activé. Par défaut True.
+initial_time (float, optionnel): Le temps initial accumulé. Doit être compris entre 0 et duration. Par défaut 0.0.
+auto_reset_when_enabling (bool, optionnel): Indique si le compteur doit être réinitialisé lors de l'activation. Par défaut True.</p>
+<p>Exceptions :
+TypeError: Si <code>duration</code> n'est pas un <code>int</code> ou un <code>float</code>.
+TypeError: Si <code>action</code> n'est pas exécutable.
+TypeError: Si <code>initial_time</code> n'est pas un <code>float</code>.
+TypeError: Si <code>name</code> n'est pas un <code>str</code> ou <code>None</code>.
+TypeError: Si <code>enabled</code> n'est pas un <code>bool</code>.
+TypeError: Si <code>auto_reset_when_enabling</code> n'est pas un <code>bool</code>.
+ValueError: Si initial_time est négatif ou supérieur à duration.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a></li>
+<li>abc.ABC</li>
+<li>base_component.BaseComponent</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tracking_device.TriggerDevice.action"><code class="name">prop <span class="ident">action</span> : GenericCallback</code></dt>
+<dd>
+<div class="desc"><p>Correspond à l'action à exécuter lorsque la durée est atteinte.</p>
+<p>L'action est un exécutable (<em>callback</em>) qui ne prend aucun argument et
+ne renvoie rien.</p>
+<p>Raises :
+TypeError: Si l'action n'est pas un exécutable.</p></div>
+</dd>
+<dt id="tracking_device.TriggerDevice.auto_reset_when_enabling"><code class="name">prop <span class="ident">auto_reset_when_enabling</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Indique si le compteur doit être réinitialisé lors de l'activation.</p>
+<p>Si <code>True</code>, le compteur est réinitialisé lors de l'activation. Sinon,
+le compteur conserve sa valeur actuelle.</p>
+<p>Raises :
+TypeError: Si la valeur n'est pas un booléen.</p></div>
+</dd>
+<dt id="tracking_device.TriggerDevice.duration"><code class="name">prop <span class="ident">duration</span> : float</code></dt>
+<dd>
+<div class="desc"><p>La durée après laquelle l'action est déclenchée.</p>
+<p>La durée doit être un nombre positif.</p>
+<p>Raises :
+TypeError: Si la durée n'est pas un nombre.
+ValueError: Si la durée est inférieure ou égale à zéro.</p></div>
+</dd>
+<dt id="tracking_device.TriggerDevice.elapsed_time_from_last_trigger"><code class="name">prop <span class="ident">elapsed_time_from_last_trigger</span> : float</code></dt>
+<dd>
+<div class="desc"><p>Le temps écoulé depuis le dernier déclenchement de l'action.</p></div>
+</dd>
+<dt id="tracking_device.TriggerDevice.remaining_time_until_next_trigger"><code class="name">prop <span class="ident">remaining_time_until_next_trigger</span> : float</code></dt>
+<dd>
+<div class="desc"><p>Le temps restant avant le prochain déclenchement de l'action.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tracking_device.TriggerDevice._do_reset"><code class="name flex">
+<span>def <span class="ident">_do_reset</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Réinitialise le compteur à zéro.</p></div>
+</dd>
+<dt id="tracking_device.TriggerDevice._do_tracking"><code class="name flex">
+<span>def <span class="ident">_do_tracking</span></span>(<span>self, elapsed_time: float) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Met à jour le compteur et déclenche l'action si la durée est
+atteinte.</p>
+<p>Le suivi du temps est effectué en accumulant le temps écoulé. Lorsque
+le temps accumulé dépasse la durée, l'action est déclenchée et le
+compteur est réinitialisé en tenant compte du temps dépassé.</p>
+<p>Args :
+elapsed_time (float) : Le temps écoulé depuis la dernière mise à jour
+du suivi.</p></div>
+</dd>
+<dt id="tracking_device.TriggerDevice._enabling"><code class="name flex">
+<span>def <span class="ident">_enabling</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Lorsque le dispositif est activé, réinitialise le compteur si
+<code>auto_reset_when_enabling</code>.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tracking_device.TrackingDevice._do_valid" href="#tracking_device.TrackingDevice._do_valid">_do_valid</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.add_sub_device" href="#tracking_device.TrackingDevice.add_sub_device">add_sub_device</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.clear_sub_devices" href="#tracking_device.TrackingDevice.clear_sub_devices">clear_sub_devices</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.remove_sub_device" href="#tracking_device.TrackingDevice.remove_sub_device">remove_sub_device</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.reset" href="#tracking_device.TrackingDevice.reset">reset</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.sub_devices_count" href="#tracking_device.TrackingDevice.sub_devices_count">sub_devices_count</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.track" href="#tracking_device.TrackingDevice.track">track</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.valid" href="#tracking_device.TrackingDevice.valid">valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tracking_device.TrackingApplication" href="#tracking_device.TrackingApplication">TrackingApplication</a></code></h4>
+<ul class="">
+<li><code><a title="tracking_device.TrackingApplication.RunningCondition" href="#tracking_device.TrackingApplication.RunningCondition">RunningCondition</a></code></li>
+<li><code><a title="tracking_device.TrackingApplication.run_forever" href="#tracking_device.TrackingApplication.run_forever">run_forever</a></code></li>
+<li><code><a title="tracking_device.TrackingApplication.run_until" href="#tracking_device.TrackingApplication.run_until">run_until</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tracking_device.TrackingDevice" href="#tracking_device.TrackingDevice">TrackingDevice</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tracking_device.TrackingDevice._do_reset" href="#tracking_device.TrackingDevice._do_reset">_do_reset</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice._do_tracking" href="#tracking_device.TrackingDevice._do_tracking">_do_tracking</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice._do_valid" href="#tracking_device.TrackingDevice._do_valid">_do_valid</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.add_sub_device" href="#tracking_device.TrackingDevice.add_sub_device">add_sub_device</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.clear_sub_devices" href="#tracking_device.TrackingDevice.clear_sub_devices">clear_sub_devices</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.remove_sub_device" href="#tracking_device.TrackingDevice.remove_sub_device">remove_sub_device</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.reset" href="#tracking_device.TrackingDevice.reset">reset</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.sub_devices_count" href="#tracking_device.TrackingDevice.sub_devices_count">sub_devices_count</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.track" href="#tracking_device.TrackingDevice.track">track</a></code></li>
+<li><code><a title="tracking_device.TrackingDevice.valid" href="#tracking_device.TrackingDevice.valid">valid</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tracking_device.TrackingManager" href="#tracking_device.TrackingManager">TrackingManager</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tracking_device.TrackingManager.add_device" href="#tracking_device.TrackingManager.add_device">add_device</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.clear_devices" href="#tracking_device.TrackingManager.clear_devices">clear_devices</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.device_count" href="#tracking_device.TrackingManager.device_count">device_count</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.devices_names" href="#tracking_device.TrackingManager.devices_names">devices_names</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.remove_device" href="#tracking_device.TrackingManager.remove_device">remove_device</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.reset" href="#tracking_device.TrackingManager.reset">reset</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.track" href="#tracking_device.TrackingManager.track">track</a></code></li>
+<li><code><a title="tracking_device.TrackingManager.valid" href="#tracking_device.TrackingManager.valid">valid</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tracking_device.TriggerDevice" href="#tracking_device.TriggerDevice">TriggerDevice</a></code></h4>
+<ul class="">
+<li><code><a title="tracking_device.TriggerDevice._do_reset" href="#tracking_device.TriggerDevice._do_reset">_do_reset</a></code></li>
+<li><code><a title="tracking_device.TriggerDevice._do_tracking" href="#tracking_device.TriggerDevice._do_tracking">_do_tracking</a></code></li>
+<li><code><a title="tracking_device.TriggerDevice._enabling" href="#tracking_device.TriggerDevice._enabling">_enabling</a></code></li>
+<li><code><a title="tracking_device.TriggerDevice.action" href="#tracking_device.TriggerDevice.action">action</a></code></li>
+<li><code><a title="tracking_device.TriggerDevice.auto_reset_when_enabling" href="#tracking_device.TriggerDevice.auto_reset_when_enabling">auto_reset_when_enabling</a></code></li>
+<li><code><a title="tracking_device.TriggerDevice.duration" href="#tracking_device.TriggerDevice.duration">duration</a></code></li>
+<li><code><a title="tracking_device.TriggerDevice.elapsed_time_from_last_trigger" href="#tracking_device.TriggerDevice.elapsed_time_from_last_trigger">elapsed_time_from_last_trigger</a></code></li>
+<li><code><a title="tracking_device.TriggerDevice.remaining_time_until_next_trigger" href="#tracking_device.TriggerDevice.remaining_time_until_next_trigger">remaining_time_until_next_trigger</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.1</a>.</p>
+</footer>
+</body>
+</html>

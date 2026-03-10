@@ -1,0 +1,7 @@
+# Installation de pdoc3
+pip install pdoc3
+
+# Exécuter à partir de la racine du projet
+pdoc --html --template-dir .\doc\pdoc3\templates --force --output-dir .\doc\ .\dev\abc_xyz.py
+
+où abc_xyz.py est le nom du fichier à traiter
