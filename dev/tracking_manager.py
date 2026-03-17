@@ -23,11 +23,11 @@ class TrackingDevice(BaseComponent):
 class TrackingManager():
     def __init__(self):
         self.__tracking_devices = dict[str, TrackingDevice]
-        self.valid = True
+        self.__valid = True
 
     @property
     def valid(self) -> bool:
-        return self.valid
+        return self.__valid
     
     @property
     def device_count(self) -> int:
