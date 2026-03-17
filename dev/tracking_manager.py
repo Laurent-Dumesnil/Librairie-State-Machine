@@ -1,6 +1,6 @@
 from base_component import BaseComponent
 from elapsed_timer import ElapsedTimer
-from typing import Iterable
+from typing import Iterable, Callable
 from abc import ABC, abstractmethod
 
 # à enlever d'ici plus tard
@@ -41,9 +41,10 @@ class TrackingManager():
         if isinstance(device, TrackingDevice):
             self.__tracking_devices.append(device)
 
-        elif isinstance(device, Iterable[TrackingDevice]):
+        elif isinstance(device, Iterable):
             for d in device:
-                self.__tracking_devices.append(d) 
+                if isinstance(d, TrackingDevice):
+                    self.__tracking_devices.append(d) 
         else:
             raise TypeError(f'Le type de {device} doit être un TrackingDevice ou un iterable de TrackingDevice. Présentement {type(device)}')
 
@@ -52,10 +53,11 @@ class TrackingManager():
         if isinstance(device, TrackingDevice):
             self.__tracking_devices.pop(device)
 
-        elif isinstance(device, Iterable[TrackingDevice]):
+        elif isinstance(device, Iterable):
             for d in device:
                 if d in self.__tracking_devices:
-                    self.__tracking_devices.pop(d) 
+                    if isinstance(d, TrackingDevice):
+                        self.__tracking_devices.pop(d) 
         else:
             raise TypeError(f'Le type de {device} doit être un TrackingDevice ou un iterable de TrackingDevice. Présentement {type(device)}')
 
@@ -68,20 +70,20 @@ class TrackingManager():
                 device.reset()
 
 class TrackingApplication(TrackingManager):
-    type RunningCondition = callable[[], any | None]
+    type RunningCondition = Callable
 
     def __init__(self):
         self.__elapsed_timer = ElapsedTimer()
 
     def run_forever(self):
         while True:
-            TrackingManager.track(self.__elapsed_timer.elapsed)
+            self.track(self.__elapsed_timer.elapsed)
             
 
     def run_until(self, running_condition : RunningCondition):
         result = running_condition()
         while result is None:
-            TrackingManager.track(self.__elapsed_timer.elapsed)
+            self.track(self.__elapsed_timer.elapsed)
             result = running_condition()
 
         return result
