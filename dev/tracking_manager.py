@@ -21,80 +21,69 @@ class TrackingDevice(BaseComponent):
 
 
 class TrackingManager():
-    __tracking_devices : dict[str, TrackingDevice]
-    valid = True
-
-    def __init__():
-        pass
+    def __init__(self):
+        self.__tracking_devices = dict[str, TrackingDevice]
+        self.valid = True
 
     @property
     def valid(self) -> bool:
-        return TrackingManager.valid
+        return self.valid
     
     @property
     def device_count(self) -> int:
-        return len(TrackingManager.__tracking_devices)
+        return len(self.__tracking_devices)
     
-    def clear_devices():
-        TrackingManager.__tracking_devices = {}
+    def clear_devices(self):
+        self.__tracking_devices = {}
 
-    def add_device(device : TrackingDevice | Iterable[TrackingDevice]):
+    def add_device(self, device : TrackingDevice | Iterable[TrackingDevice]):
 
         if isinstance(device, TrackingDevice):
-            TrackingManager.__tracking_devices.append(device)
+            self.__tracking_devices.append(device)
 
         elif isinstance(device, Iterable[TrackingDevice]):
             for d in device:
-                TrackingManager.__tracking_devices.append(d) 
+                self.__tracking_devices.append(d) 
         else:
             raise TypeError(f'Le type de {device} doit être un TrackingDevice ou un iterable de TrackingDevice. Présentement {type(device)}')
 
-    def remove_device(device : TrackingDevice | Iterable[str] | Iterable[TrackingDevice]):
+    def remove_device(self, device : TrackingDevice | Iterable[str] | Iterable[TrackingDevice]):
 
         if isinstance(device, TrackingDevice):
-            TrackingManager.__tracking_devices.pop(device)
+            self.__tracking_devices.pop(device)
 
         elif isinstance(device, Iterable[TrackingDevice]):
             for d in device:
-                if d in TrackingManager.__tracking_devices:
-                    TrackingManager.__tracking_devices.pop(d) 
+                if d in self.__tracking_devices:
+                    self.__tracking_devices.pop(d) 
         else:
             raise TypeError(f'Le type de {device} doit être un TrackingDevice ou un iterable de TrackingDevice. Présentement {type(device)}')
 
-    @abstractmethod 
-    def track(elapsed_time : float):
-        pass 
+    def track(self, elapsed_time : float):
+        for device in self.__tracking_devices:
+                device.track(elapsed_time)
 
-    def reset():
-        pass
-
-class RunningCondition():
-
-    running_condition = callable[[], any | None]
-
-    def __init__(self):
-        pass
-
-    def should_stop(self) -> bool:
-        pass # si on doit arrêter, true sinon false
+    def reset(self):
+        for device in self.__tracking_devices:
+                device.reset()
 
 class TrackingApplication(TrackingManager):
-    elapsed_timer = ElapsedTimer()
+    type RunningCondition = callable[[], any | None]
 
-    def run_forever():
+    def __init__(self):
+        self.__elapsed_timer = ElapsedTimer()
+
+    def run_forever(self):
         while True:
-            pass
+            TrackingManager.track(self.__elapsed_timer.elapsed)
+            
 
-    def run_until(running_condition : RunningCondition): # RunningCondition
-        while running_condition:
-            pass
+    def run_until(self, running_condition : RunningCondition):
+        result = running_condition()
+        while result is None:
+            TrackingManager.track(self.__elapsed_timer.elapsed)
+            result = running_condition()
 
-
-
-# NOTES MJ :
-# premier design pattern : composite
-# différence entre valid et do_valid
-
-
+        return result
 
     
