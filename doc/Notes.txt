@@ -1,0 +1,6 @@
+Fichier de notes pour le tp d'ojets connectés.
+
+
+- TrackingDevice est un Composite (Design Pattern). Le dispositif peut donc être simple ou composé d'autres dispositifs.
+
+- Chaîne de responsabilité (Design Pattern) dans le TrackingDevice (OU LE BASE COMPONENT).
