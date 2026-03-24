@@ -11,7 +11,7 @@ class TrackingDevice(BaseComponent):
         self._active = True
 
     @property
-    def active(self) -> int: # {readOnly}
+    def active(self) -> bool: # {readOnly}
         return self._active
     
     @active.setter
@@ -22,7 +22,7 @@ class TrackingDevice(BaseComponent):
 
 class TrackingManager():
     def __init__(self):
-        self.__tracking_devices = dict[str, TrackingDevice]
+        self.__tracking_devices : dict[str, TrackingDevice] = {}
         self.__valid = True
 
     @property
@@ -39,34 +39,37 @@ class TrackingManager():
     def add_device(self, device : TrackingDevice | Iterable[TrackingDevice]):
 
         if isinstance(device, TrackingDevice):
-            self.__tracking_devices.append(device)
+            self.__tracking_devices[device.name] = device # dico pas de append
 
         elif isinstance(device, Iterable):
             for d in device:
                 if isinstance(d, TrackingDevice):
-                    self.__tracking_devices.append(d) 
+                    self.__tracking_devices[d.name] = d
         else:
             raise TypeError(f'Le type de {device} doit être un TrackingDevice ou un iterable de TrackingDevice. Présentement {type(device)}')
 
     def remove_device(self, device : TrackingDevice | Iterable[str] | Iterable[TrackingDevice]):
 
         if isinstance(device, TrackingDevice):
-            self.__tracking_devices.pop(device)
+            self.__tracking_devices.pop(device.name)
 
         elif isinstance(device, Iterable):
             for d in device:
                 if d in self.__tracking_devices:
                     if isinstance(d, TrackingDevice):
-                        self.__tracking_devices.pop(d) 
+                        self.__tracking_devices.pop(d.name)
+                    elif isinstance (d, str) and d in self.__tracking_devices:
+                        self.__tracking_devices.pop(d)
+                     
         else:
             raise TypeError(f'Le type de {device} doit être un TrackingDevice ou un iterable de TrackingDevice. Présentement {type(device)}')
 
     def track(self, elapsed_time : float):
-        for device in self.__tracking_devices:
+        for device in self.__tracking_devices.values():
                 device.track(elapsed_time)
 
     def reset(self):
-        for device in self.__tracking_devices:
+        for device in self.__tracking_devices.values():
                 device.reset()
 
 class TrackingApplication(TrackingManager):
