@@ -4,13 +4,6 @@ from base_component import BaseComponent
 from typing import override, Self
 from abc import ABC, abstractmethod
 
-
-class State() :
-    pass
-
-class Transition() :
-    pass
-
 class Layout :
     def __init__(self : Self, states:tuple[State, ...]):
 
@@ -30,8 +23,7 @@ class Layout :
         
         self._initial_state : State 
         self.initial_state = states[0]
-
-            
+    
 
     def __contains__(state:State) -> bool :
         pass
