@@ -14,7 +14,7 @@ class Transition(BaseComponent, ABC):
     @property
     @override
     def valid(self : Self) -> bool:
-        return True if self.__next_state else False
+        return True if self.__next_state and super().valid else False
     
     @property
     def next_state(self : Self) -> State | None:
@@ -23,7 +23,6 @@ class Transition(BaseComponent, ABC):
     def _execute_transiting_action(self : Self) -> None:
         self._do_transiting_action()
 
-    @abstractmethod
     def _do_transiting_action(self : Self) -> None:
         pass
 

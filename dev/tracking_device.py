@@ -221,16 +221,18 @@ class TriggerDevice(TrackingDevice):
     
     def enabling(self) -> None:
         if self.__auto_reset_when_enabling:
-            self.do_reset()
+            self._do_reset()
     
-    def do_reset(self) -> None:
+    @override
+    def _do_reset(self) -> None:
         self.__accumulator = 0.0
     
-    def do_tracking(self, elapsed_time: float) -> None:
+    @override
+    def _do_tracking(self, elapsed_time: float) -> None:
         self.__accumulator += elapsed_time
         if self.__accumulator > self.__duration:
             self.__action() 
-            self.do_reset()
+            self._do_reset()
 
     
     
