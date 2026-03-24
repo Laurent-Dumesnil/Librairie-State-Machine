@@ -87,6 +87,7 @@ class TrackingDevice(BaseComponent, ABC):
         self._do_tracking(elapsed_time)
 
 
+
 class TrackingManager():
     def __init__(self:Self):
         self.__tracking_devices:dict[str, TrackingDevice] = {}
@@ -142,11 +143,11 @@ class TrackingManager():
         for device in self.__tracking_devices.values():
                 device.reset()
 
-
 class TrackingApplication(TrackingManager):
     RunningCondition:TypeAlias = Callable[[], Any|None]
 
     def __init__(self:Self) -> None:
+        super().__init__()
         self.__elapsed_timer:ElapsedTimer = ElapsedTimer()
 
     def run_forever(self:Self) -> NoReturn:
@@ -160,18 +161,16 @@ class TrackingApplication(TrackingManager):
             self.track(self.__elapsed_timer.elapsed)
             result = running_condition()
 
-        return result    
-
+        return result
 
 class TriggerDevice(TrackingDevice):
     def __init__(self, duration: float, action: GenericCallback, /, name: str | None = None, enabled: bool = True, *, initial_time: float = 0.0, auto_reset_when_enabling: bool = True):
+        super().__init__(name, enabled)
         self.__duration = duration
         self.__action = action
         self.__accumulator = 0.0
         self.__auto_reset_when_enabling = auto_reset_when_enabling
 
-        self._name = name
-        self.enabled = enabled
         self.initial_time = initial_time
 
         self.__elapsed_time_from_last_trigger = 0.0
@@ -193,7 +192,7 @@ class TriggerDevice(TrackingDevice):
         return self.__duration
         
     @duration.setter
-    def duration(self, value) -> None:
+    def duration(self, value : float) -> None:
         if not isinstance(value, float):
             raise TypeError('Duration must be a float')         
         if value <= 0:
@@ -206,7 +205,7 @@ class TriggerDevice(TrackingDevice):
         return self.__auto_reset_when_enabling   
          
     @auto_reset_when_enabling.setter
-    def auto_reset_when_enabling(self, value) -> None:
+    def auto_reset_when_enabling(self, value : bool) -> None:
         if not isinstance(value, bool):
             raise TypeError('Auto reset must be a boolean')      
           
@@ -222,16 +221,18 @@ class TriggerDevice(TrackingDevice):
     
     def enabling(self) -> None:
         if self.__auto_reset_when_enabling:
-            self.do_reset()
+            self._do_reset()
     
-    def do_reset(self) -> None:
+    @override
+    def _do_reset(self) -> None:
         self.__accumulator = 0.0
     
-    def do_tracking(self, elapsed_time: float) -> None:
+    @override
+    def _do_tracking(self, elapsed_time: float) -> None:
         self.__accumulator += elapsed_time
         if self.__accumulator > self.__duration:
             self.__action() 
-            self.do_reset()
+            self._do_reset()
 
     
     
