@@ -82,58 +82,6 @@ class TrackingDevice(BaseComponent, ABC):
             value.track(elapsed_time)
         self._do_tracking(elapsed_time)
 
-class TriggerDevice(TrackingDevice):
-    def __init__(self, duration: float, action: GenericCallback, name: str | bool, anabled_bool = True,*, initial_time: float = 0.0, auto_reset_when_enabling: bool = True):
-        self.__duration: float = duration
-        self.__action: GenericCallback = action
-        self.__auto_reset_when_enabling: bool = auto_reset_when_enabling
-        self.accumulator: float
-        self.__elapsed_time_from_last_trigger: float #propriété dérivé que l'on peut obtenir a partir d'info dans l'objet
-        self.__remaining_time_until_next_trigger: float #propriété dérivé que l'on peut obtenir a partir d'info dans l'objet
-
-    @property
-    def action(self):
-        return self.__action
-    
-    @property
-    def duration(self):
-        return self.__duration
-    
-    @property
-    def auto_reset_when_enabling(self):
-        return self.__auto_reset_when_enabling
-    
-    @property
-    def elapsed_time_from_last_trigger(self):
-        return self.__elapsed_time_from_last_trigger
-
-    @property
-    def remaining_time_until_next_trigger(self):
-        return self.__remaining_time_until_next_trigger
-    
-    @override
-    def do_reset(self):
-        super()._do_reset
-
-    @override
-    def do_tracking(self):
-        super()._do_tracking
-
-    @override
-    def enabling(self):
-        super()._enabling
-
-
-
-
-
-def main():
-    pass
-    #t = TrackingDevice("audio")
-
-if __name__ == "__main__":
-    main()
-
     
 
 
