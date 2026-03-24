@@ -1,19 +1,18 @@
-import unittest
+from time import perf_counter
+from tracking_device import TriggerDevice, TrackingApplication
 
-class ProjectTrackingDevice():
+def five_sec():
+    current_time = perf_counter()
+    stop_time = perf_counter() + 5
+    while current_time < stop_time:
+        current_time = perf_counter()
+    return "5 secondes se sont écoulées!"
 
-    def test_tracking_manager() :
-        pass
-
-    def test_tracking_device():
-        pass
-
-    def test_trigger_device():
-        pass
-
-    def test_tracking_application():
-        pass
-    
+def test_device():
+    pass
 
 if __name__ == "__main__":
-    unittest.main()
+    manager = TrackingApplication()
+    device = TriggerDevice(1, test_device, "Test")
+    manager.add_device(device)
+    print(manager.run_until(five_sec))

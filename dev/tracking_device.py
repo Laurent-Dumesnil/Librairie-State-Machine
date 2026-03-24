@@ -29,12 +29,10 @@ class TrackingDevice(BaseComponent, ABC):
     @property
     def sub_devices_count(self) -> int:
         return len(self._sub_devices)
-    
-    @abstractmethod
+
     def _do_valid(self) -> bool:
         pass 
 
-    @abstractmethod
     def _do_reset(self) -> None:
         pass
 
