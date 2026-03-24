@@ -147,6 +147,7 @@ class TrackingApplication(TrackingManager):
     RunningCondition:TypeAlias = Callable[[], Any|None]
 
     def __init__(self:Self) -> None:
+        super().__init__()
         self.__elapsed_timer:ElapsedTimer = ElapsedTimer()
 
     def run_forever(self:Self) -> NoReturn:
@@ -164,13 +165,12 @@ class TrackingApplication(TrackingManager):
 
 class TriggerDevice(TrackingDevice):
     def __init__(self, duration: float, action: GenericCallback, /, name: str | None = None, enabled: bool = True, *, initial_time: float = 0.0, auto_reset_when_enabling: bool = True):
+        super().__init__(name, enabled)
         self.__duration = duration
         self.__action = action
         self.__accumulator = 0.0
         self.__auto_reset_when_enabling = auto_reset_when_enabling
 
-        self._name = name
-        self.enabled = enabled
         self.initial_time = initial_time
 
         self.__elapsed_time_from_last_trigger = 0.0
