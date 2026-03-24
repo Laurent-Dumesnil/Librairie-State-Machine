@@ -18,6 +18,9 @@ class TrackingDevice(BaseComponent):
     def active(self, is_active):
         self._active = is_active
 
+    def track(self, elapsed_time : float) :
+        pass
+
 
 
 class TrackingManager():
