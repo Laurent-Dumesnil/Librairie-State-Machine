@@ -96,5 +96,4 @@ class TrackingApplication(TrackingManager):
             result = running_condition()
 
         return result
-
     
