@@ -87,6 +87,7 @@ class TrackingDevice(BaseComponent, ABC):
         self._do_tracking(elapsed_time)
 
 
+
 class TrackingManager():
     def __init__(self:Self):
         self.__tracking_devices:dict[str, TrackingDevice] = {}
@@ -142,7 +143,6 @@ class TrackingManager():
         for device in self.__tracking_devices.values():
                 device.reset()
 
-
 class TrackingApplication(TrackingManager):
     RunningCondition:TypeAlias = Callable[[], Any|None]
 
@@ -160,8 +160,7 @@ class TrackingApplication(TrackingManager):
             self.track(self.__elapsed_timer.elapsed)
             result = running_condition()
 
-        return result    
-
+        return result
 
 class TriggerDevice(TrackingDevice):
     def __init__(self, duration: float, action: GenericCallback, /, name: str | None = None, enabled: bool = True, *, initial_time: float = 0.0, auto_reset_when_enabling: bool = True):
@@ -193,7 +192,7 @@ class TriggerDevice(TrackingDevice):
         return self.__duration
         
     @duration.setter
-    def duration(self, value) -> None:
+    def duration(self, value : float) -> None:
         if not isinstance(value, float):
             raise TypeError('Duration must be a float')         
         if value <= 0:
@@ -206,7 +205,7 @@ class TriggerDevice(TrackingDevice):
         return self.__auto_reset_when_enabling   
          
     @auto_reset_when_enabling.setter
-    def auto_reset_when_enabling(self, value) -> None:
+    def auto_reset_when_enabling(self, value : bool) -> None:
         if not isinstance(value, bool):
             raise TypeError('Auto reset must be a boolean')      
           
