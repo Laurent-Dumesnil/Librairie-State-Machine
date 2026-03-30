@@ -5,6 +5,9 @@ from abc import ABC, abstractmethod
 from base_component import BaseComponent
 from tracking_device import TrackingDevice
 
+#Commande our corriger le fichier:
+#mypy --strict --check-untyped-defs state_machine_device.py
+
 class Layout :
     def __init__(self : Self, states:tuple[State, ...]):
 
@@ -65,21 +68,21 @@ class State(BaseComponent):
         return True
             
     @property
-    def terminal(self):
+    def terminal(self) -> bool:
         return self.__terminal
     
     @property
-    def do_in_state_action_entering(self):
+    def do_in_state_action_entering(self) -> bool:
         return self.__do_in_state_action_entering
     
     @property
-    def do_in_state_action_exiting(self):
+    def do_in_state_action_exiting(self) -> bool:
         return self.__do_in_state_action_exiting
     
     def is_transiting(self) -> Transition | None:
         for transition in self.__transitions:
             if transition.is_transiting():
-                return Transition
+                return transition
         return None
 
     def add_transition(self, transition: Transition | Iterable[Transition]) -> None:
@@ -91,32 +94,32 @@ class State(BaseComponent):
                     raise TypeError("Il faut ajouter uniquement des éléments de type Transition")
                 self.__transitions.append(t)
 
-    def _execute_entering_action(self):
+    def _execute_entering_action(self) -> None:
         self._do_entering_action()
         if self.__do_in_state_action_entering:
             self._do_in_state_action()
 
-    def _execute_in_state_action(self):
+    def _execute_in_state_action(self) -> None:
         self._do_in_state_action()
 
-    def _execute_exiting_action(self): #Est ce que l'on fait l'action in state avant ou apres la exiting action?
+    def _execute_exiting_action(self) -> None: #Est ce que l'on fait l'action in state avant ou apres la exiting action?
         if self.__do_in_state_action_exiting:
             self._do_in_state_action()
         self._do_exiting_action()
 
-    def _do_entering_action(self):
+    def _do_entering_action(self) -> None:
         pass
 
-    def _do_in_state_action(self):
+    def _do_in_state_action(self) -> None:
         pass
 
-    def _do_exiting_action(self):
+    def _do_exiting_action(self) -> None:
         pass
 
 class Transition(BaseComponent, ABC):
-    def __init__(self : Self, next_state : State | None, name : str | None = None, enabled : bool = True):
-        super().__init__(name, enabled)
-        self.__next_state : State | None = next_state
+    def __init__(self : Self, next_state : State | None = None, name : str | None = None, enabled : bool = True):
+        super().__init__(name=name, enabled=enabled)
+        self.__next_state : State | None = next_state #Besoin de type int ?
  
         
     @property
