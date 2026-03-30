@@ -8,8 +8,47 @@ from tracking_device import TrackingDevice
 #Commande our corriger le fichier:
 #mypy --strict --check-untyped-defs state_machine_device.py
 
+class StateMachineDevice(TrackingDevice) :
+    def __init__(self: Self, layout: Layout, initialized: bool = False, name: str | None = None, enabled: bool = True):
+        self.__layout = layout
+        self.__current_state: State | None = layout.initial_state if initialized else None 
+        super().__init__(name=name, enabled=enabled)
+    # Question: activation de l'etat initial engendre do_entering_action? 
+
+    @property
+    def current_state(self) -> State | None:
+        return self.__current_state    
+    
+    def __transit_by(self, transition: Transition) -> None :
+        if self.__current_state is not None:
+            self.__current_state._execute_exiting_action()
+            transition._execute_transiting_action()
+
+            if self.__current_state.terminal is False:
+                self.__current_state = transition.next_state
+                if self.__current_state is not None:
+                    self.__current_state._execute_entering_action()
+
+    def _transit_to(self, state: State) -> None :
+        pass
+
+    def _do_tracking(self, elapsed_time: float) -> None:
+        if self.__current_state is None:
+            return
+        
+        transition = self.__current_state.is_transiting()
+
+        if transition is not None and transition.is_transiting():
+            self.__transit_by(transition)
+        else:
+            self.__current_state._execute_in_state_action()
+
+    @override
+    def _do_reset(self) -> None:
+        self.__current_state = self.__layout.initial_state
+
 class Layout :
-    def __init__(self : Self, states:tuple[State, ...]):
+    def __init__(self: Self, states:tuple[State, ...]):
 
         if len(states) <= 0 :
             raise ValueError('Tuple size of states must be bigger than 0')
@@ -17,6 +56,8 @@ class Layout :
         for state in states :
             if not isinstance (state, State) :
                 raise TypeError('Must be a State')
+            if not state.valid :
+                raise ValueError('All states must be valid.')
 
         self._states = states
 
@@ -28,27 +69,20 @@ class Layout :
         self._initial_state : State 
         self.initial_state = states[0]
     
-
     def __contains__(state:State) -> bool :
         pass
 
     @property
     def initial_state(self) -> State :
         return self._initial_state
-    
-    
-
-class StateMachineDevice(TrackingDevice) :
-    def __init__(self : Self, layout:Layout, current_state: State | None):
-        pass
 
 
 class State(BaseComponent):
-    def __init__(self, name: str | None = None, *, enabled:bool = True, terminal:bool = False, do_in_state_action_entering:bool = False, do_in_state_action_exiting:bool = False):
+    def __init__(self, name: str | None = None, *, enabled:bool = True, terminal:bool = False, do_in_state_action_when_entering:bool = False, do_in_state_action_when_exiting:bool = False):
         super().__init__(name=name, enabled=enabled)
         self.__terminal = terminal #est ce que lon doit faire une validation sur bool ??
-        self.__do_in_state_action_entering = do_in_state_action_entering #est ce que lon doit faire une validation sur bool ??
-        self.__do_in_state_action_exiting = do_in_state_action_exiting #est ce que lon doit faire une validation sur bool ??
+        self.__do_in_state_action_when_entering = do_in_state_action_when_entering #est ce que lon doit faire une validation sur bool ??
+        self.__do_in_state_action_when_exiting = do_in_state_action_when_exiting #est ce que lon doit faire une validation sur bool ??
 
         self.__transitions: list[Transition] = []
 
@@ -72,12 +106,12 @@ class State(BaseComponent):
         return self.__terminal
     
     @property
-    def do_in_state_action_entering(self) -> bool:
-        return self.__do_in_state_action_entering
+    def do_in_state_action_when_entering(self) -> bool:
+        return self.__do_in_state_action_when_entering
     
     @property
-    def do_in_state_action_exiting(self) -> bool:
-        return self.__do_in_state_action_exiting
+    def do_in_state_action_when_exiting(self) -> bool:
+        return self.__do_in_state_action_when_exiting
     
     def is_transiting(self) -> Transition | None:
         for transition in self.__transitions:
@@ -96,14 +130,14 @@ class State(BaseComponent):
 
     def _execute_entering_action(self) -> None:
         self._do_entering_action()
-        if self.__do_in_state_action_entering:
+        if self.__do_in_state_action_when_entering:
             self._do_in_state_action()
 
     def _execute_in_state_action(self) -> None:
         self._do_in_state_action()
 
     def _execute_exiting_action(self) -> None: #Est ce que l'on fait l'action in state avant ou apres la exiting action?
-        if self.__do_in_state_action_exiting:
+        if self.__do_in_state_action_when_exiting:
             self._do_in_state_action()
         self._do_exiting_action()
 

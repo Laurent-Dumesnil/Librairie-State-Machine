@@ -169,12 +169,12 @@ class TrackingApplication(TrackingManager):
 class TriggerDevice(TrackingDevice):
     def __init__(self, duration: float, action: GenericCallback, /, name: str | None = None, enabled: bool = True, *, initial_time: float = 0.0, auto_reset_when_enabling: bool = True):
         super().__init__(name, enabled)
-        self.__duration = duration
-        self.__action = action
-        self.__accumulator = 0.0
-        self.__auto_reset_when_enabling = auto_reset_when_enabling
+        self.__duration:float = duration
+        self.__action:GenericCallback = action
+        self.__accumulator:float = 0.0
+        self.__auto_reset_when_enabling:bool = auto_reset_when_enabling
 
-        self.initial_time = initial_time
+        self.__initial_time = initial_time
 
         self.__elapsed_time_from_last_trigger = 0.0
         self.__remaining_time_until_next_trigger = 0.0
@@ -222,7 +222,8 @@ class TriggerDevice(TrackingDevice):
     def remaining_time_until_next_trigger(self) -> float:
         return self.__remaining_time_until_next_trigger     
     
-    def enabling(self) -> None:
+    @override
+    def _enabling(self) -> None:
         if self.__auto_reset_when_enabling:
             self._do_reset()
     
