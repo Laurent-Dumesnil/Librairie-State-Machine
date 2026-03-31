@@ -155,7 +155,7 @@ class State(BaseComponent):
     def _do_exiting_action(self) -> None:
         pass
 
-class Transition(BaseComponent, ABC):
+class Transition(ABC, BaseComponent):
     def __init__(self : Self, next_state : State | None = None, name : str | None = None, enabled : bool = True):
         super().__init__(name=name, enabled=enabled)
         self.__next_state : State | None = next_state #Besoin de type int ?
