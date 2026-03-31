@@ -94,11 +94,13 @@ class TrackingDevice(BaseComponent, ABC):
 class TrackingManager():
     def __init__(self:Self):
         self.__tracking_devices:dict[str, TrackingDevice] = {}
-        self.__valid:bool = True
 
     @property
     def valid(self:Self) -> bool:
-        return self.__valid
+        for device in self.__tracking_devices.values():
+            if not device.valid:
+                return False
+        return True
     
     @property
     def device_count(self:Self) -> int:
@@ -110,7 +112,7 @@ class TrackingManager():
     def add_device(self:Self, device : TrackingDevice | Iterable[TrackingDevice]) -> None:
 
         if isinstance(device, TrackingDevice):
-            self.__tracking_devices[device.name] = device # dico pas de append
+            self.__tracking_devices[device.name] = device
 
         elif isinstance(device, Iterable):
             for d in device:
@@ -122,22 +124,24 @@ class TrackingManager():
     def remove_device(self:Self, device : str | TrackingDevice | Iterable[str] | Iterable[TrackingDevice]) -> None:
 
         if isinstance(device, str):
-            self.__tracking_devices.pop(device)
-
-        if isinstance(device, TrackingDevice):
-            self.__tracking_devices.pop(device.name)
-
+            if device in self.__tracking_devices:
+                del self.__tracking_devices[device]
+        
+        elif isinstance(device, TrackingDevice):
+            if device.name in self.__tracking_devices:
+                del self.__tracking_devices[device.name] 
+          
         elif isinstance(device, Iterable):
             for d in device:
-                if d in self.__tracking_devices:
-                    if isinstance(d, TrackingDevice):
-                        self.__tracking_devices.pop(d.name)
-                    elif isinstance (d, str):
-                        self.__tracking_devices.pop(d)
-                     
+                if isinstance(d, str):
+                    if d in self.__tracking_devices:
+                        del self.__tracking_devices[d]
+                elif isinstance(d, TrackingDevice):
+                    if d.name in self.__tracking_devices:
+                        del self.__tracking_devices[d.name]
         else:
             raise TypeError(f'Le type de {device} doit être un TrackingDevice ou un iterable de TrackingDevice. Présentement {type(device)}')
-
+    
     def track(self:Self, elapsed_time : float) -> None:
         for device in self.__tracking_devices.values():
                 device.track(elapsed_time)
