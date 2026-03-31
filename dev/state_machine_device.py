@@ -58,23 +58,17 @@ class Layout :
                 raise TypeError('Must be a State')
             if not state.valid :
                 raise ValueError('All states must be valid.')
-
-        self._states = states
-
-        self._initial_state : State
-
-        if not isinstance(states[0], State):
-            raise TypeError('Must be a State')
         
-        self._initial_state : State 
-        self.initial_state = states[0]
+        # self._initial_state : State - si on initialise pas, on aura des problemes
+        self._states : tuple[State, ...] = states
+        self._initial_state = states[0]
     
-    def __contains__(state:State) -> bool :
-        pass
+    def __contains__(self: Self, state:State) -> bool:
+        return state in self._states
 
     @property
     def initial_state(self) -> State :
-        return self._initial_state
+        return self._initial_state 
 
 
 class State(BaseComponent):
