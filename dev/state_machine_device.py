@@ -36,8 +36,10 @@ class StateMachineDevice(TrackingDevice) :
     def __init__(self: Self, layout: Layout, initialized: bool = False, name: str | None = None, enabled: bool = True):
         self.__layout = layout
         self.__current_state: State | None = layout.initial_state if initialized else None 
+        if initialized is True:
+            self.__current_state._execute_entering_action()
+            
         super().__init__(name=name, enabled=enabled)
-        # Question: activation de l'etat initial engendre do_entering_action? 
 
     @property
     def current_state(self) -> State | None:
@@ -65,11 +67,12 @@ class StateMachineDevice(TrackingDevice) :
     @override
     def _do_tracking(self, elapsed_time: float) -> None:
         if self.__current_state is None:
-            return
+            self.__current_state = self.__layout.initial_state
+            self.__current_state._execute_entering_action()
         
         transition = self.__current_state.is_transiting()
 
-        if transition is not None and transition.is_transiting():
+        if transition is not None:
             self.__transit_by(transition)
         else:
             self.__current_state._execute_in_state_action()
