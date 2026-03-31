@@ -169,15 +169,18 @@ class TrackingApplication(TrackingManager):
 class TriggerDevice(TrackingDevice):
     def __init__(self, duration: float, action: GenericCallback, /, name: str | None = None, enabled: bool = True, *, initial_time: float = 0.0, auto_reset_when_enabling: bool = True):
         super().__init__(name, enabled)
-        self.__duration:float = duration
-        self.__action:GenericCallback = action
-        self.__accumulator:float = 0.0
-        self.__auto_reset_when_enabling:bool = auto_reset_when_enabling
+        self.__duration:float
+        self.duration = duration
+        self.__action:GenericCallback
+        self.action = action
 
-        self.__initial_time = initial_time
+        if not isinstance(initial_time, float):
+            raise TypeError('Initial time must be a float')   
+        else:
+            self.__accumulator:float = initial_time
 
-        self.__elapsed_time_from_last_trigger = 0.0
-        self.__remaining_time_until_next_trigger = 0.0
+        self.__auto_reset_when_enabling:bool
+        self.auto_reset_when_enabling = auto_reset_when_enabling
 
     @property
     def action(self) -> GenericCallback:
@@ -216,11 +219,11 @@ class TriggerDevice(TrackingDevice):
 
     @property
     def elapsed_time_from_last_trigger(self) -> float:
-        return self.__elapsed_time_from_last_trigger
+        return self.__accumulator
 
     @property
     def remaining_time_until_next_trigger(self) -> float:
-        return self.__remaining_time_until_next_trigger     
+        return self.__duration - self.__accumulator    
     
     @override
     def _enabling(self) -> None:
@@ -236,7 +239,7 @@ class TriggerDevice(TrackingDevice):
         self.__accumulator += elapsed_time
         if self.__accumulator > self.__duration:
             self.__action() 
-            self._do_reset()
+            self.__accumulator -= self.__duration
 
     
     
