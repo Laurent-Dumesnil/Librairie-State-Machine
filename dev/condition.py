@@ -8,8 +8,8 @@ class Condition(ABC):
     def __init__(self:Self, invert:bool = False):
         self.__invert:bool = invert
 
-    def __bool__(self:Self):
-        pass
+    def __bool__(self:Self) -> bool:
+        return self._compare() != self.invert
 
     @property
     def invert(self:Self) -> bool:
@@ -54,13 +54,13 @@ class ElapsedTimerCondition(Condition):
     
     @duration.setter
     def duration(self:Self, value:float) -> None:
-        self.duration = float(value)
+        self.__duration = float(value)
     
     @override
     def _compare(self:Self)-> bool:
         return self.__elapsed_timer.elapsed >= self.__duration
 
-    def reset(self:Self):
+    def reset(self:Self) -> None:
         self.__elapsed_timer.reset()
 
 class AbstractValueCondition[T](Condition):
@@ -76,8 +76,8 @@ class AbstractValueCondition[T](Condition):
     def expected_value(self:Self, value:T) -> None:
         self._expected_value = value
     
-class ReaderCondition[T](AbstractValueCondition):
-    def __init__(self:Self, expected_value, value_reader:GenericGenerator[T], invert:bool = False):
+class ReaderCondition[T](AbstractValueCondition[T]):
+    def __init__(self:Self, expected_value : T, value_reader:GenericGenerator[T], invert:bool = False):
         super().__init__(expected_value, invert)
         self._value_reader:GenericGenerator[T] = value_reader
 
@@ -89,14 +89,14 @@ class ReaderCondition[T](AbstractValueCondition):
     def value_reader(self:Self, value:GenericGenerator[T]) -> None:
         if not callable(value):
             raise "The value_reader must be a Callable"
-        self.value_reader = value
+        self._value_reader = value
     
     @override
     def _compare(self:Self)-> bool:
-        return self.expected_value == self.value_reader()
+        return bool(self.expected_value == self.value_reader())
     
-class ValueCondition[T](AbstractValueCondition):
-    def __init__(self:Self, expected_value, actual_value:T, invert:bool = False):
+class ValueCondition[T](AbstractValueCondition[T]):
+    def __init__(self:Self, expected_value : T, actual_value:T, invert:bool = False):
         super().__init__(expected_value, invert)
         self._actual_value:T = actual_value
 
@@ -106,21 +106,21 @@ class ValueCondition[T](AbstractValueCondition):
     
     @actual_value.setter
     def actual_value(self:Self, value:T) -> None:
-        self.actual_value = value
+        self._actual_value = value
     
     @override
     def _compare(self:Self)-> bool:
-        return self.expected_value == self.actual_value
+        return bool(self.expected_value == self.actual_value)
 
 class ManyConditions(Condition):
     def __init__(self:Self, condition : OptionalOneOrMany[Condition], invert:bool = False):
         super().__init__(invert)
         self._condition : OptionalOneOrMany[Condition] = condition
     
-    def clear_conditions(self:Self):
+    def clear_conditions(self:Self) -> None:
         self._condition = None
 
-    def add_condition(self: Self, condition: OneOrMany[Condition]):
+    def add_condition(self: Self, condition: OneOrMany[Condition]) -> None:
         if self._condition is not None:
 
             if isinstance(self._condition, Condition):
@@ -135,7 +135,7 @@ class ManyConditions(Condition):
 
             self._condition = conditions
 
-    def remove_condition(self: Self, condition: OneOrMany[Condition]):
+    def remove_condition(self: Self, condition: OneOrMany[Condition]) -> None:
         if self._condition is not None:
 
             if isinstance(self._condition, Condition):
@@ -189,7 +189,7 @@ class CountConditions(ManyConditions):
         return self.__n
     
     @n.setter
-    def n (self:Self, value : int):
+    def n (self:Self, value : int) -> None:
         self.__n = value
 
     @property
@@ -197,7 +197,7 @@ class CountConditions(ManyConditions):
         return self.__expected_condition_value
     
     @expected_condition_value.setter
-    def expected_condition_value (self:Self, value : bool):
+    def expected_condition_value (self:Self, value : bool) -> None:
         self.__expected_condition_value = value
 
     @property
@@ -205,7 +205,7 @@ class CountConditions(ManyConditions):
         return self.__exact_count
     
     @exact_count.setter
-    def exact_count (self:Self, value : bool):
+    def exact_count (self:Self, value : bool) -> None:
         self.__exact_count = value
 
     @override
