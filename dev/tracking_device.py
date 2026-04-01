@@ -11,7 +11,7 @@ from elapsed_timer import ElapsedTimer
 from typing import Iterable, Callable, TypeAlias, Any, NoReturn, Self
 from abc import ABC, abstractmethod
 
-#Commande our corriger le fichier:
+#Commande pour corriger le fichier:
 #mypy --strict --check-untyped-defs tracking_device.py
 
 class TrackingDevice(BaseComponent, ABC):

@@ -4,6 +4,9 @@ from collections.abc import Iterable
 from elapsed_timer import ElapsedTimer
 from type_utilities import GenericGenerator, OptionalOneOrMany, OneOrMany
 
+#Commande pour corriger le fichier:
+#mypy --strict --check-untyped-defs condition.py
+
 class Condition(ABC):
     def __init__(self:Self, invert:bool = False):
         self.__invert:bool = invert

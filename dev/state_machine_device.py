@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from base_component import BaseComponent
 from tracking_device import TrackingDevice
 
-#Commande our corriger le fichier:
+#Commande pour corriger le fichier:
 #mypy --strict --check-untyped-defs state_machine_device.py
 
 class StateMachineDevice(TrackingDevice) :
