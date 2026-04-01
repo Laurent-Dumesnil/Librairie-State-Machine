@@ -1,5 +1,6 @@
 from typing import Self, override
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from elapsed_timer import ElapsedTimer
 from type_utilities import GenericGenerator, OptionalOneOrMany, OneOrMany
 
@@ -27,7 +28,7 @@ class Condition(ABC):
 
 class AlwaysTrueCondition(Condition):
     def __init__(self:Self, invert:bool = False):
-        super.__init__(invert)
+        super().__init__(invert)
 
     @override
     def _compare(self:Self)-> bool:
@@ -35,7 +36,7 @@ class AlwaysTrueCondition(Condition):
     
 class AlwaysFalseCondition(Condition):
     def __init__(self:Self, invert:bool = False):
-        super.__init__(invert)
+        super().__init__(invert)
 
     @override
     def _compare(self:Self)-> bool:
@@ -43,7 +44,7 @@ class AlwaysFalseCondition(Condition):
     
 class ElapsedTimerCondition(Condition):
     def __init__(self:Self, duration:float, invert:bool = False):
-        super.__init__(invert)
+        super().__init__(invert)
         self.__duration:float = float(duration)
         self.__elapsed_timer:ElapsedTimer = ElapsedTimer()
 
@@ -64,7 +65,7 @@ class ElapsedTimerCondition(Condition):
 
 class AbstractValueCondition[T](Condition):
     def __init__(self:Self, expected_value: T , invert:bool = False):
-        super.__init__(invert)
+        super().__init__(invert)
         self._expected_value:T = expected_value
 
     @property
@@ -77,7 +78,7 @@ class AbstractValueCondition[T](Condition):
     
 class ReaderCondition[T](AbstractValueCondition):
     def __init__(self:Self, expected_value, value_reader:GenericGenerator[T], invert:bool = False):
-        super.__init__(expected_value, invert)
+        super().__init__(expected_value, invert)
         self._value_reader:GenericGenerator[T] = value_reader
 
     @property
@@ -85,7 +86,7 @@ class ReaderCondition[T](AbstractValueCondition):
         return self._value_reader
     
     @value_reader.setter
-    def expected_value(self:Self, value:GenericGenerator[T]) -> None:
+    def value_reader(self:Self, value:GenericGenerator[T]) -> None:
         if not callable(value):
             raise "The value_reader must be a Callable"
         self.value_reader = value
@@ -96,7 +97,7 @@ class ReaderCondition[T](AbstractValueCondition):
     
 class ValueCondition[T](AbstractValueCondition):
     def __init__(self:Self, expected_value, actual_value:T, invert:bool = False):
-        super.__init__(expected_value, invert)
+        super().__init__(expected_value, invert)
         self._actual_value:T = actual_value
 
     @property
@@ -113,37 +114,72 @@ class ValueCondition[T](AbstractValueCondition):
 
 class ManyConditions(Condition):
     def __init__(self:Self, condition : OptionalOneOrMany[Condition], invert:bool = False):
-        super.__init__(invert)
+        super().__init__(invert)
         self._condition : OptionalOneOrMany[Condition] = condition
     
     def clear_conditions(self:Self):
-        self._condition.clear()
+        self._condition = None
 
-    def add_condition(self:Self, condition:OneOrMany[Condition]):
-        self._condition[condition.name] = condition
+    def add_condition(self: Self, condition: OneOrMany[Condition]):
+        if self._condition is not None:
 
-    def remove_condition(self:Self, condition:OneOrMany[Condition]):
-        del self._condition[condition.name] 
+            if isinstance(self._condition, Condition):
+                conditions = [self._condition]
+            else:
+                conditions = list(self._condition)
+
+            if isinstance(condition, Condition):
+                conditions.append(condition)
+            else:
+                conditions.extend(condition)
+
+            self._condition = conditions
+
+    def remove_condition(self: Self, condition: OneOrMany[Condition]):
+        if self._condition is not None:
+
+            if isinstance(self._condition, Condition):
+                conditions = [self._condition]
+            else:
+                conditions = list(self._condition)
+
+            if isinstance(condition, Condition):
+                if condition in conditions:
+                    conditions.remove(condition)
+            else: # iterable
+                for c in condition:
+                    if c in conditions:
+                        conditions.remove(c)
+
+            self._condition = conditions or None
 
 class AllConditions(ManyConditions):
     def __init__(self:Self, condition : OptionalOneOrMany[Condition] = None, invert:bool = False):
-        super.__init__(condition, invert)
+        super().__init__(condition, invert)
         pass
     @override
     def _compare(self:Self)-> bool:
-        all(self._condition)
+        if self._condition is None:
+            return False
+        if isinstance(self._condition, Condition):
+            return bool(self._condition)
+        return all(self._condition)
 
 class AnyConditions(ManyConditions):
     def __init__(self:Self, condition : OptionalOneOrMany[Condition] = None, invert:bool = False):
-        super.__init__(condition, invert)
+        super().__init__(condition, invert)
     
     @override
     def _compare(self:Self)-> bool:
+        if self._condition is None:
+            return False
+        if isinstance(self._condition, Condition):
+            return bool(self._condition)
         return any(self._condition)
 
 class CountConditions(ManyConditions):
     def __init__(self:Self, n : int, condition : OptionalOneOrMany[Condition] = None, expected_condition_value : bool = True , exact_count : bool = True, invert:bool = False):
-        super.__init__(condition, invert)
+        super().__init__(condition, invert)
         self.__n : int = n
         self.__expected_condition_value : bool = expected_condition_value
         self.__exact_count : bool = exact_count
@@ -154,7 +190,7 @@ class CountConditions(ManyConditions):
     
     @n.setter
     def n (self:Self, value : int):
-        self.n = value
+        self.__n = value
 
     @property
     def expected_condition_value(self:Self) -> bool:
@@ -162,7 +198,7 @@ class CountConditions(ManyConditions):
     
     @expected_condition_value.setter
     def expected_condition_value (self:Self, value : bool):
-        self.expected_condition_value = value
+        self.__expected_condition_value = value
 
     @property
     def exact_count(self:Self) -> bool:
@@ -170,8 +206,8 @@ class CountConditions(ManyConditions):
     
     @exact_count.setter
     def exact_count (self:Self, value : bool):
-        self.exact_count = value
+        self.__exact_count = value
 
     @override
     def _compare(self:Self)-> bool:
-        return exact_count
+        return self.__exact_count
