@@ -1,7 +1,7 @@
 from typing import Self, override
 from abc import ABC, abstractmethod
 from elapsed_timer import ElapsedTimer
-from type_utilities import GenericGenerator
+from type_utilities import GenericGenerator, OptionalOneOrMany, OneOrMany
 
 class Condition(ABC):
     def __init__(self:Self, invert:bool = False):
@@ -110,3 +110,68 @@ class ValueCondition[T](AbstractValueCondition):
     @override
     def _compare(self:Self)-> bool:
         return self.expected_value == self.actual_value
+
+class ManyConditions(Condition):
+    def __init__(self:Self, condition : OptionalOneOrMany[Condition], invert:bool = False):
+        super.__init__(invert)
+        self._condition : OptionalOneOrMany[Condition] = condition
+    
+    def clear_conditions(self:Self):
+        self._condition.clear()
+
+    def add_condition(self:Self, condition:OneOrMany[Condition]):
+        self._condition[condition.name] = condition
+
+    def remove_condition(self:Self, condition:OneOrMany[Condition]):
+        del self._condition[condition.name] 
+
+class AllConditions(ManyConditions):
+    def __init__(self:Self, condition : OptionalOneOrMany[Condition] = None, invert:bool = False):
+        super.__init__(condition, invert)
+        pass
+    @override
+    def _compare(self:Self)-> bool:
+        all(self._condition)
+
+class AnyConditions(ManyConditions):
+    def __init__(self:Self, condition : OptionalOneOrMany[Condition] = None, invert:bool = False):
+        super.__init__(condition, invert)
+    
+    @override
+    def _compare(self:Self)-> bool:
+        return any(self._condition)
+
+class CountConditions(ManyConditions):
+    def __init__(self:Self, n : int, condition : OptionalOneOrMany[Condition] = None, expected_condition_value : bool = True , exact_count : bool = True, invert:bool = False):
+        super.__init__(condition, invert)
+        self.__n : int = n
+        self.__expected_condition_value : bool = expected_condition_value
+        self.__exact_count : bool = exact_count
+
+    @property
+    def n(self:Self) -> int:
+        return self.__n
+    
+    @n.setter
+    def n (self:Self, value : int):
+        self.n = value
+
+    @property
+    def expected_condition_value(self:Self) -> bool:
+        return self.__expected_condition_value
+    
+    @expected_condition_value.setter
+    def expected_condition_value (self:Self, value : bool):
+        self.expected_condition_value = value
+
+    @property
+    def exact_count(self:Self) -> bool:
+        return self.__exact_count
+    
+    @exact_count.setter
+    def exact_count (self:Self, value : bool):
+        self.exact_count = value
+
+    @override
+    def _compare(self:Self)-> bool:
+        return exact_count
