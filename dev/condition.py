@@ -158,58 +158,42 @@ class ManyConditions(Condition):
 
             self._condition = conditions or None
 
-# class AllConditions(ManyConditions):
-#     def __init__(self:Self, condition : OptionalOneOrMany[Condition] = None, invert:bool = False):
-#         super().__init__(condition, invert)
-#         pass
-#     @override
-#     def _compare(self:Self)-> bool:
-#         if self._condition is None:
-#             return False
-#         if isinstance(self._condition, Condition):
-#             return bool(self._condition)
-#         return all(self._condition)
-
-# class AnyConditions(ManyConditions):
-#     def __init__(self:Self, condition : OptionalOneOrMany[Condition] = None, invert:bool = False):
-#         super().__init__(condition, invert)
-    
-#     @override
-#     def _compare(self:Self)-> bool:
-#         if self._condition is None:
-#             return False
-#         if isinstance(self._condition, Condition):
-#             return bool(self._condition)
-#         return any(self._condition)
-
 class AllConditions(ManyConditions):
     def __init__(self:Self, condition : OptionalOneOrMany[Condition] = None, invert:bool = False):
-            super().__init__(invert, condition)
+            super().__init__(condition, invert)
 
     @override
     def _compare(self:Self)-> bool:
-        for c in self._condition():
+        if self._condition is None:
+            return False
+        if isinstance(self._condition, Condition):
+            return self._condition._compare()
+        for c in self._condition:
             if not c._compare():
                 return False
         return True
     
 class AnyConditions(ManyConditions):
     def __init__(self:Self, condition : OptionalOneOrMany[Condition] = None, invert:bool = False):
-            super().__init__(invert, condition)
+            super().__init__(condition, invert)
 
     @override
     def _compare(self:Self)-> bool:
-        for c in self._condition():
+        if self._condition is None:
+            return False
+        if isinstance(self._condition, Condition):
+            return self._condition._compare()
+        for c in self._condition:
             if c._compare():
                 return True
         return False
     
 class CountConditions(ManyConditions):
     def __init__(self:Self, n:int, condition : OptionalOneOrMany[Condition] = None, expected_condition_value:bool = True, exact_bool_count=True , invert:bool = False):
-        super().__init__(invert, condition)
+        super().__init__(condition, invert)
         self.__n:int = n
         self.__expected_condition_value:bool = expected_condition_value
-        self.exact_bool_count = exact_bool_count
+        self.__exact_bool_count = exact_bool_count
 
     @property
     def n(self:Self) -> int:
@@ -240,10 +224,15 @@ class CountConditions(ManyConditions):
         
     @override
     def _compare(self:Self)-> bool:
+        if self._condition is None:
+            return False
         valid_conditions:int = 0
-        for c in self._condition():
-            if c._compare() == self.expected_condition_value:
-                valid_conditions += 1
+        if isinstance(self._condition, Condition):
+            return self._condition._compare()
+        else:
+            for c in self._condition:
+                if c._compare() == self.expected_condition_value:
+                    valid_conditions += 1
         if self.exact_bool_count:
             return True if valid_conditions == self.n else False
         else:
