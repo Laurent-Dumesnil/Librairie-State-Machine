@@ -85,11 +85,17 @@ class StateMachineDevice(TrackingDevice) :
 class State(BaseComponent):
     def __init__(self, name: str | None = None, *, enabled:bool = True, terminal:bool = False, do_in_state_action_when_entering:bool = False, do_in_state_action_when_exiting:bool = False):
         super().__init__(name=name, enabled=enabled)
-        self.__terminal = terminal #est ce que lon doit faire une validation sur bool ??
-        self.__do_in_state_action_when_entering = do_in_state_action_when_entering #est ce que lon doit faire une validation sur bool ??
-        self.__do_in_state_action_when_exiting = do_in_state_action_when_exiting #est ce que lon doit faire une validation sur bool ??
+        self.__terminal = self.is_bool(terminal)
+        self.__do_in_state_action_when_entering = self.is_bool(do_in_state_action_when_entering)
+        self.__do_in_state_action_when_exiting = self.is_bool(do_in_state_action_when_exiting)
 
         self.__transitions: list[Transition] = []
+
+    def is_bool(self, value):
+        if isinstance(value, bool):
+            return value
+        else:
+            raise TypeError("Valeur doit être de type bool")
 
     @override
     @property
@@ -141,7 +147,7 @@ class State(BaseComponent):
     def _execute_in_state_action(self) -> None:
         self._do_in_state_action()
 
-    def _execute_exiting_action(self) -> None: #Est ce que l'on fait l'action in state avant ou apres la exiting action?
+    def _execute_exiting_action(self) -> None:
         if self.__do_in_state_action_when_exiting:
             self._do_in_state_action()
         self._do_exiting_action()
@@ -158,7 +164,7 @@ class State(BaseComponent):
 class Transition(ABC, BaseComponent):
     def __init__(self : Self, next_state : State | None = None, name : str | None = None, enabled : bool = True):
         super().__init__(name=name, enabled=enabled)
-        self.__next_state : State | None = next_state #Besoin de type int ?
+        self.__next_state : State | None = next_state
  
         
     @property
