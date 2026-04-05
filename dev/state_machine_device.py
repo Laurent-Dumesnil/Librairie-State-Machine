@@ -91,11 +91,10 @@ class State(BaseComponent):
 
         self.__transitions: list[Transition] = []
 
-    def is_bool(self, value):
+    def is_bool(self, value) -> bool:
         if isinstance(value, bool):
             return value
-        else:
-            raise TypeError("Valeur doit être de type bool")
+        raise TypeError("Valeur doit être de type bool")
 
     @override
     @property

@@ -2,10 +2,9 @@ from time import perf_counter
 from state_machine_device import Transition, State, Self
 from typing import final, override, TypeAlias, Iterable, Any
 from type_utilities import GenericCallback
+from condition import Condition
 
-class Condition:
-    def __bool__():
-        pass
+Action:TypeAlias = GenericCallback
 
 class ConditionalTransition(Transition):
     def __init__(self:Self, condition: Condition | None = None, next_state: State | None = None, name: str | None = None, enabled:bool = True):
@@ -31,8 +30,73 @@ class ConditionalTransition(Transition):
     @final
     def is_transiting(self) -> bool:
         return bool(self.__condition)
+    
+class ActionTransition(ConditionalTransition):
+    def __init__(self, condition:Condition | None = None, next_state:State | None = None, name: str | None = None, enabled:bool = True):
+        super().__init__(condition=condition, next_state=next_state, name=name, enabled=enabled)
+        self.__actions: list[Action] = list()
 
-Action:TypeAlias = GenericCallback
+    @property
+    def transiting_action_count(self) -> int:
+        return len(self.__actions)
+        
+    def _do_transiting_action(self):
+        for action in self.__actions:
+            action()
+
+    def clear_transiting_actions(self):
+        self.__actions.clear()
+
+    def add_transiting_action(self, action:Action | Iterable[Action]):
+        if callable(action):
+            self.__actions.append(action)
+            return
+        elif isinstance(action, Iterable) and not isinstance(action, str):
+            for element in action:
+                if isinstance(element, action):
+                    self.__actions.append(element)
+                else:
+                    raise TypeError("Doit être de type action")
+            return
+        raise TypeError("Doit être de type action ou un iterable d'actions")
+    
+class MonitoredTransition(ActionTransition):
+    def __init__(self, condition:Condition | None = None, next_state:State | None = None, name: str | None = None, enabled:bool = True):
+        super().__init__(condition=condition, next_state=next_state, name=name, enabled=enabled)
+        self.__transit_count: int = 0
+        self.__creation_reference_time:float = perf_counter()
+        self.__last_transit_reference_time: float | None = None
+        self.custom_value: Any = None
+
+    @property
+    def transit_count(self) -> int:
+        return self.__transit_count
+    
+    @property
+    def creation_reference_time(self) -> float:
+        return self.__creation_reference_time
+    
+    @property
+    def elapsed_time_since_creation(self) -> float:
+        return perf_counter() - self.__creation_reference_time
+    
+    @property
+    def last_transit_reference_time(self) -> float | None:
+        return self.__last_transit_reference_time
+    
+    @property
+    def elapsed_since_last_transit(self) -> float | None:
+        if self.__last_transit_reference_time is None:
+            return None
+        return perf_counter() - self.__last_transit_reference_time
+    
+    @override
+    def _execute_transiting_action(self) -> None:
+        self.__transit_count += 1
+        self.__last_transit_reference_time = perf_counter()
+        super()._execute_transiting_action()
+                
+
 class ActionState(State):
     def __init__(self, name:str | None=None, *, enabled:bool=True, terminal: bool=False, do_in_state_action_when_entering: bool=False, do_in_state_action_when_exiting: bool=False):
         super().__init__(name=name, enabled=enabled, terminal=terminal, do_in_state_action_when_entering=do_in_state_action_when_entering, do_in_state_action_when_exiting=do_in_state_action_when_exiting)

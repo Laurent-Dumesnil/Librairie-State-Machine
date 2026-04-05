@@ -51,7 +51,7 @@ class ElapsedTimerCondition(Condition):
     def __init__(self:Self, duration:float, invert:bool = False):
         super().__init__(invert)
         self.__duration:float = float(duration)
-        self.__elapsed_timer:ElapsedTimer = ElapsedTimer()
+        self.__elapsed_timer:ElapsedTimer = ElapsedTimer(ElapsedTimer.Mode.ACCUMULATED)
 
     @property
     def duration(self:Self) -> float:
