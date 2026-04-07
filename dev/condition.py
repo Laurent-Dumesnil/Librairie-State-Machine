@@ -412,10 +412,7 @@ class AllConditions(ManyConditions):
             return False
         if isinstance(self._condition, Condition):
             return self._condition._compare()
-        for c in self._condition:
-            if not c._compare():
-                return False
-        return True
+        return all(c._compare() for c in self._condition)
     
 class AnyConditions(ManyConditions):
     """Condition qui est vraie si au moins une sous-condition est vraie.
@@ -449,10 +446,7 @@ class AnyConditions(ManyConditions):
             return False
         if isinstance(self._condition, Condition):
             return self._condition._compare()
-        for c in self._condition:
-            if c._compare():
-                return True
-        return False
+        return any(c._compare() for c in self._condition)
     
 class CountConditions(ManyConditions):
     """Condition basée sur le nombre de sous-conditions qui remplissent un critère.
