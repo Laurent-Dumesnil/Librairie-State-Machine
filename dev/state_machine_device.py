@@ -50,19 +50,17 @@ class StateMachineDevice(TrackingDevice) :
             self.__current_state._execute_exiting_action()
             transition._execute_transiting_action()
 
-            if self.__current_state.terminal is False:
-                self.__current_state = transition.next_state
-                if self.__current_state is not None:
-                    self.__current_state._execute_entering_action()
+            self.__current_state = transition.next_state
+            if self.__current_state is not None:
+                self.__current_state._execute_entering_action()
 
     def _transit_to(self, state: State) -> None :
         if self.__current_state is not None:
             self.__current_state._execute_exiting_action()
 
-            if self.__current_state.terminal is False:
-                self.__current_state = state
-                if self.__current_state is not None:
-                    self.__current_state._execute_entering_action()
+            self.__current_state = state
+            if self.__current_state is not None:
+                self.__current_state._execute_entering_action()
 
     @override
     def _do_tracking(self, elapsed_time: float) -> None:
@@ -70,12 +68,13 @@ class StateMachineDevice(TrackingDevice) :
             self.__current_state = self.__layout.initial_state
             self.__current_state._execute_entering_action()
         
-        transition = self.__current_state.is_transiting()
+        if self.__current_state.terminal is False:
+            transition = self.__current_state.is_transiting()
 
-        if transition is not None:
-            self.__transit_by(transition)
-        else:
-            self.__current_state._execute_in_state_action()
+            if transition is not None:
+                self.__transit_by(transition)
+            else:
+                self.__current_state._execute_in_state_action()
 
     @override
     def _do_reset(self) -> None:
