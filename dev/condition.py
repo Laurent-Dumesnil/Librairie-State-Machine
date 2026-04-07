@@ -1,6 +1,21 @@
-from typing import Self, override
+"""
+Module de conditions logiques et temporelles pour la robotique.
+
+Ce module fournit des classes abstraites et concrètes permettant de définir, combiner et évaluer des conditions booléennes, temporelles ou liées à des états surveillés. Il est conçu pour être utilisé dans des systèmes de contrôle, d'automatisation ou de robotique nécessitant des conditions complexes et composables.
+
+Exemples d'utilisation :
+    >>> c = AlwaysTrueCondition()
+    >>> bool(c)
+    True
+    >>> c2 = ValueCondition(5, 5)
+    >>> bool(c2)
+    True
+    >>> allc = AllConditions([c, c2])
+    >>> bool(allc)
+    True
+"""
+from typing import Self, override, Any
 from abc import ABC, abstractmethod
-from collections.abc import Iterable
 from elapsed_timer import ElapsedTimer
 from type_utilities import GenericGenerator, OptionalOneOrMany, OneOrMany
 
@@ -89,10 +104,11 @@ class AlwaysTrueCondition(Condition):
 
     @override
     def _compare(self:Self)-> bool:
-        """Compares the condition, always returning True.
+        """
+        Compare la condition, retourne toujours True.
 
         Returns:
-            True.
+            bool: Toujours True.
         """
         return True
     
@@ -118,10 +134,11 @@ class AlwaysFalseCondition(Condition):
 
     @override
     def _compare(self:Self)-> bool:
-        """Compares the condition, always returning False.
+        """
+        Compare la condition, retourne toujours False.
 
         Returns:
-            False.
+            bool: Toujours False.
         """
         return False
     
@@ -165,15 +182,16 @@ class ElapsedTimerCondition(Condition):
     
     @override
     def _compare(self:Self)-> bool:
-        """Compares the condition based on elapsed time.
+        """
+        Compare la condition selon le temps écoulé.
 
         Returns:
-            True if the elapsed time is greater than or equal to the duration.
+            bool: True si le temps écoulé est supérieur ou égal à la durée.
         """
         return self.__elapsed_timer.elapsed >= self.__duration
 
     def reset(self:Self) -> None:
-        """Réinitialise le temporisateur."""
+        """Réinitialise le elapsed timer."""
         self.__elapsed_timer.reset()
 
 class AbstractValueCondition[T](Condition):
@@ -260,10 +278,11 @@ class ReaderCondition[T](AbstractValueCondition[T]):
     
     @override
     def _compare(self:Self)-> bool:
-        """Compares the expected value against the value from the reader.
+        """
+        Compare la valeur attendue à la valeur lue.
 
         Returns:
-            True if the values are equal.
+            bool: True si les valeurs sont égales.
         """
         return bool(self.expected_value == self.value_reader())
     
@@ -310,10 +329,11 @@ class ValueCondition[T](AbstractValueCondition[T]):
     
     @override
     def _compare(self:Self)-> bool:
-        """Compares the expected value against the actual value.
+        """
+        Compare la valeur attendue à la valeur réelle.
 
         Returns:
-            True if the values are equal.
+            bool: True si les valeurs sont égales.
         """
         return bool(self.expected_value == self.actual_value)
 
@@ -403,10 +423,11 @@ class AllConditions(ManyConditions):
 
     @override
     def _compare(self:Self)-> bool:
-        """Compares by checking if all conditions are True.
+        """
+        Compare en vérifiant si toutes les conditions sont vraies.
 
         Returns:
-            True if all sub-conditions are True, False otherwise.
+            bool: True si toutes les sous-conditions sont vraies, False sinon.
         """
         if self._condition is None:
             return False
@@ -437,10 +458,11 @@ class AnyConditions(ManyConditions):
 
     @override
     def _compare(self:Self)-> bool:
-        """Compares by checking if any condition is True.
+        """
+        Compare en vérifiant si au moins une condition est vraie.
 
         Returns:
-            True if at least one sub-condition is True, False otherwise.
+            bool: True si au moins une sous-condition est vraie, False sinon.
         """
         if self._condition is None:
             return False
@@ -543,10 +565,11 @@ class CountConditions(ManyConditions):
         
     @override
     def _compare(self:Self)-> bool:
-        """Compares based on the count of conditions matching the expected value.
+        """
+        Compare selon le nombre de conditions correspondant à la valeur attendue.
 
         Returns:
-            True if the count matches the criteria.
+            bool: True si le critère de comptage est respecté.
         """
         if self._condition is None:
             return False
@@ -566,4 +589,4 @@ class CountConditions(ManyConditions):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
-    print('condtion module test completed.')
+    print('condition module test completed.')
