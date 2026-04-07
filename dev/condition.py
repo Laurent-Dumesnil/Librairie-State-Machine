@@ -8,46 +8,47 @@ from type_utilities import GenericGenerator, OptionalOneOrMany, OneOrMany
 #mypy --strict --check-untyped-defs condition.py
 
 class Condition(ABC):
-    """Abstract base class for conditions that can be evaluated to a boolean value.
+    """Classe abstraite pour des conditions évaluables en bool.
 
-    This class provides a framework for creating conditions that can be inverted.
-    Subclasses must implement the _compare method to define the condition logic.
+    Cette classe fournit un cadre pour créer des conditions pouvant être inversées.
+    Les sous-classes doivent implémenter la méthode _compare pour définir la logique
+    de la condition.
     """
 
     def __init__(self:Self, invert:bool = False):
-        """Initializes the condition with an optional invert flag.
+        """Initialise la condition avec un indicateur d'inversion optionnel.
 
         Args:
-            invert: If True, the condition's result is inverted.
+            invert: Si True, le résultat de la condition est inversé.
         """
         self.__invert:bool = invert
 
     def __bool__(self:Self) -> bool:
-        """Evaluates the condition to a boolean value.
+        """Évalue la condition en une valeur booléenne.
 
         Returns:
-            The boolean result of the condition, potentially inverted.
+            Le résultat booléen de la condition, potentiellement inversé.
         """
         return self._compare() != self.invert
 
     @property
     def invert(self:Self) -> bool:
-        """Gets the invert flag.
+        """Obtient l'indicateur d'inversion.
 
         Returns:
-            True if the condition is inverted, False otherwise.
+            True si la condition est inversée, False sinon.
         """
         return self.__invert
     
     @invert.setter
     def invert(self:Self, value:bool) -> None:
-        """Sets the invert flag.
+        """Définit l'indicateur d'inversion.
 
         Args:
-            value: The new invert value.
+            value: La nouvelle valeur d'inversion.
 
         Raises:
-            ValueError: If value is not a boolean.
+            ValueError: Si la valeur n'est pas un booléen.
         """
         if not isinstance(value, bool):
             raise ValueError("Value must be a bool")
@@ -55,28 +56,34 @@ class Condition(ABC):
     
     @abstractmethod
     def _compare(self:Self)-> bool:
-        """Abstract method to compare the condition.
+        """Méthode abstraite pour comparer la condition.
 
         Returns:
-            The raw boolean result of the condition before inversion.
+            Le résultat booléen brut de la condition avant inversion.
         """
         pass
 
     def toogle_invert(self:Self) -> None:
-        """Toggles the invert flag."""
+        """Inverse l'indicateur d'inversion."""
         self.__invert = not self.__invert
 
 class AlwaysTrueCondition(Condition):
-    """A condition that always evaluates to True.
+    """Condition qui est toujours vraie.
 
-    This condition can be used as a placeholder or for testing purposes.
+    Utile comme valeur par défaut ou pour les tests.
+
+    Exemples:
+        >>> bool(AlwaysTrueCondition())
+        True
+        >>> bool(AlwaysTrueCondition(invert=True))
+        False
     """
 
     def __init__(self:Self, invert:bool = False):
-        """Initializes the always true condition.
+        """Initialise la condition toujours vraie.
 
         Args:
-            invert: If True, the condition is inverted (always False).
+            invert: Si True, la condition est inversée (toujours False).
         """
         super().__init__(invert)
 
@@ -87,19 +94,25 @@ class AlwaysTrueCondition(Condition):
         Returns:
             True.
         """
-        return True if not self.invert else False
+        return True
     
 class AlwaysFalseCondition(Condition):
-    """A condition that always evaluates to False.
+    """Condition qui est toujours fausse.
 
-    This condition can be used as a placeholder or for testing purposes.
+    Utile comme valeur par défaut ou pour les tests.
+
+    Exemples:
+        >>> bool(AlwaysFalseCondition())
+        False
+        >>> bool(AlwaysFalseCondition(invert=True))
+        True
     """
 
     def __init__(self:Self, invert:bool = False):
-        """Initializes the always false condition.
+        """Initialise la condition toujours fausse.
 
         Args:
-            invert: If True, the condition is inverted (always True).
+            invert: Si True, la condition est inversée (toujours True).
         """
         super().__init__(invert)
 
@@ -110,20 +123,23 @@ class AlwaysFalseCondition(Condition):
         Returns:
             False.
         """
-        return False if not self.invert else True
+        return False
     
 class ElapsedTimerCondition(Condition):
-    """A condition that becomes True after a specified duration has elapsed.
+    """Condition qui devient vraie après une durée écoulée spécifiée.
 
-    Uses an ElapsedTimer to track time accumulation.
+    Utilise un ElapsedTimer pour accumuler le temps. Cette condition passe
+    à True lorsque le temps écoulé est supérieur ou égal à la durée.
+
+    Note: les tests basés sur le temps ne sont pas fiables comme doctests.
     """
 
     def __init__(self:Self, duration:float, invert:bool = False):
-        """Initializes the elapsed timer condition.
+        """Initialise la condition de temporisation.
 
         Args:
-            duration: The duration in seconds after which the condition becomes True.
-            invert: If True, the condition is inverted.
+            duration: Durée en secondes après laquelle la condition devient True.
+            invert: Si True, la condition est inversée.
         """
         super().__init__(invert)
         self.__duration:float = float(duration)
@@ -131,19 +147,19 @@ class ElapsedTimerCondition(Condition):
 
     @property
     def duration(self:Self) -> float:
-        """Gets the duration.
+        """Obtient la durée.
 
         Returns:
-            The duration in seconds.
+            La durée en secondes.
         """
         return self.__duration
     
     @duration.setter
     def duration(self:Self, value:float) -> None:
-        """Sets the duration.
+        """Définit la durée.
 
         Args:
-            value: The new duration in seconds.
+            value: La nouvelle durée en secondes.
         """
         self.__duration = float(value)
     
@@ -154,81 +170,89 @@ class ElapsedTimerCondition(Condition):
         Returns:
             True if the elapsed time is greater than or equal to the duration.
         """
-        return self.__elapsed_timer.elapsed >= self.__duration if not self.invert else self.__elapsed_timer.elapsed < self.__duration
+        return self.__elapsed_timer.elapsed >= self.__duration
 
     def reset(self:Self) -> None:
-        """Resets the elapsed timer."""
+        """Réinitialise le temporisateur."""
         self.__elapsed_timer.reset()
 
 class AbstractValueCondition[T](Condition):
-    """Abstract base class for conditions that compare against an expected value.
+    """Classe de base pour les conditions comparant à une valeur attendue.
 
-    Subclasses must define how to obtain the actual value for comparison.
+    Les sous-classes doivent définir comment obtenir la valeur réelle pour la comparaison.
     """
 
     def __init__(self:Self, expected_value: T , invert:bool = False):
-        """Initializes the abstract value condition.
+        """Initialise la condition avec la valeur attendue.
 
         Args:
-            expected_value: The value to compare against.
-            invert: If True, the condition is inverted.
+            expected_value: La valeur à comparer.
+            invert: Si True, la condition est inversée.
         """
         super().__init__(invert)
         self._expected_value:T = expected_value
 
     @property
     def expected_value(self:Self) -> T:
-        """Gets the expected value.
+        """Obtient la valeur attendue.
 
         Returns:
-            The expected value.
+            La valeur attendue.
         """
         return self._expected_value
     
     @expected_value.setter
     def expected_value(self:Self, value:T) -> None:
-        """Sets the expected value.
+        """Définit la valeur attendue.
 
         Args:
-            value: The new expected value.
+            value: La nouvelle valeur attendue.
         """
         self._expected_value = value
     
 class ReaderCondition[T](AbstractValueCondition[T]):
-    """A condition that compares an expected value against a value read from a callable.
+    """Condition qui compare une valeur attendue à une valeur lue via un callable.
 
-    The value is obtained by calling the value_reader function.
+    La valeur est obtenue en appelant value_reader().
+
+    Exemples:
+        >>> reader = ReaderCondition(5, lambda: 5)
+        >>> bool(reader)
+        True
+        >>> reader.value_reader = lambda: 3
+        >>> bool(reader)
+        False
     """
 
     def __init__(self:Self, expected_value : T, value_reader:GenericGenerator[T], invert:bool = False):
-        """Initializes the reader condition.
+        """Initialise la ReaderCondition.
 
         Args:
-            expected_value: The value to compare against.
-            value_reader: A callable that returns the actual value.
-            invert: If True, the condition is inverted.
+            expected_value: La valeur attendue.
+            value_reader: Un callable qui retourne la valeur réelle.
+            invert: Si True, la condition est inversée.
         """
         super().__init__(expected_value, invert)
         self._value_reader:GenericGenerator[T] = value_reader
 
     @property
     def value_reader(self:Self) -> GenericGenerator[T]:
-        """Gets the value reader callable.
+        """Obtient le callable de lecture de valeur.
 
         Returns:
-            The callable that provides the actual value.
+            Le callable qui fournit la valeur réelle.
         """
         return self._value_reader
     
     @value_reader.setter
     def value_reader(self:Self, value:GenericGenerator[T]) -> None:
-        """Sets the value reader callable.
+        """Définit le callable de lecture de valeur.
 
         Args:
-            value: The new callable.
+            value: Le nouveau callable.
 
         Raises:
-            ValueError: If value is not callable.
+            ValueError: Si la valeur n'est pas callable.
         """
         if not callable(value):
             raise ValueError("The value_reader must be a Callable")
@@ -241,37 +265,46 @@ class ReaderCondition[T](AbstractValueCondition[T]):
         Returns:
             True if the values are equal.
         """
-        return bool(self.expected_value == self.value_reader()) if not self.invert else bool(self.expected_value != self.value_reader())
+        return bool(self.expected_value == self.value_reader())
     
 class ValueCondition[T](AbstractValueCondition[T]):
-    """A condition that compares an expected value against a static actual value."""
+    """Condition qui compare une valeur attendue à une valeur réelle statique.
+
+    Exemples:
+        >>> vc = ValueCondition(10, 10)
+        >>> bool(vc)
+        True
+        >>> vc.actual_value = 5
+        >>> bool(vc)
+        False
+    """
 
     def __init__(self:Self, expected_value : T, actual_value:T, invert:bool = False):
-        """Initializes the value condition.
+        """Initialise la ValueCondition.
 
         Args:
-            expected_value: The value to compare against.
-            actual_value: The static actual value.
-            invert: If True, the condition is inverted.
+            expected_value: La valeur attendue.
+            actual_value: La valeur réelle statique.
+            invert: Si True, la condition est inversée.
         """
         super().__init__(expected_value, invert)
         self._actual_value:T = actual_value
 
     @property
     def actual_value(self:Self) -> T:
-        """Gets the actual value.
+        """Obtient la valeur réelle.
 
         Returns:
-            The actual value.
+            La valeur réelle.
         """
         return self._actual_value
     
     @actual_value.setter
     def actual_value(self:Self, value:T) -> None:
-        """Sets the actual value.
+        """Définit la valeur réelle.
 
         Args:
-            value: The new actual value.
+            value: La nouvelle valeur réelle.
         """
         self._actual_value = value
     
@@ -282,33 +315,33 @@ class ValueCondition[T](AbstractValueCondition[T]):
         Returns:
             True if the values are equal.
         """
-        return bool(self.expected_value == self.actual_value) if not self.invert else bool(self.expected_value != self.actual_value)
+        return bool(self.expected_value == self.actual_value)
 
 class ManyConditions(Condition):
-    """Base class for conditions that operate on multiple sub-conditions.
+    """Classe de base pour des conditions opérant sur plusieurs sous-conditions.
 
-    Provides methods to add, remove, and clear conditions.
+    Fournit des méthodes pour ajouter, supprimer et effacer des conditions.
     """
 
     def __init__(self:Self, condition : OptionalOneOrMany[Condition], invert:bool = False):
-        """Initializes the many conditions.
+        """Initialise ManyConditions.
 
         Args:
-            condition: Initial condition(s) to include.
-            invert: If True, the condition is inverted.
+            condition: Condition(s) initiale(s) à inclure.
+            invert: Si True, la condition est inversée.
         """
         super().__init__(invert)
         self._condition : OptionalOneOrMany[Condition] = condition
     
     def clear_conditions(self:Self) -> None:
-        """Clears all conditions."""
+        """Efface toutes les conditions."""
         self._condition = None
 
     def add_condition(self: Self, condition: OneOrMany[Condition]) -> None:
-        """Adds one or more conditions.
+        """Ajoute une ou plusieurs conditions.
 
         Args:
-            condition: The condition(s) to add.
+            condition: La condition(s) à ajouter.
         """
         if self._condition is not None:
 
@@ -325,10 +358,10 @@ class ManyConditions(Condition):
             self._condition = conditions
 
     def remove_condition(self: Self, condition: OneOrMany[Condition]) -> None:
-        """Removes one or more conditions.
+        """Supprime une ou plusieurs conditions.
 
         Args:
-            condition: The condition(s) to remove.
+            condition: La condition(s) à supprimer.
         """
         if self._condition is not None:
 
@@ -348,14 +381,23 @@ class ManyConditions(Condition):
             self._condition = conditions or None
 
 class AllConditions(ManyConditions):
-    """A condition that is True only if all sub-conditions are True."""
+    """Condition qui est vraie seulement si toutes les sous-conditions sont vraies.
+
+    Exemples:
+        >>> a = AlwaysTrueCondition()
+        >>> b = AlwaysFalseCondition()
+        >>> bool(AllConditions([a, a]))
+        True
+        >>> bool(AllConditions([a, b]))
+        False
+    """
 
     def __init__(self:Self, condition : OptionalOneOrMany[Condition] = None, invert:bool = False):
-        """Initializes the all conditions.
+        """Initialise AllConditions.
 
         Args:
-            condition: Initial condition(s).
-            invert: If True, the condition is inverted.
+            condition: Condition(s) initiale(s).
+            invert: Si True, la condition est inversée.
         """
         super().__init__(condition, invert)
 
@@ -367,23 +409,32 @@ class AllConditions(ManyConditions):
             True if all sub-conditions are True, False otherwise.
         """
         if self._condition is None:
-            return False if not self.invert else True
+            return False
         if isinstance(self._condition, Condition):
             return self._condition._compare()
         for c in self._condition:
             if not c._compare():
-                return False if not self.invert else True
-        return True if not self.invert else False
+                return False
+        return True
     
 class AnyConditions(ManyConditions):
-    """A condition that is True if at least one sub-condition is True."""
+    """Condition qui est vraie si au moins une sous-condition est vraie.
+
+    Exemples:
+        >>> a = AlwaysTrueCondition()
+        >>> b = AlwaysFalseCondition()
+        >>> bool(AnyConditions([b, b]))
+        False
+        >>> bool(AnyConditions([b, a]))
+        True
+    """
 
     def __init__(self:Self, condition : OptionalOneOrMany[Condition] = None, invert:bool = False):
-        """Initializes the any conditions.
+        """Initialise AnyConditions.
 
         Args:
-            condition: Initial condition(s).
-            invert: If True, the condition is inverted.
+            condition: Condition(s) initiale(s).
+            invert: Si True, la condition est inversée.
         """
         super().__init__(condition, invert)
 
@@ -395,29 +446,37 @@ class AnyConditions(ManyConditions):
             True if at least one sub-condition is True, False otherwise.
         """
         if self._condition is None:
-            return False if not self.invert else True
+            return False
         if isinstance(self._condition, Condition):
             return self._condition._compare()
         for c in self._condition:
             if c._compare():
-                return True if not self.invert else False
-        return False if not self.invert else True
+                return True
+        return False
     
 class CountConditions(ManyConditions):
-    """A condition that is True based on the count of sub-conditions meeting a criteria.
+    """Condition basée sur le nombre de sous-conditions qui remplissent un critère.
 
-    Can check for exact count or at least count.
+    Permet de vérifier un nombre exact ou au moins un certain nombre.
+
+    Exemples:
+        >>> a = AlwaysTrueCondition()
+        >>> b = AlwaysFalseCondition()
+        >>> bool(CountConditions(1, [b, a]))
+        True
+        >>> bool(CountConditions(2, [a, b], exact_bool_count=True))
+        False
     """
 
     def __init__(self:Self, n:int, condition : OptionalOneOrMany[Condition] = None, expected_condition_value:bool = True, exact_bool_count:bool=True , invert:bool = False):
-        """Initializes the count conditions.
+        """Initialise CountConditions.
 
         Args:
-            n: The number of conditions to check for.
-            condition: Initial condition(s).
-            expected_condition_value: The value to match (True or False).
-            exact_bool_count: If True, requires exactly n matches; if False, at least n.
-            invert: If True, the condition is inverted.
+            n: Le nombre de conditions à vérifier.
+            condition: Condition(s) initiale(s).
+            expected_condition_value: La valeur bool attendue (True ou False).
+            exact_bool_count: Si True, nécessite exactement n correspondances; si False, au moins n.
+            invert: Si True, la condition est inversée.
         """
         super().__init__(condition, invert)
         self.__n:int = n
@@ -426,40 +485,40 @@ class CountConditions(ManyConditions):
 
     @property
     def n(self:Self) -> int:
-        """Gets the count n.
+        """Obtient le compte n.
 
         Returns:
-            The count value.
+            La valeur du compte.
         """
         return self.__n
     
     @n.setter
     def n (self:Self, value : int) -> None:
-        """Sets the count n.
+        """Définit le compte n.
 
         Args:
-            value: The new count value.
+            value: La nouvelle valeur de compte.
         """
         self.__n = int(value)
 
     @property
     def expected_condition_value(self:Self) -> bool:
-        """Gets the expected condition value.
+        """Obtient la valeur de condition attendue.
 
         Returns:
-            The expected boolean value.
+            La valeur booléenne attendue.
         """
         return self.__expected_condition_value
     
     @expected_condition_value.setter
     def expected_condition_value(self:Self, value : bool) -> None:
-        """Sets the expected condition value.
+        """Définit la valeur de condition attendue.
 
         Args:
-            value: The new expected value.
+            value: La nouvelle valeur attendue.
 
         Raises:
-            ValueError: If value is not a boolean.
+            ValueError: Si la valeur n'est pas un booléen.
         """
         if not isinstance(value, bool):
             raise ValueError("Value must be a bool")
@@ -467,22 +526,22 @@ class CountConditions(ManyConditions):
 
     @property
     def exact_bool_count(self:Self) -> bool:
-        """Gets the exact count flag.
+        """Obtient le drapeau de compte exact.
 
         Returns:
-            True if exact count is required.
+            True si un compte exact est requis.
         """
         return self.__exact_bool_count
     
     @exact_bool_count.setter
     def exact_bool_count(self:Self, value : bool) -> None:
-        """Sets the exact count flag.
+        """Définit le drapeau de compte exact.
 
         Args:
-            value: The new flag value.
+            value: La nouvelle valeur de drapeau.
 
         Raises:
-            ValueError: If value is not a boolean.
+            ValueError: Si la valeur n'est pas un booléen.
         """
         if not isinstance(value, bool):
             raise ValueError("Value must be a bool")
@@ -496,7 +555,7 @@ class CountConditions(ManyConditions):
             True if the count matches the criteria.
         """
         if self._condition is None:
-            return False if self.expected_condition_value else True
+            return False
         valid_conditions:int = 0
         if isinstance(self._condition, Condition):
             return self._condition._compare()
@@ -506,8 +565,11 @@ class CountConditions(ManyConditions):
                     valid_conditions += 1
         if self.exact_bool_count:
             result = True if valid_conditions == self.n else False
-            return result if not self.invert else not result
         else:
             result = True if valid_conditions >= self.n else False
-            return result if not self.invert else not result
+        return result
 
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+    print('condtion module test completed.')
