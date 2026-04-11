@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>state_machine_device API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>state_machine_device</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="state_machine_device.State"><code class="flex name class">
+<span>class <span class="ident">State</span></span>
+<span>(</span><span>name: str | None = None,<br>*,<br>enabled: bool = True,<br>terminal: bool = False,<br>do_in_state_action_when_entering: bool = False,<br>do_in_state_action_when_exiting: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Représentation d'un état de la machine.</p>
+<p>Un <code><a title="state_machine_device.State" href="#state_machine_device.State">State</a></code> peut contenir des transitions sortantes et définir si
+la machine doit exécuter l'action d'état lors de l'entrée ou de la
+sortie. La propriété <code>valid</code> vérifie la cohérence des
+transitions associées.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str | None</code></dt>
+<dd>Nom optionnel de l'état.</dd>
+<dt><strong><code>enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indique si l'état est activé.</dd>
+<dt><strong><code>terminal</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si True, l'état est terminal (aucune
+transition autorisée).</dd>
+<dt><strong><code>do_in_state_action_when_entering</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si True, exécute
+l'action d'état lors de l'entrée.</dd>
+<dt><strong><code>do_in_state_action_when_exiting</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si True, exécute
+l'action d'état lors de la sortie.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>Si les paramètres booléens fournis ne sont pas de
+type <code>bool</code> (méthode <code>is_bool</code>).</dd>
+</dl>
+<h2 id="initialisation">Initialisation</h2>
+<p>Initialise une nouvelle instance de <code>BaseComponent</code>.</p>
+<h2 id="parametres-__init__">Paramètres <code>__init__</code></h2>
+<ul>
+<li>
+<p><code>name</code>, <em>optionel</em>
+Le nom du composant. Si <code>None</code> ou une chaîne vide, un nom par
+défaut sera généré.</p>
+</li>
+<li>
+<p><code>enabled</code>, <em>optionnel</em>
+Indique si le composant est activé au démarrage. Par défaut
+<code>True</code>.</p>
+</li>
+<li>
+<p><code>apply_activation</code>, <em>optionnel</em>
+Indique si les méthodes <code>_enabling</code> et <code>_disabling</code> doivent être
+appelées lors de l'initialisation. Par défaut <code>False</code>.
+<br><strong>ATTENTION</strong> </p>
+<ul>
+<li>Si <code>apply_activation</code> est <code>True</code>, l'une des
+méthodes <code>_enabling</code> ou <code>_disabling</code> sera appelée lors de
+l'initialisation pour garantir un état cohérent. Si ces méthodes
+sont substituées dans une classe dérivée, elles seront appelées
+immédiatement à l'initialisation. Par conséquent, si la classe
+dérivée possède des dépendances non encore initialisées (une
+variable membre par exemple), cela causera systématiquement une
+erreur. Pour ces situations, <strong>il faut</strong> que l'appel du
+<code>__init__</code> de la classe parent soit appelée <strong>après</strong> avoir
+initialisé les dépendances. </li>
+<li>Une autre stratégie possible est que la classe enfant définisse
+<code>apply_activation</code> systématiquement à <code>False</code> et qu'il soit
+impossible de la modifier via les paramètrs du <code>__init__</code> de la
+classe dérivée.</li>
+<li>Une observation technique intéressante qui dépasse le but de ce
+projet: cette approche est impossible avec d'autres langages de
+programmation comme Java, C# ou C++ où les méthodes 'overridables'
+(communément appelée virtuelle ou 'virtual') ne doivent pas être
+appelées dans le constructeur de la classe de base. La raison est
+que l'ordre d'appel des constructeurs et strict et que le
+constructeur parent est systématiquement appelé avant le
+constructeur enfant sans possibilité d'en changer l'ordre.
+On fait parfois référence à cette situation comme étant le
+<em>Virtual Dispatch Trap</em> ou <em>Premature Virtual Call</em>. Un dernier
+point technique à noter est que la même situation existe pour les
+destructeurs en C++.</li>
+</ul>
+</li>
+</ul>
+<h2 id="exceptions">Exceptions</h2>
+<ul>
+<li><code>TypeError</code><ul>
+<li>Si <code>name</code> n'est pas une chaîne ou <code>None</code>.</li>
+<li>Si <code>enabled</code> n'est pas un booléen.</li>
+<li>Si <code>apply_activation</code> n'est pas un booléen.</li>
+</ul>
+</li>
+<li><code>ValueError</code><ul>
+<li>Si <code>name</code> est une chaîne vide.</li>
+</ul>
+</li>
+</ul></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>base_component.BaseComponent</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="state_machine_device.State.do_in_state_action_when_entering"><code class="name">prop <span class="ident">do_in_state_action_when_entering</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Indique si l'action d'état doit être exécutée lors de l'entrée.</p></div>
+</dd>
+<dt id="state_machine_device.State.do_in_state_action_when_exiting"><code class="name">prop <span class="ident">do_in_state_action_when_exiting</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Indique si l'action d'état doit être exécutée lors de la sortie.</p></div>
+</dd>
+<dt id="state_machine_device.State.terminal"><code class="name">prop <span class="ident">terminal</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Indique si l'état est terminal (pas de transitions).</p></div>
+</dd>
+<dt id="state_machine_device.State.valid"><code class="name">prop <span class="ident">valid</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Vérifie si l'état est cohérent.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True si l'état est valide selon les règles (pas de
+transitions pour un état terminal, au moins une transition
+valide sinon).</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="state_machine_device.State.add_transition"><code class="name flex">
+<span>def <span class="ident">add_transition</span></span>(<span>self,<br>transition: <a title="state_machine_device.Transition" href="#state_machine_device.Transition">Transition</a> | Iterable[<a title="state_machine_device.Transition" href="#state_machine_device.Transition">Transition</a>]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ajoute une ou plusieurs transitions à l'état.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>transition</code></strong> :&ensp;<code>Transition | Iterable[Transition]</code></dt>
+<dd>Transition ou
+itérable de transitions à ajouter.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>Si un élément fourni n'est pas une <code><a title="state_machine_device.Transition" href="#state_machine_device.Transition">Transition</a></code>.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_device.State.is_bool"><code class="name flex">
+<span>def <span class="ident">is_bool</span></span>(<span>self, value) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Vérifie qu'une valeur est un booléen.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>value</code></strong></dt>
+<dd>Valeur à tester.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>La valeur si elle est un booléen.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>Si la valeur n'est pas de type bool.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_device.State.is_transiting"><code class="name flex">
+<span>def <span class="ident">is_transiting</span></span>(<span>self) ‑> <a title="state_machine_device.Transition" href="#state_machine_device.Transition">Transition</a> | None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Parcours les transitions et retourne la première active.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Transition | None</code></dt>
+<dd>La transition active, ou None.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="state_machine_device.StateMachineDevice"><code class="flex name class">
+<span>class <span class="ident">StateMachineDevice</span></span>
+<span>(</span><span>layout: Layout,<br>initialized: bool = False,<br>name: str | None = None,<br>enabled: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Appareil pilotant une machine à états.</p>
+<p><code><a title="state_machine_device.StateMachineDevice" href="#state_machine_device.StateMachineDevice">StateMachineDevice</a></code> exécute un ensemble d'états (définis par
+<code>Layout</code>) et effectue les transitions lorsque leurs conditions
+sont remplies. L'objet conserve l'état courant et appelle les
+actions d'entrée, de sortie et d'exécution en fonction du cycle de
+suivi.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>layout</code></strong> :&ensp;<code>Layout</code></dt>
+<dd>Objet décrivant la liste des états et l'état
+initial.</dd>
+<dt><strong><code>initialized</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si True, initialise la machine en appelant
+l'action d'entrée de l'état initial.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str | None</code></dt>
+<dd>Nom optionnel du composant.</dd>
+<dt><strong><code>enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indique si le composant est activé.</dd>
+</dl>
+<p>Initialise le StateMachineDevice.</p>
+<h2 id="args_1">Args</h2>
+<dl>
+<dt><strong><code>layout</code></strong> :&ensp;<code>Layout</code></dt>
+<dd>Layout définissant les états et l'état initial.</dd>
+<dt><strong><code>initialized</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si True, l'état initial est exécuté immédiatement.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str | None</code></dt>
+<dd>Nom optionnel du composant.</dd>
+<dt><strong><code>enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indique si le composant est activé.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>tracking_device.TrackingDevice</li>
+<li>base_component.BaseComponent</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="state_machine_device.StateMachineDevice.Layout"><code class="name">var <span class="ident">Layout</span></code></dt>
+<dd>
+<div class="desc"><p>Conteneur immuable d'états et définition de l'état initial.</p>
+<p>La classe vérifie la validité des états fournis et conserve le
+premier état comme état initial.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>states</code></strong> :&ensp;<code>tuple[<a title="state_machine_device.State" href="#state_machine_device.State">State</a>, &hellip;]</code></dt>
+<dd>Tuple d'instances <code><a title="state_machine_device.State" href="#state_machine_device.State">State</a></code>.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>Si la tuple est vide ou si un état n'est pas
+valide.</dd>
+<dt><code>TypeError</code></dt>
+<dd>Si un élément de <code>states</code> n'est pas une
+instance de <code><a title="state_machine_device.State" href="#state_machine_device.State">State</a></code>.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="state_machine_device.StateMachineDevice.current_state"><code class="name">prop <span class="ident">current_state</span> : <a title="state_machine_device.State" href="#state_machine_device.State">State</a> | None</code></dt>
+<dd>
+<div class="desc"><p>État courant de la machine.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>State | None</code></dt>
+<dd>L'état courant ou None si non initialisé.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="state_machine_device.Transition"><code class="flex name class">
+<span>class <span class="ident">Transition</span></span>
+<span>(</span><span>next_state: <a title="state_machine_device.State" href="#state_machine_device.State">State</a> | None = None,<br>name: str | None = None,<br>enabled: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base abstraite pour une transition entre états.</p>
+<p>Une <code><a title="state_machine_device.Transition" href="#state_machine_device.Transition">Transition</a></code> référence l'état suivant (<code>next_state</code>) et peut
+exécuter une action de transit. Les sous-classes doivent
+implémenter <code>is_transiting()</code> pour indiquer si la transition doit
+être prise.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>next_state</code></strong> :&ensp;<code>State | None</code></dt>
+<dd>État cible de la transition.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str | None</code></dt>
+<dd>Nom optionnel de la transition.</dd>
+<dt><strong><code>enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si False, la transition est ignorée.</dd>
+</dl>
+<p>Initialise la transition.</p>
+<h2 id="args_1">Args</h2>
+<dl>
+<dt><strong><code>next_state</code></strong> :&ensp;<code>State | None</code></dt>
+<dd>État cible de la transition.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str | None</code></dt>
+<dd>Nom optionnel.</dd>
+<dt><strong><code>enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indique si la transition est activée.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+<li>base_component.BaseComponent</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="state_machine_device.Transition.next_state"><code class="name">prop <span class="ident">next_state</span> : <a title="state_machine_device.State" href="#state_machine_device.State">State</a> | None</code></dt>
+<dd>
+<div class="desc"><p>Retourne l'état cible de la transition.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>State | None</code></dt>
+<dd>État suivant ou None.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_device.Transition.valid"><code class="name">prop <span class="ident">valid</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Indique si la transition est valide (référence d'état et validité).</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True si <code>next_state</code> est défini et que le composant est
+valide selon la classe de base.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="state_machine_device.Transition.is_transiting"><code class="name flex">
+<span>def <span class="ident">is_transiting</span></span>(<span>self: Self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Devrait être implémentée pour indiquer si la transition doit être prise.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True si la transition doit être exécutée.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="state_machine_device.State" href="#state_machine_device.State">State</a></code></h4>
+<ul class="">
+<li><code><a title="state_machine_device.State.add_transition" href="#state_machine_device.State.add_transition">add_transition</a></code></li>
+<li><code><a title="state_machine_device.State.do_in_state_action_when_entering" href="#state_machine_device.State.do_in_state_action_when_entering">do_in_state_action_when_entering</a></code></li>
+<li><code><a title="state_machine_device.State.do_in_state_action_when_exiting" href="#state_machine_device.State.do_in_state_action_when_exiting">do_in_state_action_when_exiting</a></code></li>
+<li><code><a title="state_machine_device.State.is_bool" href="#state_machine_device.State.is_bool">is_bool</a></code></li>
+<li><code><a title="state_machine_device.State.is_transiting" href="#state_machine_device.State.is_transiting">is_transiting</a></code></li>
+<li><code><a title="state_machine_device.State.terminal" href="#state_machine_device.State.terminal">terminal</a></code></li>
+<li><code><a title="state_machine_device.State.valid" href="#state_machine_device.State.valid">valid</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="state_machine_device.StateMachineDevice" href="#state_machine_device.StateMachineDevice">StateMachineDevice</a></code></h4>
+<ul class="">
+<li><code><a title="state_machine_device.StateMachineDevice.Layout" href="#state_machine_device.StateMachineDevice.Layout">Layout</a></code></li>
+<li><code><a title="state_machine_device.StateMachineDevice.current_state" href="#state_machine_device.StateMachineDevice.current_state">current_state</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="state_machine_device.Transition" href="#state_machine_device.Transition">Transition</a></code></h4>
+<ul class="">
+<li><code><a title="state_machine_device.Transition.is_transiting" href="#state_machine_device.Transition.is_transiting">is_transiting</a></code></li>
+<li><code><a title="state_machine_device.Transition.next_state" href="#state_machine_device.Transition.next_state">next_state</a></code></li>
+<li><code><a title="state_machine_device.Transition.valid" href="#state_machine_device.Transition.valid">valid</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

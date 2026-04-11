@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>state_machine_utilities API documentation</title>
+<meta name="description" content="Module utilitaire pour la gestion d&#39;automates d&#39;états et de transitions conditionnelles …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>state_machine_utilities</code></h1>
+</header>
+<section id="section-intro">
+<p>Module utilitaire pour la gestion d'automates d'états et de transitions conditionnelles.</p>
+<p>Ce module fournit des classes pour la gestion d'états, de transitions conditionnelles, d'actions associées aux transitions et aux états, ainsi que des états surveillés permettant de mesurer le temps et le nombre d'entrées/sorties.</p>
+<p>Exemple d'utilisation :
+&gt;&gt;&gt; from condition import AlwaysTrueCondition
+&gt;&gt;&gt; s1 = MonitoredState(name="A")
+&gt;&gt;&gt; s2 = MonitoredState(name="B")
+&gt;&gt;&gt; t = ConditionalTransition(condition=AlwaysTrueCondition(), next_state=s2)
+&gt;&gt;&gt; t.valid
+True</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="state_machine_utilities.ActionState"><code class="flex name class">
+<span>class <span class="ident">ActionState</span></span>
+<span>(</span><span>name: str | None = None,<br>*,<br>enabled: bool = True,<br>terminal: bool = False,<br>do_in_state_action_when_entering: bool = False,<br>do_in_state_action_when_exiting: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>État avec actions associées à l'entrée, à l'intérieur et à la sortie de l'état.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str | None</code></dt>
+<dd>Nom de l'état.</dd>
+<dt><strong><code>enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si l'état est activé.</dd>
+<dt><strong><code>terminal</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si l'état est terminal.</dd>
+<dt><strong><code>do_in_state_action_when_entering</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Exécute l'action d'état à l'entrée.</dd>
+<dt><strong><code>do_in_state_action_when_exiting</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Exécute l'action d'état à la sortie.</dd>
+</dl>
+<h2 id="initialisation">Initialisation</h2>
+<p>Initialise une nouvelle instance de <code>BaseComponent</code>.</p>
+<h2 id="parametres-__init__">Paramètres <code>__init__</code></h2>
+<ul>
+<li>
+<p><code>name</code>, <em>optionel</em>
+Le nom du composant. Si <code>None</code> ou une chaîne vide, un nom par
+défaut sera généré.</p>
+</li>
+<li>
+<p><code>enabled</code>, <em>optionnel</em>
+Indique si le composant est activé au démarrage. Par défaut
+<code>True</code>.</p>
+</li>
+<li>
+<p><code>apply_activation</code>, <em>optionnel</em>
+Indique si les méthodes <code>_enabling</code> et <code>_disabling</code> doivent être
+appelées lors de l'initialisation. Par défaut <code>False</code>.
+<br><strong>ATTENTION</strong> </p>
+<ul>
+<li>Si <code>apply_activation</code> est <code>True</code>, l'une des
+méthodes <code>_enabling</code> ou <code>_disabling</code> sera appelée lors de
+l'initialisation pour garantir un état cohérent. Si ces méthodes
+sont substituées dans une classe dérivée, elles seront appelées
+immédiatement à l'initialisation. Par conséquent, si la classe
+dérivée possède des dépendances non encore initialisées (une
+variable membre par exemple), cela causera systématiquement une
+erreur. Pour ces situations, <strong>il faut</strong> que l'appel du
+<code>__init__</code> de la classe parent soit appelée <strong>après</strong> avoir
+initialisé les dépendances. </li>
+<li>Une autre stratégie possible est que la classe enfant définisse
+<code>apply_activation</code> systématiquement à <code>False</code> et qu'il soit
+impossible de la modifier via les paramètrs du <code>__init__</code> de la
+classe dérivée.</li>
+<li>Une observation technique intéressante qui dépasse le but de ce
+projet: cette approche est impossible avec d'autres langages de
+programmation comme Java, C# ou C++ où les méthodes 'overridables'
+(communément appelée virtuelle ou 'virtual') ne doivent pas être
+appelées dans le constructeur de la classe de base. La raison est
+que l'ordre d'appel des constructeurs et strict et que le
+constructeur parent est systématiquement appelé avant le
+constructeur enfant sans possibilité d'en changer l'ordre.
+On fait parfois référence à cette situation comme étant le
+<em>Virtual Dispatch Trap</em> ou <em>Premature Virtual Call</em>. Un dernier
+point technique à noter est que la même situation existe pour les
+destructeurs en C++.</li>
+</ul>
+</li>
+</ul>
+<h2 id="exceptions">Exceptions</h2>
+<ul>
+<li><code>TypeError</code><ul>
+<li>Si <code>name</code> n'est pas une chaîne ou <code>None</code>.</li>
+<li>Si <code>enabled</code> n'est pas un booléen.</li>
+<li>Si <code>apply_activation</code> n'est pas un booléen.</li>
+</ul>
+</li>
+<li><code>ValueError</code><ul>
+<li>Si <code>name</code> est une chaîne vide.</li>
+</ul>
+</li>
+</ul></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>state_machine_device.State</li>
+<li>base_component.BaseComponent</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="state_machine_utilities.MonitoredState" href="#state_machine_utilities.MonitoredState">MonitoredState</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="state_machine_utilities.ActionState.entering_action_count"><code class="name">prop <span class="ident">entering_action_count</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Retourne le nombre d'actions à l'entrée de l'état.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Nombre d'actions.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.ActionState.exiting_action_count"><code class="name">prop <span class="ident">exiting_action_count</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Retourne le nombre d'actions à la sortie de l'état.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Nombre d'actions.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.ActionState.in_state_action_count"><code class="name">prop <span class="ident">in_state_action_count</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Retourne le nombre d'actions dans l'état.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Nombre d'actions.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="state_machine_utilities.ActionState.add_entering_action"><code class="name flex">
+<span>def <span class="ident">add_entering_action</span></span>(<span>self, action: Callable[[], None] | Iterable[Callable[[], None]]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ajoute une ou plusieurs actions à exécuter à l'entrée de l'état.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>action</code></strong> :&ensp;<code>Action | Iterable[Action]</code></dt>
+<dd>Action(s) à ajouter.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>Si l'élément n'est pas callable.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.ActionState.add_exiting_action"><code class="name flex">
+<span>def <span class="ident">add_exiting_action</span></span>(<span>self, action: Callable[[], None] | Iterable[Callable[[], None]]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ajoute une ou plusieurs actions à exécuter à la sortie de l'état.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>action</code></strong> :&ensp;<code>Action | Iterable[Action]</code></dt>
+<dd>Action(s) à ajouter.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>Si l'élément n'est pas callable.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.ActionState.add_in_state_action"><code class="name flex">
+<span>def <span class="ident">add_in_state_action</span></span>(<span>self, action: Callable[[], None] | Iterable[Callable[[], None]]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ajoute une ou plusieurs actions à exécuter dans l'état.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>action</code></strong> :&ensp;<code>Action | Iterable[Action]</code></dt>
+<dd>Action(s) à ajouter.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>Si l'élément n'est pas callable.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.ActionState.clear_entering_actions"><code class="name flex">
+<span>def <span class="ident">clear_entering_actions</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Efface toutes les actions d'entrée de l'état.</p></div>
+</dd>
+<dt id="state_machine_utilities.ActionState.clear_exiting_actions"><code class="name flex">
+<span>def <span class="ident">clear_exiting_actions</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Efface toutes les actions de sortie de l'état.</p></div>
+</dd>
+<dt id="state_machine_utilities.ActionState.clear_in_state_actions"><code class="name flex">
+<span>def <span class="ident">clear_in_state_actions</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Efface toutes les actions de l'état.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="state_machine_utilities.ActionTransition"><code class="flex name class">
+<span>class <span class="ident">ActionTransition</span></span>
+<span>(</span><span>condition: condition.Condition | None = None,<br>next_state: state_machine_device.State | None = None,<br>name: str | None = None,<br>enabled: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Transition conditionnelle avec actions à exécuter lors de la transition.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>condition</code></strong> :&ensp;<code>Condition | None</code></dt>
+<dd>Condition à évaluer pour la transition.</dd>
+<dt><strong><code>next_state</code></strong> :&ensp;<code>State | None</code></dt>
+<dd>État suivant.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str | None</code></dt>
+<dd>Nom de la transition.</dd>
+<dt><strong><code>enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si la transition est activée.</dd>
+</dl>
+<p>Initialise la transition.</p>
+<h2 id="args_1">Args</h2>
+<dl>
+<dt><strong><code>next_state</code></strong> :&ensp;<code>State | None</code></dt>
+<dd>État cible de la transition.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str | None</code></dt>
+<dd>Nom optionnel.</dd>
+<dt><strong><code>enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indique si la transition est activée.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="state_machine_utilities.ConditionalTransition" href="#state_machine_utilities.ConditionalTransition">ConditionalTransition</a></li>
+<li>state_machine_device.Transition</li>
+<li>abc.ABC</li>
+<li>base_component.BaseComponent</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="state_machine_utilities.MonitoredTransition" href="#state_machine_utilities.MonitoredTransition">MonitoredTransition</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="state_machine_utilities.ActionTransition.transiting_action_count"><code class="name">prop <span class="ident">transiting_action_count</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Retourne le nombre d'actions associées à la transition.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Nombre d'actions.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="state_machine_utilities.ActionTransition.add_transiting_action"><code class="name flex">
+<span>def <span class="ident">add_transiting_action</span></span>(<span>self: Self, action: Callable[[], None] | Iterable[Callable[[], None]]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ajoute une ou plusieurs actions à exécuter lors de la transition.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>action</code></strong> :&ensp;<code>Action | Iterable[Action]</code></dt>
+<dd>Action(s) à ajouter.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>Si l'élément n'est pas callable.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.ActionTransition.clear_transiting_actions"><code class="name flex">
+<span>def <span class="ident">clear_transiting_actions</span></span>(<span>self: Self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="state_machine_utilities.ConditionalTransition" href="#state_machine_utilities.ConditionalTransition">ConditionalTransition</a></b></code>:
+<ul class="hlist">
+<li><code><a title="state_machine_utilities.ConditionalTransition.condition" href="#state_machine_utilities.ConditionalTransition.condition">condition</a></code></li>
+<li><code><a title="state_machine_utilities.ConditionalTransition.is_transiting" href="#state_machine_utilities.ConditionalTransition.is_transiting">is_transiting</a></code></li>
+<li><code><a title="state_machine_utilities.ConditionalTransition.valid" href="#state_machine_utilities.ConditionalTransition.valid">valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="state_machine_utilities.ConditionalTransition"><code class="flex name class">
+<span>class <span class="ident">ConditionalTransition</span></span>
+<span>(</span><span>condition: condition.Condition | None = None,<br>next_state: state_machine_device.State | None = None,<br>name: str | None = None,<br>enabled: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Transition conditionnelle basée sur un objet Condition.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>condition</code></strong> :&ensp;<code>Condition | None</code></dt>
+<dd>Condition à évaluer pour la transition.</dd>
+<dt><strong><code>next_state</code></strong> :&ensp;<code>State | None</code></dt>
+<dd>État suivant.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str | None</code></dt>
+<dd>Nom de la transition.</dd>
+<dt><strong><code>enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si la transition est activée.</dd>
+</dl>
+<p>Initialise la transition.</p>
+<h2 id="args_1">Args</h2>
+<dl>
+<dt><strong><code>next_state</code></strong> :&ensp;<code>State | None</code></dt>
+<dd>État cible de la transition.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str | None</code></dt>
+<dd>Nom optionnel.</dd>
+<dt><strong><code>enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indique si la transition est activée.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>state_machine_device.Transition</li>
+<li>abc.ABC</li>
+<li>base_component.BaseComponent</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="state_machine_utilities.ActionTransition" href="#state_machine_utilities.ActionTransition">ActionTransition</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="state_machine_utilities.ConditionalTransition.condition"><code class="name">prop <span class="ident">condition</span> : condition.Condition | None</code></dt>
+<dd>
+<div class="desc"><p>Retourne la condition associée à la transition.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Condition</code></dt>
+<dd>La condition de transition.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.ConditionalTransition.valid"><code class="name">prop <span class="ident">valid</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Indique si la transition est valide (référence d'état et validité).</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True si <code>next_state</code> est défini et que le composant est
+valide selon la classe de base.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="state_machine_utilities.ConditionalTransition.is_transiting"><code class="name flex">
+<span>def <span class="ident">is_transiting</span></span>(<span>self: Self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Indique si la transition doit s'effectuer (condition vraie).</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True si la condition est vraie.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="state_machine_utilities.DelaySinceEnteredCondition"><code class="flex name class">
+<span>class <span class="ident">DelaySinceEnteredCondition</span></span>
+<span>(</span><span>duration: float,<br>monitored_state: <a title="state_machine_utilities.MonitoredState" href="#state_machine_utilities.MonitoredState">MonitoredState</a> | None = None,<br>invert: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Condition vraie si la durée depuis l'entrée dans l'état surveillé dépasse un seuil.</p>
+<h2 id="exemple">Exemple</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class DummyState(MonitoredState):
+...     def __init__(self):
+...         super().__init__(name=&quot;dummy&quot;)
+...         self._MonitoredState__last_entry_reference_time = 0
+...     @property
+...     def elapsed_since_last_entry(self):
+...         return 2.0
+&gt;&gt;&gt; c = DelaySinceEnteredCondition(1.5, DummyState())
+&gt;&gt;&gt; bool(c)
+True
+</code></pre>
+<p>Initialise la condition avec un indicateur d'inversion optionnel.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>invert</code></strong></dt>
+<dd>Si True, le résultat de la condition est inversé.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="state_machine_utilities.DelayStateCondition" href="#state_machine_utilities.DelayStateCondition">DelayStateCondition</a></li>
+<li><a title="state_machine_utilities.MonitoredStateCondition" href="#state_machine_utilities.MonitoredStateCondition">MonitoredStateCondition</a></li>
+<li>condition.Condition</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="state_machine_utilities.DelayStateCondition" href="#state_machine_utilities.DelayStateCondition">DelayStateCondition</a></b></code>:
+<ul class="hlist">
+<li><code><a title="state_machine_utilities.DelayStateCondition.duration" href="#state_machine_utilities.DelayStateCondition.duration">duration</a></code></li>
+<li><code><a title="state_machine_utilities.DelayStateCondition.monitored_state" href="#state_machine_utilities.MonitoredStateCondition.monitored_state">monitored_state</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="state_machine_utilities.DelaySinceExitedCondition"><code class="flex name class">
+<span>class <span class="ident">DelaySinceExitedCondition</span></span>
+<span>(</span><span>duration: float,<br>monitored_state: <a title="state_machine_utilities.MonitoredState" href="#state_machine_utilities.MonitoredState">MonitoredState</a> | None = None,<br>invert: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Condition vraie si la durée depuis la sortie de l'état surveillé dépasse un seuil.</p>
+<h2 id="exemple">Exemple</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class DummyState(MonitoredState):
+...     def __init__(self):
+...         super().__init__(name=&quot;dummy&quot;)
+...         self._MonitoredState__last_exit_reference_time = 0
+...     @property
+...     def elapsed_since_last_exit(self):
+...         return 3.0
+&gt;&gt;&gt; c = DelaySinceExitedCondition(2.5, DummyState())
+&gt;&gt;&gt; bool(c)
+True
+</code></pre>
+<p>Initialise la condition avec un indicateur d'inversion optionnel.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>invert</code></strong></dt>
+<dd>Si True, le résultat de la condition est inversé.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="state_machine_utilities.DelayStateCondition" href="#state_machine_utilities.DelayStateCondition">DelayStateCondition</a></li>
+<li><a title="state_machine_utilities.MonitoredStateCondition" href="#state_machine_utilities.MonitoredStateCondition">MonitoredStateCondition</a></li>
+<li>condition.Condition</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="state_machine_utilities.DelayStateCondition" href="#state_machine_utilities.DelayStateCondition">DelayStateCondition</a></b></code>:
+<ul class="hlist">
+<li><code><a title="state_machine_utilities.DelayStateCondition.duration" href="#state_machine_utilities.DelayStateCondition.duration">duration</a></code></li>
+<li><code><a title="state_machine_utilities.DelayStateCondition.monitored_state" href="#state_machine_utilities.MonitoredStateCondition.monitored_state">monitored_state</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="state_machine_utilities.DelayStateCondition"><code class="flex name class">
+<span>class <span class="ident">DelayStateCondition</span></span>
+<span>(</span><span>duration: float,<br>monitored_state: <a title="state_machine_utilities.MonitoredState" href="#state_machine_utilities.MonitoredState">MonitoredState</a> | None = None,<br>invert: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Condition abstraite de délai basée sur un MonitoredState.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>duration</code></strong> :&ensp;<code>float</code></dt>
+<dd>Durée du délai.</dd>
+<dt><strong><code>monitored_state</code></strong> :&ensp;<code>MonitoredState | None</code></dt>
+<dd>L'état surveillé.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si True, la condition est inversée.</dd>
+</dl>
+<p>Initialise la condition avec un indicateur d'inversion optionnel.</p>
+<h2 id="args_1">Args</h2>
+<dl>
+<dt><strong><code>invert</code></strong></dt>
+<dd>Si True, le résultat de la condition est inversé.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="state_machine_utilities.MonitoredStateCondition" href="#state_machine_utilities.MonitoredStateCondition">MonitoredStateCondition</a></li>
+<li>condition.Condition</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="state_machine_utilities.DelaySinceEnteredCondition" href="#state_machine_utilities.DelaySinceEnteredCondition">DelaySinceEnteredCondition</a></li>
+<li><a title="state_machine_utilities.DelaySinceExitedCondition" href="#state_machine_utilities.DelaySinceExitedCondition">DelaySinceExitedCondition</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="state_machine_utilities.DelayStateCondition.duration"><code class="name">prop <span class="ident">duration</span> : float</code></dt>
+<dd>
+<div class="desc"><p>Retourne la durée du délai.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Durée en secondes.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="state_machine_utilities.MonitoredStateCondition" href="#state_machine_utilities.MonitoredStateCondition">MonitoredStateCondition</a></b></code>:
+<ul class="hlist">
+<li><code><a title="state_machine_utilities.MonitoredStateCondition.monitored_state" href="#state_machine_utilities.MonitoredStateCondition.monitored_state">monitored_state</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="state_machine_utilities.MonitoredState"><code class="flex name class">
+<span>class <span class="ident">MonitoredState</span></span>
+<span>(</span><span>name: str | None = None,<br>*,<br>enabled: bool = True,<br>terminal: bool = False,<br>do_in_state_action_when_entering: bool = False,<br>do_in_state_action_when_exiting: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>État surveillé permettant de compter les entrées/sorties et de mesurer les temps associés.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str | None</code></dt>
+<dd>Nom de l'état.</dd>
+<dt><strong><code>enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si l'état est activé.</dd>
+<dt><strong><code>terminal</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si l'état est terminal.</dd>
+<dt><strong><code>do_in_state_action_when_entering</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Exécute l'action d'état à l'entrée.</dd>
+<dt><strong><code>do_in_state_action_when_exiting</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Exécute l'action d'état à la sortie.</dd>
+</dl>
+<h2 id="exemple">Exemple</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; s = MonitoredState(name=&quot;A&quot;)
+&gt;&gt;&gt; s.entry_count
+0
+</code></pre>
+<h2 id="initialisation">Initialisation</h2>
+<p>Initialise une nouvelle instance de <code>BaseComponent</code>.</p>
+<h2 id="parametres-__init__">Paramètres <code>__init__</code></h2>
+<ul>
+<li>
+<p><code>name</code>, <em>optionel</em>
+Le nom du composant. Si <code>None</code> ou une chaîne vide, un nom par
+défaut sera généré.</p>
+</li>
+<li>
+<p><code>enabled</code>, <em>optionnel</em>
+Indique si le composant est activé au démarrage. Par défaut
+<code>True</code>.</p>
+</li>
+<li>
+<p><code>apply_activation</code>, <em>optionnel</em>
+Indique si les méthodes <code>_enabling</code> et <code>_disabling</code> doivent être
+appelées lors de l'initialisation. Par défaut <code>False</code>.
+<br><strong>ATTENTION</strong> </p>
+<ul>
+<li>Si <code>apply_activation</code> est <code>True</code>, l'une des
+méthodes <code>_enabling</code> ou <code>_disabling</code> sera appelée lors de
+l'initialisation pour garantir un état cohérent. Si ces méthodes
+sont substituées dans une classe dérivée, elles seront appelées
+immédiatement à l'initialisation. Par conséquent, si la classe
+dérivée possède des dépendances non encore initialisées (une
+variable membre par exemple), cela causera systématiquement une
+erreur. Pour ces situations, <strong>il faut</strong> que l'appel du
+<code>__init__</code> de la classe parent soit appelée <strong>après</strong> avoir
+initialisé les dépendances. </li>
+<li>Une autre stratégie possible est que la classe enfant définisse
+<code>apply_activation</code> systématiquement à <code>False</code> et qu'il soit
+impossible de la modifier via les paramètrs du <code>__init__</code> de la
+classe dérivée.</li>
+<li>Une observation technique intéressante qui dépasse le but de ce
+projet: cette approche est impossible avec d'autres langages de
+programmation comme Java, C# ou C++ où les méthodes 'overridables'
+(communément appelée virtuelle ou 'virtual') ne doivent pas être
+appelées dans le constructeur de la classe de base. La raison est
+que l'ordre d'appel des constructeurs et strict et que le
+constructeur parent est systématiquement appelé avant le
+constructeur enfant sans possibilité d'en changer l'ordre.
+On fait parfois référence à cette situation comme étant le
+<em>Virtual Dispatch Trap</em> ou <em>Premature Virtual Call</em>. Un dernier
+point technique à noter est que la même situation existe pour les
+destructeurs en C++.</li>
+</ul>
+</li>
+</ul>
+<h2 id="exceptions">Exceptions</h2>
+<ul>
+<li><code>TypeError</code><ul>
+<li>Si <code>name</code> n'est pas une chaîne ou <code>None</code>.</li>
+<li>Si <code>enabled</code> n'est pas un booléen.</li>
+<li>Si <code>apply_activation</code> n'est pas un booléen.</li>
+</ul>
+</li>
+<li><code>ValueError</code><ul>
+<li>Si <code>name</code> est une chaîne vide.</li>
+</ul>
+</li>
+</ul></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="state_machine_utilities.ActionState" href="#state_machine_utilities.ActionState">ActionState</a></li>
+<li>state_machine_device.State</li>
+<li>base_component.BaseComponent</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="state_machine_utilities.MonitoredState.creation_reference_time"><code class="name">prop <span class="ident">creation_reference_time</span> : float</code></dt>
+<dd>
+<div class="desc"><p>Retourne le temps écoulé depuis la création de l'état.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Temps en secondes.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.MonitoredState.elapsed_since_last_entry"><code class="name">prop <span class="ident">elapsed_since_last_entry</span> : float | None</code></dt>
+<dd>
+<div class="desc"><p>Retourne le temps écoulé depuis la dernière entrée dans l'état.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float | None</code></dt>
+<dd>Temps en secondes ou None si aucune entrée.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.MonitoredState.elapsed_since_last_exit"><code class="name">prop <span class="ident">elapsed_since_last_exit</span> : float | None</code></dt>
+<dd>
+<div class="desc"><p>Retourne le temps écoulé depuis la dernière sortie de l'état.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float | None</code></dt>
+<dd>Temps en secondes ou None si aucune sortie.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.MonitoredState.elapsed_time_since_creation"><code class="name">prop <span class="ident">elapsed_time_since_creation</span> : float</code></dt>
+<dd>
+<div class="desc"><p>Retourne le temps écoulé depuis la création de l'état.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Temps en secondes.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.MonitoredState.entry_count"><code class="name">prop <span class="ident">entry_count</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Retourne le nombre d'entrées dans l'état.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Nombre d'entrées.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.MonitoredState.exit_count"><code class="name">prop <span class="ident">exit_count</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Retourne le nombre de sorties de l'état.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Nombre de sorties.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.MonitoredState.last_entry_reference_time"><code class="name">prop <span class="ident">last_entry_reference_time</span> : float | None</code></dt>
+<dd>
+<div class="desc"><p>Retourne le temps écoulé depuis la dernière entrée dans l'état.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float | None</code></dt>
+<dd>Temps en secondes ou None si aucune entrée.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.MonitoredState.last_exit_reference_time"><code class="name">prop <span class="ident">last_exit_reference_time</span> : float | None</code></dt>
+<dd>
+<div class="desc"><p>Retourne le temps écoulé depuis la dernière sortie de l'état.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float | None</code></dt>
+<dd>Temps en secondes ou None si aucune sortie.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="state_machine_utilities.ActionState" href="#state_machine_utilities.ActionState">ActionState</a></b></code>:
+<ul class="hlist">
+<li><code><a title="state_machine_utilities.ActionState.add_entering_action" href="#state_machine_utilities.ActionState.add_entering_action">add_entering_action</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.add_exiting_action" href="#state_machine_utilities.ActionState.add_exiting_action">add_exiting_action</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.add_in_state_action" href="#state_machine_utilities.ActionState.add_in_state_action">add_in_state_action</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.clear_entering_actions" href="#state_machine_utilities.ActionState.clear_entering_actions">clear_entering_actions</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.clear_exiting_actions" href="#state_machine_utilities.ActionState.clear_exiting_actions">clear_exiting_actions</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.clear_in_state_actions" href="#state_machine_utilities.ActionState.clear_in_state_actions">clear_in_state_actions</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.entering_action_count" href="#state_machine_utilities.ActionState.entering_action_count">entering_action_count</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.exiting_action_count" href="#state_machine_utilities.ActionState.exiting_action_count">exiting_action_count</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.in_state_action_count" href="#state_machine_utilities.ActionState.in_state_action_count">in_state_action_count</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="state_machine_utilities.MonitoredStateCondition"><code class="flex name class">
+<span>class <span class="ident">MonitoredStateCondition</span></span>
+<span>(</span><span>monitored_state: <a title="state_machine_utilities.MonitoredState" href="#state_machine_utilities.MonitoredState">MonitoredState</a> | None = None,<br>invert: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Condition abstraite basée sur un MonitoredState.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>monitored_state</code></strong> :&ensp;<code>MonitoredState | None</code></dt>
+<dd>L'état surveillé.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si True, la condition est inversée.</dd>
+</dl>
+<p>Initialise la condition avec un indicateur d'inversion optionnel.</p>
+<h2 id="args_1">Args</h2>
+<dl>
+<dt><strong><code>invert</code></strong></dt>
+<dd>Si True, le résultat de la condition est inversé.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>condition.Condition</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="state_machine_utilities.DelayStateCondition" href="#state_machine_utilities.DelayStateCondition">DelayStateCondition</a></li>
+<li><a title="state_machine_utilities.StateEntryCountCondition" href="#state_machine_utilities.StateEntryCountCondition">StateEntryCountCondition</a></li>
+<li><a title="state_machine_utilities.StateValueCondition" href="#state_machine_utilities.StateValueCondition">StateValueCondition</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="state_machine_utilities.MonitoredStateCondition.monitored_state"><code class="name">prop <span class="ident">monitored_state</span> : <a title="state_machine_utilities.MonitoredState" href="#state_machine_utilities.MonitoredState">MonitoredState</a> | None</code></dt>
+<dd>
+<div class="desc"><p>Retourne l'état surveillé.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>MonitoredState | None</code></dt>
+<dd>L'état surveillé ou None si non défini.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="state_machine_utilities.MonitoredTransition"><code class="flex name class">
+<span>class <span class="ident">MonitoredTransition</span></span>
+<span>(</span><span>condition: condition.Condition | None = None,<br>next_state: state_machine_device.State | None = None,<br>name: str | None = None,<br>enabled: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Transition conditionnelle surveillée, comptant le nombre de transitions et mesurant le temps.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>condition</code></strong> :&ensp;<code>Condition | None</code></dt>
+<dd>Condition à évaluer pour la transition.</dd>
+<dt><strong><code>next_state</code></strong> :&ensp;<code>State | None</code></dt>
+<dd>État suivant.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str | None</code></dt>
+<dd>Nom de la transition.</dd>
+<dt><strong><code>enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Si la transition est activée.</dd>
+</dl>
+<p>Initialise la transition.</p>
+<h2 id="args_1">Args</h2>
+<dl>
+<dt><strong><code>next_state</code></strong> :&ensp;<code>State | None</code></dt>
+<dd>État cible de la transition.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str | None</code></dt>
+<dd>Nom optionnel.</dd>
+<dt><strong><code>enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indique si la transition est activée.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="state_machine_utilities.ActionTransition" href="#state_machine_utilities.ActionTransition">ActionTransition</a></li>
+<li><a title="state_machine_utilities.ConditionalTransition" href="#state_machine_utilities.ConditionalTransition">ConditionalTransition</a></li>
+<li>state_machine_device.Transition</li>
+<li>abc.ABC</li>
+<li>base_component.BaseComponent</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="state_machine_utilities.MonitoredTransition.creation_reference_time"><code class="name">prop <span class="ident">creation_reference_time</span> : float</code></dt>
+<dd>
+<div class="desc"><p>Retourne le temps écoulé depuis la création de la transition.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Temps en secondes.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.MonitoredTransition.elapsed_since_last_transit"><code class="name">prop <span class="ident">elapsed_since_last_transit</span> : float | None</code></dt>
+<dd>
+<div class="desc"><p>Retourne le temps écoulé depuis la dernière transition.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float | None</code></dt>
+<dd>Temps en secondes ou None si aucune transition.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.MonitoredTransition.elapsed_time_since_creation"><code class="name">prop <span class="ident">elapsed_time_since_creation</span> : float</code></dt>
+<dd>
+<div class="desc"><p>Retourne le temps écoulé depuis la création de la transition.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Temps en secondes.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.MonitoredTransition.last_transit_reference_time"><code class="name">prop <span class="ident">last_transit_reference_time</span> : float | None</code></dt>
+<dd>
+<div class="desc"><p>Retourne le temps écoulé depuis la dernière transition.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float | None</code></dt>
+<dd>Temps en secondes ou None si aucune transition.</dd>
+</dl></div>
+</dd>
+<dt id="state_machine_utilities.MonitoredTransition.transit_count"><code class="name">prop <span class="ident">transit_count</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Retourne le nombre de transitions effectuées.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Nombre de transitions.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="state_machine_utilities.ActionTransition" href="#state_machine_utilities.ActionTransition">ActionTransition</a></b></code>:
+<ul class="hlist">
+<li><code><a title="state_machine_utilities.ActionTransition.add_transiting_action" href="#state_machine_utilities.ActionTransition.add_transiting_action">add_transiting_action</a></code></li>
+<li><code><a title="state_machine_utilities.ActionTransition.condition" href="#state_machine_utilities.ConditionalTransition.condition">condition</a></code></li>
+<li><code><a title="state_machine_utilities.ActionTransition.is_transiting" href="#state_machine_utilities.ConditionalTransition.is_transiting">is_transiting</a></code></li>
+<li><code><a title="state_machine_utilities.ActionTransition.transiting_action_count" href="#state_machine_utilities.ActionTransition.transiting_action_count">transiting_action_count</a></code></li>
+<li><code><a title="state_machine_utilities.ActionTransition.valid" href="#state_machine_utilities.ConditionalTransition.valid">valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="state_machine_utilities.StateEntryCountCondition"><code class="flex name class">
+<span>class <span class="ident">StateEntryCountCondition</span></span>
+<span>(</span><span>expected_count: int,<br>monitored_state: <a title="state_machine_utilities.MonitoredState" href="#state_machine_utilities.MonitoredState">MonitoredState</a> | None = None,<br>invert: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Condition vraie si le nombre d'entrées dans l'état surveillé atteint un seuil.</p>
+<p>Initialise la condition avec un indicateur d'inversion optionnel.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>invert</code></strong></dt>
+<dd>Si True, le résultat de la condition est inversé.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="state_machine_utilities.MonitoredStateCondition" href="#state_machine_utilities.MonitoredStateCondition">MonitoredStateCondition</a></li>
+<li>condition.Condition</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="state_machine_utilities.StateEntryCountCondition.expected_count"><code class="name">prop <span class="ident">expected_count</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Retourne le nombre d'entrées attendu.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Nombre d'entrées attendu.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="state_machine_utilities.MonitoredStateCondition" href="#state_machine_utilities.MonitoredStateCondition">MonitoredStateCondition</a></b></code>:
+<ul class="hlist">
+<li><code><a title="state_machine_utilities.MonitoredStateCondition.monitored_state" href="#state_machine_utilities.MonitoredStateCondition.monitored_state">monitored_state</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="state_machine_utilities.StateValueCondition"><code class="flex name class">
+<span>class <span class="ident">StateValueCondition</span></span>
+<span>(</span><span>expected_value: Any = None,<br>monitored_state: <a title="state_machine_utilities.MonitoredState" href="#state_machine_utilities.MonitoredState">MonitoredState</a> | None = None,<br>invert: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Condition vraie si la valeur personnalisée de l'état surveillé correspond à la valeur attendue.</p>
+<h2 id="exemple">Exemple</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class DummyState(MonitoredState):
+...     def __init__(self):
+...         super().__init__(name=&quot;dummy&quot;)
+...         self.custom_value = 42
+&gt;&gt;&gt; c = StateValueCondition(42, DummyState())
+&gt;&gt;&gt; bool(c)
+True
+&gt;&gt;&gt; c = StateValueCondition(99, DummyState())
+&gt;&gt;&gt; bool(c)
+False
+</code></pre>
+<p>Initialise la condition avec un indicateur d'inversion optionnel.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>invert</code></strong></dt>
+<dd>Si True, le résultat de la condition est inversé.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="state_machine_utilities.MonitoredStateCondition" href="#state_machine_utilities.MonitoredStateCondition">MonitoredStateCondition</a></li>
+<li>condition.Condition</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="state_machine_utilities.MonitoredStateCondition" href="#state_machine_utilities.MonitoredStateCondition">MonitoredStateCondition</a></b></code>:
+<ul class="hlist">
+<li><code><a title="state_machine_utilities.MonitoredStateCondition.monitored_state" href="#state_machine_utilities.MonitoredStateCondition.monitored_state">monitored_state</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="state_machine_utilities.ActionState" href="#state_machine_utilities.ActionState">ActionState</a></code></h4>
+<ul class="">
+<li><code><a title="state_machine_utilities.ActionState.add_entering_action" href="#state_machine_utilities.ActionState.add_entering_action">add_entering_action</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.add_exiting_action" href="#state_machine_utilities.ActionState.add_exiting_action">add_exiting_action</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.add_in_state_action" href="#state_machine_utilities.ActionState.add_in_state_action">add_in_state_action</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.clear_entering_actions" href="#state_machine_utilities.ActionState.clear_entering_actions">clear_entering_actions</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.clear_exiting_actions" href="#state_machine_utilities.ActionState.clear_exiting_actions">clear_exiting_actions</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.clear_in_state_actions" href="#state_machine_utilities.ActionState.clear_in_state_actions">clear_in_state_actions</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.entering_action_count" href="#state_machine_utilities.ActionState.entering_action_count">entering_action_count</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.exiting_action_count" href="#state_machine_utilities.ActionState.exiting_action_count">exiting_action_count</a></code></li>
+<li><code><a title="state_machine_utilities.ActionState.in_state_action_count" href="#state_machine_utilities.ActionState.in_state_action_count">in_state_action_count</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="state_machine_utilities.ActionTransition" href="#state_machine_utilities.ActionTransition">ActionTransition</a></code></h4>
+<ul class="">
+<li><code><a title="state_machine_utilities.ActionTransition.add_transiting_action" href="#state_machine_utilities.ActionTransition.add_transiting_action">add_transiting_action</a></code></li>
+<li><code><a title="state_machine_utilities.ActionTransition.clear_transiting_actions" href="#state_machine_utilities.ActionTransition.clear_transiting_actions">clear_transiting_actions</a></code></li>
+<li><code><a title="state_machine_utilities.ActionTransition.transiting_action_count" href="#state_machine_utilities.ActionTransition.transiting_action_count">transiting_action_count</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="state_machine_utilities.ConditionalTransition" href="#state_machine_utilities.ConditionalTransition">ConditionalTransition</a></code></h4>
+<ul class="">
+<li><code><a title="state_machine_utilities.ConditionalTransition.condition" href="#state_machine_utilities.ConditionalTransition.condition">condition</a></code></li>
+<li><code><a title="state_machine_utilities.ConditionalTransition.is_transiting" href="#state_machine_utilities.ConditionalTransition.is_transiting">is_transiting</a></code></li>
+<li><code><a title="state_machine_utilities.ConditionalTransition.valid" href="#state_machine_utilities.ConditionalTransition.valid">valid</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="state_machine_utilities.DelaySinceEnteredCondition" href="#state_machine_utilities.DelaySinceEnteredCondition">DelaySinceEnteredCondition</a></code></h4>
+</li>
+<li>
+<h4><code><a title="state_machine_utilities.DelaySinceExitedCondition" href="#state_machine_utilities.DelaySinceExitedCondition">DelaySinceExitedCondition</a></code></h4>
+</li>
+<li>
+<h4><code><a title="state_machine_utilities.DelayStateCondition" href="#state_machine_utilities.DelayStateCondition">DelayStateCondition</a></code></h4>
+<ul class="">
+<li><code><a title="state_machine_utilities.DelayStateCondition.duration" href="#state_machine_utilities.DelayStateCondition.duration">duration</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="state_machine_utilities.MonitoredState" href="#state_machine_utilities.MonitoredState">MonitoredState</a></code></h4>
+<ul class="">
+<li><code><a title="state_machine_utilities.MonitoredState.creation_reference_time" href="#state_machine_utilities.MonitoredState.creation_reference_time">creation_reference_time</a></code></li>
+<li><code><a title="state_machine_utilities.MonitoredState.elapsed_since_last_entry" href="#state_machine_utilities.MonitoredState.elapsed_since_last_entry">elapsed_since_last_entry</a></code></li>
+<li><code><a title="state_machine_utilities.MonitoredState.elapsed_since_last_exit" href="#state_machine_utilities.MonitoredState.elapsed_since_last_exit">elapsed_since_last_exit</a></code></li>
+<li><code><a title="state_machine_utilities.MonitoredState.elapsed_time_since_creation" href="#state_machine_utilities.MonitoredState.elapsed_time_since_creation">elapsed_time_since_creation</a></code></li>
+<li><code><a title="state_machine_utilities.MonitoredState.entry_count" href="#state_machine_utilities.MonitoredState.entry_count">entry_count</a></code></li>
+<li><code><a title="state_machine_utilities.MonitoredState.exit_count" href="#state_machine_utilities.MonitoredState.exit_count">exit_count</a></code></li>
+<li><code><a title="state_machine_utilities.MonitoredState.last_entry_reference_time" href="#state_machine_utilities.MonitoredState.last_entry_reference_time">last_entry_reference_time</a></code></li>
+<li><code><a title="state_machine_utilities.MonitoredState.last_exit_reference_time" href="#state_machine_utilities.MonitoredState.last_exit_reference_time">last_exit_reference_time</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="state_machine_utilities.MonitoredStateCondition" href="#state_machine_utilities.MonitoredStateCondition">MonitoredStateCondition</a></code></h4>
+<ul class="">
+<li><code><a title="state_machine_utilities.MonitoredStateCondition.monitored_state" href="#state_machine_utilities.MonitoredStateCondition.monitored_state">monitored_state</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="state_machine_utilities.MonitoredTransition" href="#state_machine_utilities.MonitoredTransition">MonitoredTransition</a></code></h4>
+<ul class="">
+<li><code><a title="state_machine_utilities.MonitoredTransition.creation_reference_time" href="#state_machine_utilities.MonitoredTransition.creation_reference_time">creation_reference_time</a></code></li>
+<li><code><a title="state_machine_utilities.MonitoredTransition.elapsed_since_last_transit" href="#state_machine_utilities.MonitoredTransition.elapsed_since_last_transit">elapsed_since_last_transit</a></code></li>
+<li><code><a title="state_machine_utilities.MonitoredTransition.elapsed_time_since_creation" href="#state_machine_utilities.MonitoredTransition.elapsed_time_since_creation">elapsed_time_since_creation</a></code></li>
+<li><code><a title="state_machine_utilities.MonitoredTransition.last_transit_reference_time" href="#state_machine_utilities.MonitoredTransition.last_transit_reference_time">last_transit_reference_time</a></code></li>
+<li><code><a title="state_machine_utilities.MonitoredTransition.transit_count" href="#state_machine_utilities.MonitoredTransition.transit_count">transit_count</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="state_machine_utilities.StateEntryCountCondition" href="#state_machine_utilities.StateEntryCountCondition">StateEntryCountCondition</a></code></h4>
+<ul class="">
+<li><code><a title="state_machine_utilities.StateEntryCountCondition.expected_count" href="#state_machine_utilities.StateEntryCountCondition.expected_count">expected_count</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="state_machine_utilities.StateValueCondition" href="#state_machine_utilities.StateValueCondition">StateValueCondition</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
