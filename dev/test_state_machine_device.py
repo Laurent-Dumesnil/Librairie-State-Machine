@@ -94,6 +94,13 @@ class TestLayout(unittest.TestCase):
         with self.assertRaises(ValueError):
             StateMachineDevice.Layout((bad_state,))
 
+    def test_layout_does_not_contain_unknown_state(self) -> None:
+        state_a = State(name="A")
+        state_b = State(name="B", terminal=True)
+        state_a.add_transition(self._create_transition(state_b))
+        layout = StateMachineDevice.Layout((state_a, state_b))
+        self.assertNotIn(State(name="C"), layout)
+
     def _create_transition(self, next_state: State | None) -> Transition:
         class DummyTransition(Transition):
             def __init__(self, next_state: State | None):
@@ -217,6 +224,18 @@ class TestStateMachineDevice(unittest.TestCase):
         terminal.calls.clear()
         machine.track(0.1)
         self.assertEqual(terminal.calls, [])
+
+    def test_track_does_not_reenter_state_when_already_initialized(self) -> None:
+        initial = self.RecordingState(name="Initial")
+        target = self.RecordingState(name="Target", terminal=True)
+        initial.add_transition(self.InactiveTransition(target))
+
+        machine = StateMachineDevice(StateMachineDevice.Layout((initial, target)), initialized=True)
+        self.assertEqual(initial.calls, ["enter-Initial"])
+
+        machine.track(0.1)
+        self.assertEqual(initial.calls, ["enter-Initial", "in-Initial"])
+        self.assertIs(machine.current_state, initial)
 
     def test_reset_returns_to_initial_state_without_entering(self) -> None:
         initial = self.RecordingState(name="Initial")
