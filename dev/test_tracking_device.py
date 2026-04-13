@@ -1,260 +1,221 @@
 import unittest
-from typing import Any
-from unittest.mock import Mock
 
-from tracking_device import TrackingApplication, TrackingDevice, TrackingManager, TriggerDevice
+from state_machine_utilities import (
+    ConditionalTransition,
+    ActionTransition,
+    MonitoredTransition,
+    ActionState,
+    MonitoredState,
+    DelaySinceEnteredCondition,
+    DelaySinceExitedCondition,
+    StateEntryCountCondition,
+    StateValueCondition,
+)
+
+from condition import AlwaysTrueCondition, AlwaysFalseCondition
+from state_machine_device import State
 
 
-class TestTrackingDevice(unittest.TestCase):
+# =========================================================
+# Helpers
+# =========================================================
+class DummyState(MonitoredState):
+    """Contrôle du temps sans dépendre du système."""
 
-    class DummyTrackingDevice(TrackingDevice):
-        def __init__(self, name: str | None = None, enabled: bool = True) -> None:
-            super().__init__(name=name, enabled=enabled)
-            self.tracked: list[float] = []
-            self.reset_called: bool = False
-            self.valid_override: bool = True
+    def __init__(self):
+        super().__init__("dummy")
+        self._MonitoredState__last_entry_reference_time = 0
+        self._MonitoredState__last_exit_reference_time = 0
 
-        def _do_valid(self) -> bool:
-            return self.valid_override
+    @property
+    def elapsed_since_last_entry(self):
+        return 2.0
 
-        def _do_reset(self) -> None:
-            self.reset_called = True
+    @property
+    def elapsed_since_last_exit(self):
+        return 3.0
 
-        def _do_tracking(self, elapsed_time: float) -> None:
-            self.tracked.append(elapsed_time)
 
-    def test_add_and_remove_sub_devices(self) -> None:
-        parent = self.DummyTrackingDevice(name="Parent")
-        child = self.DummyTrackingDevice(name="Child")
+# =========================================================
+# Transitions
+# =========================================================
+class TestTransitions(unittest.TestCase):
 
-        parent.add_sub_device(child)
-        self.assertEqual(parent.sub_devices_count, 1)
+    def test_conditional_transition(self):
+        s = State("S")
+        t = ConditionalTransition(AlwaysTrueCondition(), s)
 
-        parent.remove_sub_device("Child")
-        self.assertEqual(parent.sub_devices_count, 0)
+        self.assertTrue(t.valid)
+        self.assertTrue(t.is_transiting())
 
-    def test_add_sub_device_invalid_type(self) -> None:
-        device = self.DummyTrackingDevice(name="Parent")
+        t.condition = AlwaysFalseCondition()
+        self.assertFalse(t.is_transiting())
+
+    def test_condition_setter_invalid(self):
+        t = ConditionalTransition(AlwaysTrueCondition(), State("S"))
+
         with self.assertRaises(TypeError):
-            device.add_sub_device(123)  # type: ignore
+            t.condition = 123  # type: ignore
 
-    def test_add_sub_device_duplicate_name(self) -> None:
-        device = self.DummyTrackingDevice(name="Parent")
-        child = self.DummyTrackingDevice(name="Child")
-        duplicate = self.DummyTrackingDevice(name="Child")
+    def test_conditional_transition_invalid(self):
+        t = ConditionalTransition(None, State("S"))
+        self.assertFalse(t.valid)
 
-        device.add_sub_device(child)
-        with self.assertRaises(ValueError):
-            device.add_sub_device(duplicate)
+    def test_inverted_condition(self):
+        s = State("S")
+        c = AlwaysTrueCondition(invert=True)
 
-    def test_remove_sub_device_iterable(self) -> None:
-        device = self.DummyTrackingDevice(name="Parent")
-        children = [
-            self.DummyTrackingDevice(name="ChildA"),
-            self.DummyTrackingDevice(name="ChildB"),
-        ]
+        t = ConditionalTransition(c, s)
+        self.assertFalse(t.is_transiting())
 
-        device.add_sub_device(children)
-        self.assertEqual(device.sub_devices_count, 2)
+    def test_action_transition_execution(self):
+        called = []
 
-        device.remove_sub_device(["ChildA", "ChildB"])
-        self.assertEqual(device.sub_devices_count, 0)
+        def action():
+            called.append(1)
 
-    def test_remove_sub_device_invalid_type(self) -> None:
-        device = self.DummyTrackingDevice(name="Parent")
+        t = ActionTransition(AlwaysTrueCondition(), State("S"))
+        t.add_transiting_action(action)
+
+        t._do_transiting_action()
+        self.assertEqual(len(called), 1)
+
+    def test_action_transition_multiple_actions_order(self):
+        called = []
+
+        def a(): called.append("a")
+        def b(): called.append("b")
+
+        t = ActionTransition(AlwaysTrueCondition(), State("S"))
+        t.add_transiting_action([a, b])
+
+        t._do_transiting_action()
+        self.assertEqual(called, ["a", "b"])
+
+    def test_action_transition_invalid_action(self):
+        t = ActionTransition(AlwaysTrueCondition(), State("S"))
+
         with self.assertRaises(TypeError):
-            device.remove_sub_device(["Child", 123])  # type: ignore
+            t.add_transiting_action(42)  # type: ignore
 
-    def test_reset_propagates_to_sub_devices(self) -> None:
-        parent = self.DummyTrackingDevice(name="Parent")
-        child = self.DummyTrackingDevice(name="Child")
-        parent.add_sub_device(child)
+    def test_monitored_transition(self):
+        t = MonitoredTransition(AlwaysTrueCondition(), State("S"))
 
-        parent.reset()
-        self.assertTrue(parent.reset_called)
-        self.assertTrue(child.reset_called)
+        self.assertEqual(t.transit_count, 0)
 
-    def test_track_propagates_to_sub_devices(self) -> None:
-        parent = self.DummyTrackingDevice(name="Parent")
-        child = self.DummyTrackingDevice(name="Child")
-        parent.add_sub_device(child)
+        t._execute_transiting_action()
+        t._execute_transiting_action()
 
-        parent.track(0.5)
-        self.assertEqual(parent.tracked, [0.5])
-        self.assertEqual(child.tracked, [0.5])
-
-    def test_track_does_not_execute_when_disabled_or_invalid(self) -> None:
-        disabled_device = self.DummyTrackingDevice(name="Disabled", enabled=False)
-        disabled_device.track(0.5)
-        self.assertEqual(disabled_device.tracked, [])
-
-        invalid_device = self.DummyTrackingDevice(name="Invalid")
-        invalid_device.valid_override = False
-        invalid_device.track(0.5)
-        self.assertEqual(invalid_device.tracked, [])
-
-    def test_valid_with_invalid_sub_device(self) -> None:
-        parent = self.DummyTrackingDevice(name="Parent")
-        child = self.DummyTrackingDevice(name="Child")
-        parent.add_sub_device(child)
-
-        self.assertTrue(parent.valid)
-        child.valid_override = False
-        self.assertFalse(parent.valid)
+        self.assertEqual(t.transit_count, 2)
+        self.assertIsNotNone(t.last_transit_reference_time)
 
 
-class TestTrackingManager(unittest.TestCase):
+# =========================================================
+# ActionState
+# =========================================================
+class TestActionState(unittest.TestCase):
 
-    class DummyTrackingDevice(TrackingDevice):
-        def __init__(self, name: str | None = None, enabled: bool = True) -> None:
-            super().__init__(name=name, enabled=enabled)
-            self.tracked: list[float] = []
-            self.reset_called: bool = False
+    def test_entering_actions(self):
+        called = []
 
-        def _do_tracking(self, elapsed_time: float) -> None:
-            self.tracked.append(elapsed_time)
+        def action():
+            called.append(1)
 
-        def _do_reset(self) -> None:
-            self.reset_called = True
+        s = ActionState("S")
+        s.add_entering_action(action)
 
-    def test_add_and_remove_device_by_name_and_instance(self) -> None:
-        manager = TrackingManager()
-        device = self.DummyTrackingDevice(name="DeviceA")
+        s._do_entering_action()
+        self.assertEqual(len(called), 1)
 
-        manager.add_device(device)
-        self.assertEqual(manager.device_count, 1)
+    def test_in_state_actions(self):
+        called = []
 
-        manager.remove_device("DeviceA")
-        self.assertEqual(manager.device_count, 0)
+        def action():
+            called.append(1)
 
-        manager.add_device(device)
-        manager.remove_device(device)
-        self.assertEqual(manager.device_count, 0)
+        s = ActionState("S")
+        s.add_in_state_action(action)
 
-    def test_add_and_remove_devices_iterable(self) -> None:
-        manager = TrackingManager()
-        devices = [
-            self.DummyTrackingDevice(name="DeviceA"),
-            self.DummyTrackingDevice(name="DeviceB"),
-        ]
+        s._do_in_state_action()
+        self.assertEqual(len(called), 1)
 
-        manager.add_device(devices)
-        self.assertEqual(manager.device_count, 2)
+    def test_exiting_actions(self):
+        called = []
 
-        manager.remove_device(["DeviceA", devices[1]])
-        self.assertEqual(manager.device_count, 0)
+        def action():
+            called.append(1)
 
-    def test_add_device_invalid_type(self) -> None:
-        manager = TrackingManager()
+        s = ActionState("S")
+        s.add_exiting_action(action)
+
+        s._do_exiting_action()
+        self.assertEqual(len(called), 1)
+
+    def test_invalid_action(self):
+        s = ActionState("S")
+
         with self.assertRaises(TypeError):
-            manager.add_device(123)  # type: ignore
-
-    def test_remove_device_invalid_type(self) -> None:
-        manager = TrackingManager()
-        with self.assertRaises(TypeError):
-            manager.remove_device(3.14)  # type: ignore
-
-    def test_track_and_reset_on_all_devices(self) -> None:
-        manager = TrackingManager()
-        devices = [
-            self.DummyTrackingDevice(name="DeviceA"),
-            self.DummyTrackingDevice(name="DeviceB"),
-        ]
-
-        manager.add_device(devices)
-        manager.track(0.25)
-        self.assertEqual(devices[0].tracked, [0.25])
-        self.assertEqual(devices[1].tracked, [0.25])
-
-        manager.reset()
-        self.assertTrue(devices[0].reset_called)
-        self.assertTrue(devices[1].reset_called)
-
-    def test_valid_property(self) -> None:
-        manager = TrackingManager()
-        device = self.DummyTrackingDevice(name="DeviceA")
-        manager.add_device(device)
-        self.assertTrue(manager.valid)
-
-        class InvalidDevice(self.DummyTrackingDevice):
-            def _do_valid(self) -> bool:
-                return False
-
-        invalid_device = InvalidDevice(name="DeviceB")
-        manager.add_device(invalid_device)
-        self.assertFalse(manager.valid)
+            s.add_entering_action(123)  # type: ignore
 
 
-class TestTrackingApplication(unittest.TestCase):
+# =========================================================
+# MonitoredState
+# =========================================================
+class TestMonitoredState(unittest.TestCase):
 
-    def test_run_until_stops_when_condition_is_met(self) -> None:
-        app = TrackingApplication()
-        iteration_count = 0
+    def test_entry_exit_count(self):
+        s = MonitoredState("S")
 
-        def running_condition() -> str | None:
-            nonlocal iteration_count
-            iteration_count += 1
-            return "finished" if iteration_count >= 2 else None
+        s._execute_entering_action()
+        s._execute_entering_action()
+        s._execute_exiting_action()
 
-        result = app.run_until(running_condition)
-        self.assertEqual(result, "finished")
-        self.assertGreaterEqual(iteration_count, 2)
+        self.assertEqual(s.entry_count, 2)
+        self.assertEqual(s.exit_count, 1)
 
+    def test_timing(self):
+        s = MonitoredState("S")
 
-class TestTriggerDevice(unittest.TestCase):
+        self.assertIsNotNone(s.creation_reference_time)
+        self.assertGreaterEqual(s.elapsed_time_since_creation, 0)
 
-    def test_init_validates_duration_type_and_value(self) -> None:
-        with self.assertRaises(TypeError):
-            TriggerDevice(1, lambda: None, "Trigger")  # type: ignore
+# =========================================================
+# Conditions
+# =========================================================
+class TestConditions(unittest.TestCase):
 
-        with self.assertRaises(ValueError):
-            TriggerDevice(0.0, lambda: None, "Trigger")
+    def test_delay_since_entered(self):
+        s = DummyState()
+        c = DelaySinceEnteredCondition(1.5, s)
 
-    def test_init_validates_action_type(self) -> None:
-        with self.assertRaises(TypeError):
-            TriggerDevice(0.5, "not callable", "Trigger")  # type: ignore
+        self.assertTrue(bool(c))
 
-    def test_init_validates_initial_time_type(self) -> None:
-        with self.assertRaises(TypeError):
-            TriggerDevice(0.5, lambda: None, "Trigger", initial_time=1)  # type: ignore
+    def test_delay_since_exited(self):
+        s = DummyState()
+        c = DelaySinceExitedCondition(2.5, s)
 
-    def test_init_validates_auto_reset_when_enabling_type(self) -> None:
-        with self.assertRaises(TypeError):
-            TriggerDevice(0.5, lambda: None, "Trigger", auto_reset_when_enabling="yes")  # type: ignore
+        self.assertTrue(bool(c))
 
-    def test_elapsed_and_remaining_time_properties(self) -> None:
-        trigger = TriggerDevice(0.5, lambda: None, "Trigger")
-        self.assertEqual(trigger.elapsed_time_from_last_trigger, 0.0)
-        self.assertEqual(trigger.remaining_time_until_next_trigger, 0.5)
+    def test_entry_count_condition(self):
+        s = MonitoredState("S")
+        c = StateEntryCountCondition(2, s)
 
-    def test_track_triggers_action_after_duration(self) -> None:
-        action = Mock()
-        trigger = TriggerDevice(0.5, action, "Trigger")
+        s._execute_entering_action()
+        self.assertFalse(bool(c))
 
-        trigger.track(0.4)
-        action.assert_not_called()
-        self.assertAlmostEqual(trigger.elapsed_time_from_last_trigger, 0.4, delta=1e-9)
+        s._execute_entering_action()
+        self.assertTrue(bool(c))
 
-        trigger.track(0.2)
-        action.assert_called_once()
-        self.assertAlmostEqual(trigger.elapsed_time_from_last_trigger, 0.1, delta=1e-9)
+    def test_state_value_condition(self):
+        s = MonitoredState("S")
+        s.custom_value = 42
 
-    def test_auto_reset_when_enabling(self) -> None:
-        action = Mock()
-        trigger = TriggerDevice(0.5, action, "Trigger", initial_time=0.4, auto_reset_when_enabling=True)
+        c = StateValueCondition(42, s)
+        self.assertTrue(bool(c))
 
-        trigger.enabled = False
-        trigger.enabled = True
-        self.assertAlmostEqual(trigger.elapsed_time_from_last_trigger, 0.0, delta=1e-9)
-
-    def test_no_auto_reset_when_enabling(self) -> None:
-        action = Mock()
-        trigger = TriggerDevice(0.5, action, "Trigger", initial_time=0.4, auto_reset_when_enabling=False)
-
-        trigger.enabled = False
-        trigger.enabled = True
-        self.assertAlmostEqual(trigger.elapsed_time_from_last_trigger, 0.4, delta=1e-9)
+        c = StateValueCondition(0, s)
+        self.assertFalse(bool(c))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

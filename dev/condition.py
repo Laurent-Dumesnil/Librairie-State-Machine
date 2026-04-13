@@ -14,13 +14,11 @@ Exemples d'utilisation :
     >>> bool(allc)
     True
 """
-from typing import Self, override, Any
+from typing import Self, override, Iterable
 from abc import ABC, abstractmethod
 from elapsed_timer import ElapsedTimer
 from type_utilities import GenericGenerator, OptionalOneOrMany, OneOrMany
 
-#Commande pour corriger le fichier:
-#mypy --strict --check-untyped-defs condition.py
 
 class Condition(ABC):
     """Classe abstraite pour des conditions évaluables en bool.
@@ -351,11 +349,13 @@ class ManyConditions(Condition):
             invert: Si True, la condition est inversée.
         """
         super().__init__(invert)
-        self._condition : OptionalOneOrMany[Condition] = condition
+        self._condition : list[Condition] = []
+        if condition is not None:
+            self.add_condition(condition)
     
     def clear_conditions(self:Self) -> None:
         """Efface toutes les conditions."""
-        self._condition = None
+        self._condition = []
 
     def add_condition(self: Self, condition: OneOrMany[Condition]) -> None:
         """Ajoute une ou plusieurs conditions.
@@ -363,19 +363,26 @@ class ManyConditions(Condition):
         Args:
             condition: La condition(s) à ajouter.
         """
-        if self._condition is not None:
-
-            if isinstance(self._condition, Condition):
-                conditions = [self._condition]
-            else:
-                conditions = list(self._condition)
+    
+        if isinstance(condition, Iterable):
+            for c in condition:
+                if not isinstance(c, Condition):
+                    raise ValueError('La liste ne doit contenir que des conditions.')
+        
+        elif not isinstance(condition,Condition):
+            raise ValueError('La condition doit être de type Condition')
+        
+        if self._condition:
 
             if isinstance(condition, Condition):
-                conditions.append(condition)
+                self._condition.append(condition)
             else:
-                conditions.extend(condition)
-
-            self._condition = conditions
+                self._condition.extend(condition)
+        else:
+            if isinstance(condition, Condition):
+                self._condition = [condition]
+            else:
+                self._condition = list(condition)
 
     def remove_condition(self: Self, condition: OneOrMany[Condition]) -> None:
         """Supprime une ou plusieurs conditions.
@@ -383,22 +390,15 @@ class ManyConditions(Condition):
         Args:
             condition: La condition(s) à supprimer.
         """
-        if self._condition is not None:
 
-            if isinstance(self._condition, Condition):
-                conditions = [self._condition]
-            else:
-                conditions = list(self._condition)
+        if isinstance(condition, Condition):
+            if condition in self._condition:
+                self._condition.remove(condition)
+        elif isinstance(condition, Iterable):
 
-            if isinstance(condition, Condition):
-                if condition in conditions:
-                    conditions.remove(condition)
-            else: # iterable
-                for c in condition:
-                    if c in conditions:
-                        conditions.remove(c)
-
-            self._condition = conditions or None
+            for c in condition:
+                if c in self._condition:
+                    self._condition.remove(c)
 
 class AllConditions(ManyConditions):
     """Condition qui est vraie seulement si toutes les sous-conditions sont vraies.
@@ -429,7 +429,7 @@ class AllConditions(ManyConditions):
         Returns:
             bool: True si toutes les sous-conditions sont vraies, False sinon.
         """
-        if self._condition is None:
+        if self._condition:
             return False
         if isinstance(self._condition, Condition):
             return self._condition._compare()
@@ -464,7 +464,7 @@ class AnyConditions(ManyConditions):
         Returns:
             bool: True si au moins une sous-condition est vraie, False sinon.
         """
-        if self._condition is None:
+        if self._condition:
             return False
         if isinstance(self._condition, Condition):
             return self._condition._compare()
@@ -571,7 +571,7 @@ class CountConditions(ManyConditions):
         Returns:
             bool: True si le critère de comptage est respecté.
         """
-        if self._condition is None:
+        if self._condition:
             return False
         valid_conditions:int = 0
         if isinstance(self._condition, Condition):

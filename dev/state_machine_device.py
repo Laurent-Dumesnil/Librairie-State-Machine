@@ -9,7 +9,6 @@ et `Transition` (décrit une transition vers un état suivant). Une classe
 imbriquée `Layout` permet de regrouper la liste des états et
 définir l'état initial.
 
-Les docstrings suivent la convention Google et sont fournies en français.
 """
 from typing import Iterable, Callable, TypeAlias, Any, NoReturn, Self
 from typing import override, Self
@@ -271,7 +270,7 @@ class State(BaseComponent):
             Transition | None: La transition active, ou None.
         """
         for transition in self.__transitions:
-            if transition.is_transiting():
+            if transition.enabled and transition.is_transiting():
                 return transition
         return None
 
