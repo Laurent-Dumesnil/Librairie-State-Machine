@@ -25,17 +25,12 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
-from typing import final, override
 from base_component import BaseComponent
 from type_utilities import GenericCallback
-
-from base_component import BaseComponent
 from elapsed_timer import ElapsedTimer
-from typing import Iterable, Callable, TypeAlias, Any, NoReturn, Self
-from abc import ABC, abstractmethod
+from typing import final, override, Iterable, Callable, TypeAlias, Any, NoReturn, Self
 
-#Commande pour corriger le fichier:
-#mypy --strict --check-untyped-defs tracking_device.py
+
 
 class TrackingDevice(BaseComponent, ABC):
     """

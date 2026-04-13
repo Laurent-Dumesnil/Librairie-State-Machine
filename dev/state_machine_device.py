@@ -10,14 +10,11 @@ imbriquée `Layout` permet de regrouper la liste des états et
 définir l'état initial.
 
 """
-from typing import Iterable, Callable, TypeAlias, Any, NoReturn, Self
-from typing import override, Self
+from typing import override, Self, Any, Iterable
 from abc import ABC, abstractmethod
 from base_component import BaseComponent
 from tracking_device import TrackingDevice
 
-#Commande pour corriger le fichier:
-#mypy --strict --check-untyped-defs state_machine_device.py
 
 class StateMachineDevice(TrackingDevice) :
     """Appareil pilotant une machine à états.
@@ -108,7 +105,7 @@ class StateMachineDevice(TrackingDevice) :
         """
         self.__layout = layout
         self.__current_state: State | None = layout.initial_state if initialized else None 
-        if initialized is True:
+        if initialized is True and self.__current_state is not None:
             self.__current_state._execute_entering_action()
 			
         super().__init__(name=name, enabled=enabled)
@@ -202,7 +199,7 @@ class State(BaseComponent):
         TypeError: Si les paramètres booléens fournis ne sont pas de
             type ``bool`` (méthode ``is_bool``).
     """
-    def __init__(self, name: str | None = None, *, enabled:bool = True, terminal:bool = False, do_in_state_action_when_entering:bool = False, do_in_state_action_when_exiting:bool = False):
+    def __init__(self:Self, name: str | None = None, /,*, enabled:bool = True, terminal:bool = False, do_in_state_action_when_entering:bool = False, do_in_state_action_when_exiting:bool = False):
         super().__init__(name=name, enabled=enabled)
         self.__terminal = self.is_bool(terminal)
         self.__do_in_state_action_when_entering = self.is_bool(do_in_state_action_when_entering)
@@ -210,7 +207,7 @@ class State(BaseComponent):
 
         self.__transitions: list[Transition] = []
 
-    def is_bool(self, value) -> bool:
+    def is_bool(self:Self, value:Any) -> bool:
         """Vérifie qu'une valeur est un booléen.
 
         Args:

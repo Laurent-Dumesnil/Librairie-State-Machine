@@ -50,7 +50,7 @@ el.replaceWith(d);
 <dl>
 <dt id="state_machine_device.State"><code class="flex name class">
 <span>class <span class="ident">State</span></span>
-<span>(</span><span>name: str | None = None,<br>*,<br>enabled: bool = True,<br>terminal: bool = False,<br>do_in_state_action_when_entering: bool = False,<br>do_in_state_action_when_exiting: bool = False)</span>
+<span>(</span><span>name: str | None = None,<br>/,<br>*,<br>enabled: bool = True,<br>terminal: bool = False,<br>do_in_state_action_when_entering: bool = False,<br>do_in_state_action_when_exiting: bool = False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Représentation d'un état de la machine.</p>
@@ -192,7 +192,7 @@ itérable de transitions à ajouter.</dd>
 </dl></div>
 </dd>
 <dt id="state_machine_device.State.is_bool"><code class="name flex">
-<span>def <span class="ident">is_bool</span></span>(<span>self, value) ‑> bool</span>
+<span>def <span class="ident">is_bool</span></span>(<span>self: Self, value: Any) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Vérifie qu'une valeur est un booléen.</p>

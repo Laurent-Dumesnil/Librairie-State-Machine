@@ -205,8 +205,8 @@ class ActionState(State):
         do_in_state_action_when_entering (bool): Exécute l'action d'état à l'entrée.
         do_in_state_action_when_exiting (bool): Exécute l'action d'état à la sortie.
     """
-    def __init__(self, name:str | None=None, *, enabled:bool=True, terminal: bool=False, do_in_state_action_when_entering: bool=False, do_in_state_action_when_exiting: bool=False):
-        super().__init__(name=name, enabled=enabled, terminal=terminal, do_in_state_action_when_entering=do_in_state_action_when_entering, do_in_state_action_when_exiting=do_in_state_action_when_exiting)
+    def __init__(self, name:str | None=None, /,*, enabled:bool=True, terminal: bool=False, do_in_state_action_when_entering: bool=False, do_in_state_action_when_exiting: bool=False):
+        super().__init__(name, enabled=enabled, terminal=terminal, do_in_state_action_when_entering=do_in_state_action_when_entering, do_in_state_action_when_exiting=do_in_state_action_when_exiting)
         self.__entering_actions: list[Action] = list()
         self.__in_state_actions: list[Action] = list()
         self.__exiting_actions: list[Action] = list()
@@ -366,8 +366,8 @@ class MonitoredState(ActionState):
         >>> s.entry_count
         0
     """
-    def __init__(self, name:str | None=None, *, enabled:bool=True, terminal: bool=False, do_in_state_action_when_entering: bool=False, do_in_state_action_when_exiting: bool=False):
-        super().__init__(name=name, enabled=enabled, terminal=terminal, do_in_state_action_when_entering=do_in_state_action_when_entering, do_in_state_action_when_exiting=do_in_state_action_when_exiting)
+    def __init__(self, name:str | None=None, /,*, enabled:bool=True, terminal: bool=False, do_in_state_action_when_entering: bool=False, do_in_state_action_when_exiting: bool=False):
+        super().__init__(name, enabled=enabled, terminal=terminal, do_in_state_action_when_entering=do_in_state_action_when_entering, do_in_state_action_when_exiting=do_in_state_action_when_exiting)
         self.__entry_count:int = 0
         self.__exit_count:int = 0
         self.__creation_reference_time:float = perf_counter()

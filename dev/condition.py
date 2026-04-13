@@ -429,10 +429,9 @@ class AllConditions(ManyConditions):
         Returns:
             bool: True si toutes les sous-conditions sont vraies, False sinon.
         """
-        if self._condition:
+        if not self._condition:
             return False
-        if isinstance(self._condition, Condition):
-            return self._condition._compare()
+
         return all(c._compare() for c in self._condition)
     
 class AnyConditions(ManyConditions):
@@ -464,10 +463,9 @@ class AnyConditions(ManyConditions):
         Returns:
             bool: True si au moins une sous-condition est vraie, False sinon.
         """
-        if self._condition:
+        if not self._condition:
             return False
-        if isinstance(self._condition, Condition):
-            return self._condition._compare()
+        
         return any(c._compare() for c in self._condition)
     
 class CountConditions(ManyConditions):
@@ -571,15 +569,13 @@ class CountConditions(ManyConditions):
         Returns:
             bool: True si le critère de comptage est respecté.
         """
-        if self._condition:
+        if not self._condition:
             return False
         valid_conditions:int = 0
-        if isinstance(self._condition, Condition):
-            return self._condition._compare()
-        else:
-            for c in self._condition:
-                if c._compare() == self.expected_condition_value:
-                    valid_conditions += 1
+       
+        for c in self._condition:
+            if c._compare() == self.expected_condition_value:
+                valid_conditions += 1
         if self.exact_bool_count:
             result = True if valid_conditions == self.n else False
         else:
