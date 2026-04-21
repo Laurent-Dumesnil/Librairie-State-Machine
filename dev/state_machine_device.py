@@ -236,9 +236,6 @@ class State(BaseComponent):
         if self.terminal:
             return len(self.__transitions) == 0
 
-        if len(self.__transitions) == 0:
-            return False
-
         for transition in self.__transitions:
             if not transition.valid:
                 return False
