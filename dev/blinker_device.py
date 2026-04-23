@@ -1,11 +1,6 @@
-from typing import Self, override, Iterable, TypeAlias, Callable, overload, Any
-from abc import ABC, abstractmethod
-from elapsed_timer import ElapsedTimer
-from type_utilities import GenericGenerator, OptionalOneOrMany, OneOrMany
-
+from typing import Self, TypeAlias, Callable, overload, Any
 from state_machine_device import StateMachineDevice 
 from state_machine_utilities import MonitoredState, ConditionalTransition, DelaySinceEnteredCondition, StateValueCondition
-from condition import AlwaysTrueCondition
 from tracking_device import TrackingDevice
 from enum import Enum, auto
 from random import choice
@@ -16,24 +11,97 @@ class BlinkerDevice(StateMachineDevice) :
 
     def __init__(self, off_state_factory : BlinkerStateFactory, on_state_factory : BlinkerStateFactory):
 
-        self.off = off_state_factory()
+        self.__off = off_state_factory()
+        self.__on = on_state_factory()
 
-        self.off_duration = off_state_factory()
-        self.blink_off = off_state_factory()
-        self.blink_stop_off = off_state_factory()
+        self.__off_duration = off_state_factory()
+        self.__blink_off = off_state_factory()
+        self.__blink_stop_off = off_state_factory()
 
-        self.on = on_state_factory()
-        self.on_duration = on_state_factory()
-        self.blink_on = on_state_factory()
-        self.blink_stop_on = on_state_factory()
+        self.__on_duration = on_state_factory()
+        self.__blink_on = on_state_factory()
+        self.__blink_stop_on = on_state_factory()
 
-        self.off_duration.add_transition(ConditionalTransition(DelaySinceEnteredCondition(0), self.on))
+        self.__blink_begin = MonitoredState()
+        self.__blink_stop_begin = MonitoredState()
+        self.__blink_stop_end = MonitoredState()
 
+        self.__delay_since_entered_condition = DelaySinceEnteredCondition(0)
 
-        layout = (self.off, self.off_duration, self.blink_off, self.blink_stop_off, self.on, self.on_duration, self.blink_on,self.blink_stop_on)
+        self.__off_duration.add_transition(ConditionalTransition(self.__delay_since_entered_condition, self.__on))
+        self.__on_duration.add_transition(ConditionalTransition(self.__delay_since_entered_condition, self.__off))
+
+        self.__blink_begin.custom_value = False
+        self.__blink_begin.add_transition(ConditionalTransition(StateValueCondition(False, self.__blink_begin), self.__blink_off))
+        self.__blink_begin.add_transition(ConditionalTransition(StateValueCondition(True, self.__blink_begin), self.__blink_on))
+
+        self.__blink_off.add_transition(ConditionalTransition(self.__delay_since_entered_condition,self.__blink_on))
+        self.__blink_on.add_transition(ConditionalTransition(self.__delay_since_entered_condition,self.__blink_off))
+
+        self.__blink_stop_begin.custom_value = False
+        self.__blink_stop_begin.add_transition(ConditionalTransition(StateValueCondition(False, self.__blink_stop_begin), self.__blink_off))
+        self.__blink_stop_begin.add_transition(ConditionalTransition(StateValueCondition(True, self.__blink_stop_begin), self.__blink_on))
+
+        self.__blink_stop_off.add_transition(ConditionalTransition(self.__delay_since_entered_condition,self.__blink_stop_on))
+        self.__blink_stop_on.add_transition(ConditionalTransition(self.__delay_since_entered_condition,self.__blink_stop_off))
+        self.__blink_stop_off.add_transition(ConditionalTransition(self.__delay_since_entered_condition,self.__blink_stop_end))
+        self.__blink_stop_on.add_transition(ConditionalTransition(self.__delay_since_entered_condition,self.__blink_stop_end))
+
+        self.__blink_stop_end.custom_value = False
+        self.__blink_stop_end.add_transition(ConditionalTransition(StateValueCondition(False, self.__blink_stop_end), self.__blink_on))
+        self.__blink_stop_end.add_transition(ConditionalTransition(StateValueCondition(True, self.__blink_stop_end), self.__blink_off))
+
+        layout = (self.__off, self.__off_duration, self.__blink_off, self.__blink_stop_off, self.__on, self.__on_duration, self.__blink_on,self.__blink_stop_on, self.__blink_begin, self.__blink_stop_begin, self.__blink_stop_end)
 
         super().__init__(layout)
 
+    @property
+    def is_off(self) -> bool :
+        return True if self.current_state in [self.__off, self.__off_duration, self.__blink_off, self.__blink_stop_off] else False
+    
+    @property
+    def is_on(self) -> bool :
+        return True if self.current_state in [self.__on, self.__on_duration, self.__blink_on, self.__blink_stop_on] else False
+
+    def __set_delay_since_entered_condition_values(self:Self, duration:float, monitered_state:MonitoredState):
+        self.__delay_since_entered_condition.duration = duration
+        self.__delay_since_entered_condition.monitored_state = monitered_state
+
+    @overload
+    def turn_off(self:Self) -> None: ...
+
+    @overload
+    def turn_off(self:Self, duration:float) -> None: ...
+
+    def turn_off(self:Self, duration:float|None = None) -> None:
+        if duration == None:
+            self._transit_to(self.__off)
+        elif isinstance(duration, float):
+            if duration < 0:
+                raise ValueError("Duration must be greater than 0")
+            else:
+                self.__set_delay_since_entered_condition_values(duration, self.__off_duration)
+                self._transit_to(self.__off_duration)
+        else:
+            raise TypeError("Duration must be a float")
+        
+    @overload
+    def turn_on(self:Self) -> None: ...
+
+    @overload
+    def turn_on(self:Self, duration:float) -> None: ...
+
+    def turn_on(self:Self, duration:float|None = None) -> None:
+        if duration == None:
+            self._transit_to(self.__on)
+        elif isinstance(duration, float):
+            if duration < 0:
+                raise ValueError("Duration must be greater than 0")
+            else:
+                self.__set_delay_since_entered_condition_values(duration, self.__on_duration)
+                self._transit_to(self.__on_duration)
+        else:
+            raise TypeError("Duration must be a float")
 
 class SideBlinkersDevice(TrackingDevice):
     """

@@ -546,6 +546,10 @@ class DelayStateCondition(MonitoredStateCondition):
             float: Durée en secondes.
         """
         return self.__duration
+    
+    @duration.setter
+    def duration(self, value) -> None:
+        self.__duration = value
 
 
 class DelaySinceEnteredCondition(DelayStateCondition):
