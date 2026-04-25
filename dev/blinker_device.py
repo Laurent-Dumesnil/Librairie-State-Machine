@@ -1,5 +1,5 @@
 from typing import Self, TypeAlias, Callable, overload, Any
-from state_machine_device import StateMachineDevice 
+from state_machine_device import StateMachineDevice
 from state_machine_utilities import MonitoredState, ConditionalTransition, DelaySinceEnteredCondition, StateValueCondition
 from tracking_device import TrackingDevice
 from enum import Enum, auto
@@ -9,7 +9,7 @@ BlinkerStateFactory:TypeAlias = Callable[[], MonitoredState]
 
 class BlinkerDevice(StateMachineDevice) :
 
-    def __init__(self, off_state_factory : BlinkerStateFactory, on_state_factory : BlinkerStateFactory):
+    def __init__(self : Self, off_state_factory : BlinkerStateFactory, on_state_factory : BlinkerStateFactory):
 
         self.__off = off_state_factory()
         self.__on = on_state_factory()
@@ -54,8 +54,8 @@ class BlinkerDevice(StateMachineDevice) :
         self.__blink_stop_end.add_transition(ConditionalTransition(StateValueCondition(False, self.__blink_stop_end), self.__blink_on))
         self.__blink_stop_end.add_transition(ConditionalTransition(StateValueCondition(True, self.__blink_stop_end), self.__blink_off))
 
-        layout = (self.__off, self.__off_duration, self.__blink_off, self.__blink_stop_off, self.__on, self.__on_duration, self.__blink_on,self.__blink_stop_on, self.__blink_begin, self.__blink_stop_begin, self.__blink_stop_end)
-
+        tuple_states = (self.__off, self.__off_duration, self.__blink_off, self.__blink_stop_off, self.__on, self.__on_duration, self.__blink_on,self.__blink_stop_on, self.__blink_begin, self.__blink_stop_begin, self.__blink_stop_end)
+        layout = StateMachineDevice.Layout(tuple_states)
         super().__init__(layout)
 
     @property
@@ -119,7 +119,7 @@ class BlinkerDevice(StateMachineDevice) :
     def blink(self:Self, *, n_cycle:int, cycle_duration:float, percent_on:float, begin_on:bool, end_off:bool) -> None: ...
 
     def blink(self:Self, **kwargs:Any) -> None:
-        self.__validate_kwargs_blink()
+        self.__validate_kwargs_blink(kwargs)
         if all(k in kwargs for k in ("cycle_duration", "percent_on", "begin_on")):
             self.__blink_begin.custom_value = kwargs["begin_on"]
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_on, kwargs["cycle_duration"]*kwargs["percent_on"], self.__blink_on)
@@ -128,21 +128,21 @@ class BlinkerDevice(StateMachineDevice) :
 
         elif all(k in kwargs for k in ("total_duration", "cycle_duration", "percent_on", "begin_on", "end_off")):
             self.__blink_stop_begin.custom_value = kwargs["begin_on"]
-            self.__blink_stop_off.custom_value = kwargs["end_off"]
+            self.__blink_stop_end.custom_value = kwargs["end_off"]
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_total_duration, kwargs["total_duration"], self.__blink_stop_begin)
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_on, kwargs["cycle_duration"]*kwargs["percent_on"], self.__blink_stop_on)
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_off, kwargs["cycle_duration"]*(1-kwargs["percent_on"]), self.__blink_stop_off)
             self._transit_to(self.__blink_stop_begin)
         elif all(k in kwargs for k in ("total_duration", "n_cycle", "percent_on", "begin_on", "end_off")):
             self.__blink_stop_begin.custom_value = kwargs["begin_on"]
-            self.__blink_stop_off.custom_value = kwargs["end_off"]
+            self.__blink_stop_end.custom_value = kwargs["end_off"]
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_total_duration, kwargs["total_duration"], self.__blink_stop_begin)
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_on, kwargs["total_duration"]/kwargs["n_cycle"]*kwargs["percent_on"], self.__blink_stop_on)
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_off, kwargs["total_duration"]/kwargs["n_cycle"]*(1-kwargs["percent_on"]), self.__blink_stop_off)
             self._transit_to(self.__blink_stop_begin)
         elif all(k in kwargs for k in ("n_cycle", "cycle_duration", "percent_on", "begin_on", "end_off")):
             self.__blink_stop_begin.custom_value = kwargs["begin_on"]
-            self.__blink_stop_off.custom_value = kwargs["end_off"]
+            self.__blink_stop_end.custom_value = kwargs["end_off"]
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_total_duration, kwargs["cycle_duration"]*kwargs["n_cycle"], self.__blink_stop_begin)
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_on, kwargs["cycle_duration"]*kwargs["percent_on"], self.__blink_stop_on)
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_off, kwargs["cycle_duration"]*(1-kwargs["percent_on"]), self.__blink_stop_off)
@@ -150,7 +150,7 @@ class BlinkerDevice(StateMachineDevice) :
         else:
             raise SyntaxError("Combination of method arguments invalid")
         
-    def __validate_kwargs_blink(self:Self, kwargs_blink:dict) -> None:
+    def __validate_kwargs_blink(self:Self, kwargs_blink: dict[str, Any]) -> None:
         if "cycle_duration" in kwargs_blink:
             if kwargs_blink["cycle_duration"] < 0 or not isinstance(kwargs_blink["cycle_duration"], float):
                 raise ValueError("cycle_duration must be a float greater than 0")
@@ -167,7 +167,7 @@ class BlinkerDevice(StateMachineDevice) :
             if not isinstance(kwargs_blink["end_off"], bool):
                 raise ValueError("end_off must be a bool")
         if "n_cycle" in kwargs_blink:
-            if kwargs_blink["n_cycle"] < 0 or not isinstance(kwargs_blink["total_duration"], int):
+            if kwargs_blink["n_cycle"] < 0 or not isinstance(kwargs_blink["n_cycle"], int):
                 raise ValueError("n_cycle must be an integer greater than 0")
 
 
@@ -228,17 +228,17 @@ class SideBlinkersDevice(TrackingDevice):
             ValueError: Si le côté n'est pas valide.
         """
         if side is SideBlinkersDevice.Side.LEFT:
-            return self.__left_blinker.is_off()
+            return self.__left_blinker.is_off
         elif side is SideBlinkersDevice.Side.RIGHT:
-            return self.__right_blinker.is_off()
+            return self.__right_blinker.is_off
         elif side is SideBlinkersDevice.Side.BOTH:
-            return all((self.__left_blinker.is_off(), self.__right_blinker.is_off()))
+            return all((self.__left_blinker.is_off, self.__right_blinker.is_off))
         elif side is SideBlinkersDevice.Side.ANY:
-            return any((self.__left_blinker.is_off(), self.__right_blinker.is_off()))
+            return any((self.__left_blinker.is_off, self.__right_blinker.is_off))
         elif side is SideBlinkersDevice.Side.LEFT_RECIPROCAL:
-            return all((self.__left_blinker.is_off(), self.__right_blinker.is_on()))
+            return all((self.__left_blinker.is_off, self.__right_blinker.is_on))
         elif side is SideBlinkersDevice.Side.RIGHT_RECIPROCAL:
-            return all((self.__left_blinker.is_on(), self.__right_blinker.is_off()))
+            return all((self.__left_blinker.is_on, self.__right_blinker.is_off))
         else:
             raise ValueError(f"{side} n'est pas une donnée valide")
     
@@ -256,17 +256,17 @@ class SideBlinkersDevice(TrackingDevice):
             ValueError: Si le côté n'est pas valide.
         """
         if side is SideBlinkersDevice.Side.LEFT:
-            return self.__left_blinker.is_on()
+            return self.__left_blinker.is_on
         elif side is SideBlinkersDevice.Side.RIGHT:
-            return self.__right_blinker.is_on()
+            return self.__right_blinker.is_on
         elif side is SideBlinkersDevice.Side.BOTH:
-            return all((self.__left_blinker.is_on(), self.__right_blinker.is_on()))
+            return all((self.__left_blinker.is_on, self.__right_blinker.is_on))
         elif side is SideBlinkersDevice.Side.ANY:
-            return any((self.__left_blinker.is_on(), self.__right_blinker.is_on()))
+            return any((self.__left_blinker.is_on, self.__right_blinker.is_on))
         elif side is SideBlinkersDevice.Side.LEFT_RECIPROCAL:
-            return all((self.__left_blinker.is_on(), self.__right_blinker.is_off()))
+            return all((self.__left_blinker.is_on, self.__right_blinker.is_off))
         elif side is SideBlinkersDevice.Side.RIGHT_RECIPROCAL:
-            return all((self.__left_blinker.is_off(), self.__right_blinker.is_on()))
+            return all((self.__left_blinker.is_off, self.__right_blinker.is_on))
         else:
             raise ValueError(f"{side} n'est pas une donnée valide")
         
@@ -287,24 +287,25 @@ class SideBlinkersDevice(TrackingDevice):
         Raises:
             ValueError: Si le côté n'est pas valide.
         """
-        if side is SideBlinkersDevice.Side.LEFT:
-            self.__left_blinker.turn_off(duration)
-        elif side is SideBlinkersDevice.Side.RIGHT:
-            self.__right_blinker.turn_off(duration)
-        elif side is SideBlinkersDevice.Side.BOTH:
-            self.__left_blinker.turn_off(duration)
-            self.__right_blinker.turn_off(duration)
-        elif side is SideBlinkersDevice.Side.ANY:
-            rng = choice([self.__left_blinker.turn_off, self.__right_blinker.turn_off])
-            rng(duration)
-        elif side is SideBlinkersDevice.Side.LEFT_RECIPROCAL:
-            self.__left_blinker.turn_off(duration)
-            self.__right_blinker.turn_on(duration)
-        elif side is SideBlinkersDevice.Side.RIGHT_RECIPROCAL:
-            self.__left_blinker.turn_on(duration)
-            self.__right_blinker.turn_off(duration)
-        else:
-            raise ValueError(f"{side} n'est pas une donnée valide")
+        if duration is not None:
+            if side is SideBlinkersDevice.Side.LEFT:
+                self.__left_blinker.turn_off(duration)
+            elif side is SideBlinkersDevice.Side.RIGHT:
+                self.__right_blinker.turn_off(duration)
+            elif side is SideBlinkersDevice.Side.BOTH:
+                self.__left_blinker.turn_off(duration)
+                self.__right_blinker.turn_off(duration)
+            elif side is SideBlinkersDevice.Side.ANY:
+                rng = choice([self.__left_blinker.turn_off, self.__right_blinker.turn_off])
+                rng(duration)
+            elif side is SideBlinkersDevice.Side.LEFT_RECIPROCAL:
+                self.__left_blinker.turn_off(duration)
+                self.__right_blinker.turn_on(duration)
+            elif side is SideBlinkersDevice.Side.RIGHT_RECIPROCAL:
+                self.__left_blinker.turn_on(duration)
+                self.__right_blinker.turn_off(duration)
+            else:
+                raise ValueError(f"{side} n'est pas une donnée valide")
         
     @overload
     def turn_on(self:Self, side:Side) -> None: ...
@@ -323,24 +324,25 @@ class SideBlinkersDevice(TrackingDevice):
         Raises:
             ValueError: Si le côté n'est pas valide.
         """
-        if side is SideBlinkersDevice.Side.LEFT:
-            self.__left_blinker.turn_on(duration)
-        elif side is SideBlinkersDevice.Side.RIGHT:
-            self.__right_blinker.turn_on(duration)
-        elif side is SideBlinkersDevice.Side.BOTH:
-            self.__left_blinker.turn_on(duration)
-            self.__right_blinker.turn_on(duration)
-        elif side is SideBlinkersDevice.Side.ANY:
-            rng = choice([self.__left_blinker.turn_on, self.__right_blinker.turn_on])
-            rng(duration)
-        elif side is SideBlinkersDevice.Side.LEFT_RECIPROCAL:
-            self.__left_blinker.turn_on(duration)
-            self.__right_blinker.turn_off(duration)
-        elif side is SideBlinkersDevice.Side.RIGHT_RECIPROCAL:
-            self.__left_blinker.turn_off(duration)
-            self.__right_blinker.turn_on(duration)
-        else:
-            raise ValueError(f"{side} n'est pas une donnée valide")
+        if duration is not None:
+            if side is SideBlinkersDevice.Side.LEFT:
+                self.__left_blinker.turn_on(duration)
+            elif side is SideBlinkersDevice.Side.RIGHT:
+                self.__right_blinker.turn_on(duration)
+            elif side is SideBlinkersDevice.Side.BOTH:
+                self.__left_blinker.turn_on(duration)
+                self.__right_blinker.turn_on(duration)
+            elif side is SideBlinkersDevice.Side.ANY:
+                rng = choice([self.__left_blinker.turn_on, self.__right_blinker.turn_on])
+                rng(duration)
+            elif side is SideBlinkersDevice.Side.LEFT_RECIPROCAL:
+                self.__left_blinker.turn_on(duration)
+                self.__right_blinker.turn_off(duration)
+            elif side is SideBlinkersDevice.Side.RIGHT_RECIPROCAL:
+                self.__left_blinker.turn_off(duration)
+                self.__right_blinker.turn_on(duration)
+            else:
+                raise ValueError(f"{side} n'est pas une donnée valide")
         
     @overload
     def blink(self:Self, side:Side, *, cycle_duration:float, percent_on:float, begin_on:bool) -> None: ...
@@ -384,11 +386,16 @@ class SideBlinkersDevice(TrackingDevice):
         else:
             raise ValueError(f"{side} n'est pas une donnée valide")
 
-def main():
-    def factory_off():
+def main() -> None:
+    def factory_off() -> MonitoredState:
         off_state = MonitoredState()
         return off_state
+
+    def factory_on() -> MonitoredState:
+        on_state = MonitoredState()
+        return on_state
+
     
-    b = BlinkerDevice(factory_off)
+    b = BlinkerDevice(factory_off, factory_on)
 
     

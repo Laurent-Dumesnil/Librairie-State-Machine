@@ -6,17 +6,17 @@ from tracking_device import TrackingApplication
 from typing import Self, override
 
 class TrafficLightByAction(StateMachineDevice):
-    def __init__(self:Self, initialized:bool = False, name:str|None = None, enabled:bool = True):
-        self.red_state = MonitoredState(name="red")
+    def __init__(self:Self, initialized:bool = False, name:str|None = None, enabled:bool = True) -> None:
+        self.red_state = MonitoredState()
         self.red_state.add_entering_action(lambda: self.reset_timer(1))
         self.red_state.add_entering_action(self.print_red)
-        self.yellow_state = ActionState(name="yellow")
+        self.yellow_state = ActionState()
         self.yellow_state.add_entering_action(lambda: self.reset_timer(0.2))
         self.yellow_state.add_entering_action(self.print_yellow)
-        self.green_state = ActionState(name="green")
+        self.green_state = ActionState()
         self.green_state.add_entering_action(lambda : self.reset_timer(0.8))
         self.green_state.add_entering_action(self.print_green)
-        self.terminal_state = ActionState(name="Fin",terminal=True,enabled=False)
+        self.terminal_state = ActionState(terminal=True,enabled=False)
         self.terminal_state.add_entering_action(self.print_end)
         self.timer = ElapsedTimerCondition(1)
         self.red_state.add_transition(ConditionalTransition(self.timer, self.green_state))
@@ -73,7 +73,7 @@ class TrafficLightState(MonitoredState):
         super().__init__(name, enabled=enabled, terminal=terminal, do_in_state_action_when_entering=do_in_state_action_when_entering, do_in_state_action_when_exiting=do_in_state_action_when_exiting)
 
     @override
-    def _do_entering_action(self:Self):
+    def _do_entering_action(self:Self) -> None:
         print(f"\r{self.color}! ", end="", sep="")
 
 
