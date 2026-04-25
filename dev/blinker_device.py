@@ -26,9 +26,9 @@ class BlinkerDevice(StateMachineDevice) :
         self.__blink_stop_begin = MonitoredState()
         self.__blink_stop_end = MonitoredState()
 
-        self.__delay_since_entered_condition_off = DelaySinceEnteredCondition(0)
-        self.__delay_since_entered_condition_on = DelaySinceEnteredCondition(0)
-        self.__delay_since_entered_condition_total_duration = DelaySinceEnteredCondition(0)
+        self.__delay_since_entered_condition_off = DelaySinceEnteredCondition(0, self.__off)
+        self.__delay_since_entered_condition_on = DelaySinceEnteredCondition(0, self.__on)
+        self.__delay_since_entered_condition_total_duration = DelaySinceEnteredCondition(0, self.__off)
 
         self.__off_duration.add_transition(ConditionalTransition(self.__delay_since_entered_condition_off, self.__on))
         self.__on_duration.add_transition(ConditionalTransition(self.__delay_since_entered_condition_on, self.__off))
@@ -80,7 +80,7 @@ class BlinkerDevice(StateMachineDevice) :
         if duration == None:
             self._transit_to(self.__off)
         elif isinstance(duration, float):
-            if duration < 0:
+            if duration <= 0:
                 raise ValueError("Duration must be greater than 0")
             else:
                 self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_off, duration, self.__off_duration)
@@ -98,7 +98,7 @@ class BlinkerDevice(StateMachineDevice) :
         if duration == None:
             self._transit_to(self.__on)
         elif isinstance(duration, float):
-            if duration < 0:
+            if duration <= 0:
                 raise ValueError("Duration must be greater than 0")
             else:
                 self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_on, duration, self.__on_duration)
@@ -288,24 +288,29 @@ class SideBlinkersDevice(TrackingDevice):
             ValueError: Si le côté n'est pas valide.
         """
         if duration is not None:
-            if side is SideBlinkersDevice.Side.LEFT:
-                self.__left_blinker.turn_off(duration)
-            elif side is SideBlinkersDevice.Side.RIGHT:
-                self.__right_blinker.turn_off(duration)
-            elif side is SideBlinkersDevice.Side.BOTH:
-                self.__left_blinker.turn_off(duration)
-                self.__right_blinker.turn_off(duration)
-            elif side is SideBlinkersDevice.Side.ANY:
-                rng = choice([self.__left_blinker.turn_off, self.__right_blinker.turn_off])
-                rng(duration)
-            elif side is SideBlinkersDevice.Side.LEFT_RECIPROCAL:
-                self.__left_blinker.turn_off(duration)
-                self.__right_blinker.turn_on(duration)
-            elif side is SideBlinkersDevice.Side.RIGHT_RECIPROCAL:
-                self.__left_blinker.turn_on(duration)
-                self.__right_blinker.turn_off(duration)
-            else:
-                raise ValueError(f"{side} n'est pas une donnée valide")
+            if not isinstance(duration, float):
+                raise TypeError("duration must be a float")
+            if duration <= 0:
+                raise ValueError("duration must be positive")
+
+        if side is SideBlinkersDevice.Side.LEFT:
+            self.__left_blinker.turn_off() if duration is None else self.__left_blinker.turn_off(duration)
+        elif side is SideBlinkersDevice.Side.RIGHT:
+            self.__right_blinker.turn_off() if duration is None else self.__right_blinker.turn_off(duration)
+        elif side is SideBlinkersDevice.Side.BOTH:
+            self.__left_blinker.turn_off() if duration is None else self.__left_blinker.turn_off(duration)
+            self.__right_blinker.turn_off() if duration is None else self.__right_blinker.turn_off(duration)
+        elif side is SideBlinkersDevice.Side.ANY:
+            blinker = choice([self.__left_blinker, self.__right_blinker])
+            blinker.turn_off() if duration is None else blinker.turn_off(duration)
+        elif side is SideBlinkersDevice.Side.LEFT_RECIPROCAL:
+            self.__left_blinker.turn_off() if duration is None else self.__left_blinker.turn_off(duration)
+            self.__right_blinker.turn_on() if duration is None else self.__right_blinker.turn_on(duration)
+        elif side is SideBlinkersDevice.Side.RIGHT_RECIPROCAL:
+            self.__left_blinker.turn_on() if duration is None else self.__left_blinker.turn_on(duration)
+            self.__right_blinker.turn_off() if duration is None else self.__right_blinker.turn_off(duration)
+        else:
+            raise ValueError(f"{side} n'est pas une donnée valide")
         
     @overload
     def turn_on(self:Self, side:Side) -> None: ...
@@ -325,24 +330,29 @@ class SideBlinkersDevice(TrackingDevice):
             ValueError: Si le côté n'est pas valide.
         """
         if duration is not None:
-            if side is SideBlinkersDevice.Side.LEFT:
-                self.__left_blinker.turn_on(duration)
-            elif side is SideBlinkersDevice.Side.RIGHT:
-                self.__right_blinker.turn_on(duration)
-            elif side is SideBlinkersDevice.Side.BOTH:
-                self.__left_blinker.turn_on(duration)
-                self.__right_blinker.turn_on(duration)
-            elif side is SideBlinkersDevice.Side.ANY:
-                rng = choice([self.__left_blinker.turn_on, self.__right_blinker.turn_on])
-                rng(duration)
-            elif side is SideBlinkersDevice.Side.LEFT_RECIPROCAL:
-                self.__left_blinker.turn_on(duration)
-                self.__right_blinker.turn_off(duration)
-            elif side is SideBlinkersDevice.Side.RIGHT_RECIPROCAL:
-                self.__left_blinker.turn_off(duration)
-                self.__right_blinker.turn_on(duration)
-            else:
-                raise ValueError(f"{side} n'est pas une donnée valide")
+            if not isinstance(duration, float):
+                raise TypeError("duration must be a float")
+            if duration <= 0:
+                raise ValueError("duration must be positive")
+
+        if side is SideBlinkersDevice.Side.LEFT:
+            self.__left_blinker.turn_on() if duration is None else self.__left_blinker.turn_on(duration)
+        elif side is SideBlinkersDevice.Side.RIGHT:
+            self.__right_blinker.turn_on() if duration is None else self.__right_blinker.turn_on(duration)
+        elif side is SideBlinkersDevice.Side.BOTH:
+            self.__left_blinker.turn_on() if duration is None else self.__left_blinker.turn_on(duration)
+            self.__right_blinker.turn_on() if duration is None else self.__right_blinker.turn_on(duration)
+        elif side is SideBlinkersDevice.Side.ANY:
+            blinker = choice([self.__left_blinker, self.__right_blinker])
+            blinker.turn_on() if duration is None else blinker.turn_on(duration)
+        elif side is SideBlinkersDevice.Side.LEFT_RECIPROCAL:
+            self.__left_blinker.turn_on() if duration is None else self.__left_blinker.turn_on(duration)
+            self.__right_blinker.turn_off() if duration is None else self.__right_blinker.turn_off(duration)
+        elif side is SideBlinkersDevice.Side.RIGHT_RECIPROCAL:
+            self.__left_blinker.turn_off() if duration is None else self.__left_blinker.turn_off(duration)
+            self.__right_blinker.turn_on() if duration is None else self.__right_blinker.turn_on(duration)
+        else:
+            raise ValueError(f"{side} n'est pas une donnée valide")
         
     @overload
     def blink(self:Self, side:Side, *, cycle_duration:float, percent_on:float, begin_on:bool) -> None: ...
