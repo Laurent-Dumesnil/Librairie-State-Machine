@@ -56,7 +56,7 @@ class BlinkerDevice(StateMachineDevice) :
 
         tuple_states = (self.__off, self.__off_duration, self.__blink_off, self.__blink_stop_off, self.__on, self.__on_duration, self.__blink_on,self.__blink_stop_on, self.__blink_begin, self.__blink_stop_begin, self.__blink_stop_end)
         layout = StateMachineDevice.Layout(tuple_states)
-        super().__init__(layout)
+        super().__init__(layout, True)
 
     @property
     def is_off(self) -> bool :
@@ -120,27 +120,28 @@ class BlinkerDevice(StateMachineDevice) :
 
     def blink(self:Self, **kwargs:Any) -> None:
         self.__validate_kwargs_blink(kwargs)
-        if all(k in kwargs for k in ("cycle_duration", "percent_on", "begin_on")):
+        k = set(kwargs.keys())
+
+        if k == {"cycle_duration", "percent_on", "begin_on"}:
             self.__blink_begin.custom_value = kwargs["begin_on"]
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_on, kwargs["cycle_duration"]*kwargs["percent_on"], self.__blink_on)
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_off, kwargs["cycle_duration"]*(1-kwargs["percent_on"]), self.__blink_off)
             self._transit_to(self.__blink_begin)
-
-        elif all(k in kwargs for k in ("total_duration", "cycle_duration", "percent_on", "begin_on", "end_off")):
+        elif k == {"total_duration", "cycle_duration", "percent_on", "begin_on", "end_off"}:
             self.__blink_stop_begin.custom_value = kwargs["begin_on"]
             self.__blink_stop_end.custom_value = kwargs["end_off"]
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_total_duration, kwargs["total_duration"], self.__blink_stop_begin)
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_on, kwargs["cycle_duration"]*kwargs["percent_on"], self.__blink_stop_on)
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_off, kwargs["cycle_duration"]*(1-kwargs["percent_on"]), self.__blink_stop_off)
             self._transit_to(self.__blink_stop_begin)
-        elif all(k in kwargs for k in ("total_duration", "n_cycle", "percent_on", "begin_on", "end_off")):
+        elif k == {"total_duration", "n_cycle", "percent_on", "begin_on", "end_off"}:
             self.__blink_stop_begin.custom_value = kwargs["begin_on"]
             self.__blink_stop_end.custom_value = kwargs["end_off"]
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_total_duration, kwargs["total_duration"], self.__blink_stop_begin)
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_on, kwargs["total_duration"]/kwargs["n_cycle"]*kwargs["percent_on"], self.__blink_stop_on)
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_off, kwargs["total_duration"]/kwargs["n_cycle"]*(1-kwargs["percent_on"]), self.__blink_stop_off)
             self._transit_to(self.__blink_stop_begin)
-        elif all(k in kwargs for k in ("n_cycle", "cycle_duration", "percent_on", "begin_on", "end_off")):
+        elif k == {"n_cycle", "cycle_duration", "percent_on", "begin_on", "end_off"}:
             self.__blink_stop_begin.custom_value = kwargs["begin_on"]
             self.__blink_stop_end.custom_value = kwargs["end_off"]
             self.__set_delay_since_entered_condition_values(self.__delay_since_entered_condition_total_duration, kwargs["cycle_duration"]*kwargs["n_cycle"], self.__blink_stop_begin)
@@ -396,16 +397,5 @@ class SideBlinkersDevice(TrackingDevice):
         else:
             raise ValueError(f"{side} n'est pas une donnée valide")
 
-def main() -> None:
-    def factory_off() -> MonitoredState:
-        off_state = MonitoredState()
-        return off_state
-
-    def factory_on() -> MonitoredState:
-        on_state = MonitoredState()
-        return on_state
-
-    
-    b = BlinkerDevice(factory_off, factory_on)
 
     
