@@ -8,9 +8,29 @@ from random import choice
 BlinkerStateFactory:TypeAlias = Callable[[], MonitoredState]
 
 class BlinkerDevice(StateMachineDevice) :
+    """
+    Dispositif de clignotant multifonctionnel capable de gérer des états d'allumage/extinction,
+    des temporisations et des séquences de clignotement complexes.
+
+    La classe gère un état machine avec plusieurs configurations possibles:
+    - Allumé/Éteint simple
+    - Allumé/Éteint temporisé
+    - Clignotement continu
+    - Clignotement avec durée totale limitée
+
+    Args:
+        off_state_factory (BlinkerStateFactory): Fabrique pour créer les états OFF.
+        on_state_factory (BlinkerStateFactory): Fabrique pour créer les états ON.
+    """
 
     def __init__(self : Self, off_state_factory : BlinkerStateFactory, on_state_factory : BlinkerStateFactory):
+        """
+        Initialise le dispositif de clignotant.
 
+        Args:
+            off_state_factory (BlinkerStateFactory): Fabrique pour créer les états OFF.
+            on_state_factory (BlinkerStateFactory): Fabrique pour créer les états ON.
+        """
         self.__off = off_state_factory()
         self.__on = on_state_factory()
 
@@ -60,10 +80,22 @@ class BlinkerDevice(StateMachineDevice) :
 
     @property
     def is_off(self) -> bool :
+        """
+        Vérifie si le clignotant est dans un état éteint.
+
+        Returns:
+            bool: True si le clignotant est éteint, False sinon.
+        """
         return True if self.current_state in [self.__off, self.__off_duration, self.__blink_off, self.__blink_stop_off] else False
     
     @property
     def is_on(self) -> bool :
+        """
+        Vérifie si le clignotant est dans un état allumé.
+
+        Returns:
+            bool: True si le clignotant est allumé, False sinon.
+        """
         return True if self.current_state in [self.__on, self.__on_duration, self.__blink_on, self.__blink_stop_on] else False
 
     def __set_delay_since_entered_condition_values(self:Self, delay_since_entered_condition:DelaySinceEnteredCondition, duration:float, monitered_state:MonitoredState) -> None:
@@ -77,6 +109,17 @@ class BlinkerDevice(StateMachineDevice) :
     def turn_off(self:Self, duration:float) -> None: ...
 
     def turn_off(self:Self, duration:float|None = None) -> None:
+        """
+        Éteint le clignotant, optionnellement pour une durée définie.
+
+        Args:
+            duration (float, optionnel): Durée pendant laquelle le clignotant reste éteint.
+                                        Si None, le clignotant reste éteint indéfiniment.
+
+        Raises:
+            ValueError: Si la durée est négative ou nulle.
+            TypeError: Si la durée n'est pas un float.
+        """
         if duration == None:
             self._transit_to(self.__off)
         elif isinstance(duration, float):
@@ -95,6 +138,17 @@ class BlinkerDevice(StateMachineDevice) :
     def turn_on(self:Self, duration:float) -> None: ...
 
     def turn_on(self:Self, duration:float|None = None) -> None:
+        """
+        Allume le clignotant, optionnellement pour une durée définie.
+
+        Args:
+            duration (float, optionnel): Durée pendant laquelle le clignotant reste allumé.
+                                        Si None, le clignotant reste allumé indéfiniment.
+
+        Raises:
+            ValueError: Si la durée est négative ou nulle.
+            TypeError: Si la durée n'est pas un float.
+        """
         if duration == None:
             self._transit_to(self.__on)
         elif isinstance(duration, float):
@@ -119,6 +173,27 @@ class BlinkerDevice(StateMachineDevice) :
     def blink(self:Self, *, n_cycle:int, cycle_duration:float, percent_on:float, begin_on:bool, end_off:bool) -> None: ...
 
     def blink(self:Self, **kwargs:Any) -> None:
+        """
+        Fait clignoter le dispositif selon les paramètres donnés.
+
+        Supporte plusieurs variantes de clignotement:
+        1. Clignotement continu avec cycle_duration et percent_on
+        2. Clignotement avec durée totale limitée et cycle_duration
+        3. Clignotement avec nombre de cycles défini et cycle_duration
+        4. Clignotement avec nombre de cycles et durée totale
+
+        Args:
+            cycle_duration (float, optionnel): Durée d'un cycle complet de clignotement (en secondes).
+            percent_on (float, optionnel): Pourcentage du cycle durant lequel le clignotant est allumé (0.0-1.0).
+            begin_on (bool): Si True, le clignotement commence à l'état allumé; sinon à l'état éteint.
+            total_duration (float, optionnel): Durée totale du clignotement (en secondes).
+            n_cycle (int, optionnel): Nombre de cycles complets à effectuer.
+            end_off (bool, optionnel): Si True, termine en état éteint; sinon en état allumé.
+
+        Raises:
+            ValueError: Si les paramètres sont invalides ou hors limites.
+            SyntaxError: Si la combinaison de paramètres n'est pas valide.
+        """
         self.__validate_kwargs_blink(kwargs)
         k = set(kwargs.keys())
 
