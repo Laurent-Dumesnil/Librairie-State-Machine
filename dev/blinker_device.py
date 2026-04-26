@@ -42,8 +42,8 @@ class BlinkerDevice(StateMachineDevice) :
         self.__blink_on.add_transition(ConditionalTransition(self.__delay_since_entered_condition_on,self.__blink_off))
 
         self.__blink_stop_begin.custom_value = False
-        self.__blink_stop_begin.add_transition(ConditionalTransition(StateValueCondition(False, self.__blink_stop_begin), self.__blink_off))
-        self.__blink_stop_begin.add_transition(ConditionalTransition(StateValueCondition(True, self.__blink_stop_begin), self.__blink_on))
+        self.__blink_stop_begin.add_transition(ConditionalTransition(StateValueCondition(False, self.__blink_stop_begin), self.__blink_stop_off))
+        self.__blink_stop_begin.add_transition(ConditionalTransition(StateValueCondition(True, self.__blink_stop_begin), self.__blink_stop_on))
 
         self.__blink_stop_off.add_transition(ConditionalTransition(self.__delay_since_entered_condition_off,self.__blink_stop_on))
         self.__blink_stop_on.add_transition(ConditionalTransition(self.__delay_since_entered_condition_on,self.__blink_stop_off))
@@ -51,8 +51,8 @@ class BlinkerDevice(StateMachineDevice) :
         self.__blink_stop_on.add_transition(ConditionalTransition(self.__delay_since_entered_condition_total_duration,self.__blink_stop_end))
 
         self.__blink_stop_end.custom_value = False
-        self.__blink_stop_end.add_transition(ConditionalTransition(StateValueCondition(False, self.__blink_stop_end), self.__blink_on))
-        self.__blink_stop_end.add_transition(ConditionalTransition(StateValueCondition(True, self.__blink_stop_end), self.__blink_off))
+        self.__blink_stop_end.add_transition(ConditionalTransition(StateValueCondition(False, self.__blink_stop_end), self.__on))
+        self.__blink_stop_end.add_transition(ConditionalTransition(StateValueCondition(True, self.__blink_stop_end), self.__off))
 
         tuple_states = (self.__off, self.__off_duration, self.__blink_off, self.__blink_stop_off, self.__on, self.__on_duration, self.__blink_on,self.__blink_stop_on, self.__blink_begin, self.__blink_stop_begin, self.__blink_stop_end)
         layout = StateMachineDevice.Layout(tuple_states)
