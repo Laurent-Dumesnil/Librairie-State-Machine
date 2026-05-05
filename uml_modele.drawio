@@ -94,7 +94,7 @@
         <mxCell id="jP7gwSs5NOF349UNAJwi-13" value="Blinker" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="260" y="650" width="310" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="V1wbgM5l10xvCFtlWwos-1" value="Le state machine&amp;nbsp; ScouterStadeMachine contient les états suivants : power_off, charging, unlocking, powering_up, integrity_failed, powering_down, idle, locking, scooting, chargin_failed.&amp;nbsp;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
+        <mxCell id="V1wbgM5l10xvCFtlWwos-1" value="Le layout du state machine&amp;nbsp; ScouterStadeMachine contient les états suivants : power_off, charging, unlocking, powering_up, integrity_failed, powering_down, idle, locking, scooting, chargin_failed.&amp;nbsp;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
           <mxGeometry x="620" y="40" width="180" height="160" as="geometry" />
         </mxCell>
         <mxCell id="V1wbgM5l10xvCFtlWwos-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.003;entryY=0.25;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;startFill=0;dashed=1;" edge="1" parent="1" source="V1wbgM5l10xvCFtlWwos-1" target="HDNTsqTd7lAjhx9DZTqB-4">
