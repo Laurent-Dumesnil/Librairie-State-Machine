@@ -1,4 +1,5 @@
 from typing import Self
+from state_machine_utilities import State
 
 class Scooter():
     Pi = 2.5
@@ -41,6 +42,8 @@ class Scooter():
 
 
 class Battery():
+    Ps = 0.05
+
     def __init__(self:Self):
         self.__temperature = 0
         self.__power = 0
@@ -60,7 +63,7 @@ class Battery():
     def power(self:Self) -> float:
         return self.__power
 
-    @power.setter
+    @power.setter # devrait pas être private ?
     def power(self:Self, value:float) -> None:
         if not isinstance(value, float):
             raise TypeError("Battery charge must be a float")
@@ -68,3 +71,35 @@ class Battery():
             raise ValueError("Battery charge must be between 0 and 100")
         else:
             self.__power = value
+
+    # def charge(self:Self, state : State):
+    #     if not isinstance(state, State):
+    #         raise TypeError("State must be a State")
+        
+    #     if state.name is "charging_on":
+    #         self.__power = Scooter.Pm*Scooter.
+    #     elif state.name is "cooling":
+    #         # 
+    #     elif state.name is "charging_complete":
+    #         # 
+    #     else:
+    #         raise TypeError("State must be a State")
+        
+    def charging_while_power_off(self:Self):
+        p_net = -Battery.Ps
+        self.power(p_net)
+
+    def charging_while_charging_on():
+        pass
+
+    def charging_while_cooling():
+        pass
+
+    def charging_while_charging_complete():
+        pass
+
+    def charging_while_other():
+        pass
+
+
+
