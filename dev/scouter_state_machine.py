@@ -5,18 +5,7 @@ from condition import Condition, ReaderCondition, AllConditions, AnyConditions, 
 from tracking_device import TrackingApplication
 from blinker_device import BlinkerDevice
 from console import Console
-
-
-##Pour test uniquement
-class Scouter():
-    class Battery():
-        def __init__(self):
-            self.power = 100
-
-    def __init__(self):
-        self.battery = Scouter.Battery()
-        self.speed = 30
-#######################################
+from scooter import Scooter
 
 ##À finir ca na pas été testé
 class LessThenCondition(AbstractValueCondition):
@@ -75,7 +64,7 @@ class Scooting(State):
 
 class ScooterStateMachine(StateMachineDevice):
     def __init__(self, console):
-        self.__scouter = Scouter()
+        self.__scooter = Scooter()
         self.__plugged_in = False
 
         #States
@@ -93,8 +82,8 @@ class ScooterStateMachine(StateMachineDevice):
         #Conditions
         plugged_in_condition = ReaderCondition(True, lambda:self.__plugged_in)
         plugged_out_condition = ReaderCondition(False, lambda:self.__plugged_in)
-        power_less_then_condition = LessThenCondition(0.03, lambda:self.__scouter.battery.power)
-        speed_less_then_condition = LessThenCondition(0.01, lambda:self.__scouter.speed)
+        power_less_then_condition = LessThenCondition(0.03, lambda:self.__scooter.battery.power)
+        speed_less_then_condition = LessThenCondition(0.01, lambda:self.__scooter.speed)
 
         #Transitions
         power_off_state.add_transition(plugged_in_condition, charging_state)
