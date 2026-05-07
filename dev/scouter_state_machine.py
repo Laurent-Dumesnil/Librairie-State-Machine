@@ -39,16 +39,16 @@ class Charging(State):
     def __init__(self, console: Console):
         battery_management = Charging.BatteryManagement(console)
 
-class Scouting(State):
+class Scooting(State):
     
     class RideManagement(StateMachineDevice):
         def __init__(self, console: Console):
             pass
 
     def __init__(self, console):
-        ride_management = Scouting.RideManagement(console)
+        ride_management = Scooting.RideManagement(console)
 
-class ScouterStateMachine(StateMachineDevice):
+class ScooterStateMachine(StateMachineDevice):
     def __init__(self, console):
         self.__plugged_in = False
 
@@ -62,7 +62,7 @@ class ScouterStateMachine(StateMachineDevice):
         powering_down_state = MonitoredState("powering_down")
         intygrity_failed_state = MonitoredState("intygrity_failed")
         charging_state = Charging("charging", console)
-        scooting_state = Scouting("scouting", console)
+        scooting_state = Scooting("scooting", console)
 
         #Conditions
         plugged_in_condition = ReaderCondition(True, lambda:self.__plugged_in)
@@ -92,9 +92,9 @@ class ScouterStateMachine(StateMachineDevice):
 def main():
     console = Console()
     app = TrackingApplication()
-    scouter = ScouterStateMachine(console)
+    scooter = ScooterStateMachine(console)
 
-    app.add_device(scouter)
+    app.add_device(scooter)
 
 if __name__ == "__main__":
     main()
