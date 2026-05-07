@@ -1,0 +1,283 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.2.15 Chrome/134.0.6998.205 Electron/35.2.1 Safari/537.36">
+  <diagram name="Page-1" id="0j9JYQ8FzGIpsBzRxrVQ">
+    <mxGraphModel dx="1311" dy="1766" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="1GLfdaThtfdqlqExpZcu-1" parent="1" style="html=1;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" value="&lt;div&gt;&lt;div&gt;&lt;b&gt;head_light_off&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="114" x="222" y="449.75" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-6" parent="1" style="html=1;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" value="&lt;div&gt;&lt;b&gt;head_light_on&lt;/b&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="111" x="705" y="449.75" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-11" edge="1" parent="1" source="1GLfdaThtfdqlqExpZcu-1" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="1GLfdaThtfdqlqExpZcu-6" value="&amp;lt;&amp;lt;button, value&amp;gt;&amp;gt;&lt;div&gt;[Space and ScooterStateMachine : is_head_light_available]&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="105" y="892.75" as="sourcePoint" />
+            <mxPoint x="265" y="892.75" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-12" parent="1" style="ellipse;html=1;fillColor=#000000;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="125" y="474.75" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-13" edge="1" parent="1" source="1GLfdaThtfdqlqExpZcu-12" style="endArrow=open;html=1;rounded=0;align=center;verticalAlign=top;endFill=0;labelBackgroundColor=none;endSize=6;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="1GLfdaThtfdqlqExpZcu-1" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="225" y="444.75" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-14" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="Initial State" vertex="1">
+          <mxGeometry height="30" width="80" x="45" y="472.75" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-19" parent="1" style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=15;verticalAlign=top;align=left;spacing=8;fontSize=13;" value="&lt;font&gt;Dans la classe ScooterStateMachine, on a des fonctions qui servent à déterminer si certaines fonctionnalitées sont accessibles. Elles retournent vrai seulement si l&#39;état courant fait parti des états acceptés:&lt;/font&gt;&lt;div&gt;&lt;font&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- is_head_light_available :&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;power_off, charging, idle ou scooting.&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;&lt;span style=&quot;text-align: center; white-space: nowrap;&quot;&gt;- are_blinkers_available :&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;/span&gt;&lt;span style=&quot;text-align: justify; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;idle ou scooting&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;&lt;span style=&quot;text-align: justify; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- is_scooting_available : scooting&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span&gt;Conditions de transitions :&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span&gt;- &amp;lt;&amp;lt; button, value&amp;gt;&amp;gt; : AllConditions qui vérifit 2 ReaderConditions (Le bouton appuyé et le retour de la fonction).&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="190.25" width="730" x="850" y="379.75" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-22" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="HeadLight : StateMachineDevice" vertex="1">
+          <mxGeometry height="30" width="200" x="29" y="379.75" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-23" parent="1" style="html=1;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" value="&lt;div&gt;&lt;div&gt;&lt;b&gt;blinker_light_off&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="65.5" width="124" x="229" y="83.25" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-24" parent="1" style="html=1;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" value="&lt;div&gt;&lt;b&gt;blinker_light_on&lt;/b&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="66.5" width="115" x="708" y="82.25" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-25" edge="1" parent="1" source="1GLfdaThtfdqlqExpZcu-23" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="1GLfdaThtfdqlqExpZcu-24" value="&amp;lt;&amp;lt;button, value&amp;gt;&amp;gt;&lt;div&gt;[Left_arrow and ScooterStateMachine : are_blinkers_available]&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="132" y="527.5" as="sourcePoint" />
+            <mxPoint x="292" y="527.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-26" parent="1" style="ellipse;html=1;fillColor=#000000;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="132" y="106" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-27" edge="1" parent="1" source="1GLfdaThtfdqlqExpZcu-26" style="endArrow=open;html=1;rounded=0;align=center;verticalAlign=top;endFill=0;labelBackgroundColor=none;endSize=6;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="1GLfdaThtfdqlqExpZcu-23" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="232" y="76" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-28" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="Initial State" vertex="1">
+          <mxGeometry height="30" width="80" x="52" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-29" parent="1" style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=16;verticalAlign=top;align=left;spacing=8;strokeColor=default;fontFamily=Helvetica;fontSize=13;fontColor=default;fillColor=default;fontStyle=0;" value="&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;font&gt;Les cligotants de gauche et de droite sont chacun des SideBlinkers. Ils ont chacun deux Blinkers (Avant et arrière) qui sont parfois asynchrone dépendemment de l&#39;état courant du Scooter.&amp;nbsp;&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font&gt;&lt;br&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font&gt;Paramètres de la fonction blink quand l&#39;état courant du Scooter est idle:&amp;nbsp;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;font&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- side = LEFT_RECIPROCAL*&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- percent_on = 0.5&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- cycle_duration = 1.0&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- begin_on = false&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;font&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;font&gt;Paramètres de la fonction blink quand l&#39;état courant du Scooter est scooting:&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;font&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;- side = BOTH&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;- percent_on = 0.5&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;- cycle_duration = 1.0&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;- begin_on = false&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;font&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;font&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;* Étant une classe à la base mise en place pour des blinkers de gauche et de droite, on assume que lorsqu&#39;on parle de&amp;nbsp;&lt;i&gt;right &lt;/i&gt;et &lt;i&gt;left &lt;/i&gt;pour le &lt;i&gt;side, &lt;/i&gt;on parle en fait de l&#39;avant et arrière. Donc si on allume le LEFT_RECIPROCAL, on allume le blinker avant et on éteint celui d&#39;arrière.&amp;nbsp;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="321.25" width="680" x="910" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-30" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="LeftBlinker : SideBlinkers" vertex="1">
+          <mxGeometry height="30" width="200" x="36" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-39" edge="1" parent="1" source="1GLfdaThtfdqlqExpZcu-24" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="1GLfdaThtfdqlqExpZcu-23" value="&amp;lt;&amp;lt;button, value&amp;gt;&amp;gt;&lt;div&gt;[Left_arrow and ScooterStateMachine : are_blinkers_available]&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="642" y="217.5" as="sourcePoint" />
+            <mxPoint x="242" y="217.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-40" edge="1" parent="1" source="1GLfdaThtfdqlqExpZcu-6" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="1GLfdaThtfdqlqExpZcu-1" value="&amp;lt;&amp;lt;button, value&amp;gt;&amp;gt;&lt;div&gt;[Space and ScooterStateMachine : is_head_light_available]&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="555" y="580.75" as="sourcePoint" />
+            <mxPoint x="215" y="580.75" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-59" parent="1" style="html=1;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" value="&lt;div&gt;&lt;div&gt;&lt;b&gt;charging_on&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="216" x="219" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-60" parent="1" style="html=1;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" value="&lt;b&gt;cooling&lt;/b&gt;" vertex="1">
+          <mxGeometry height="60" width="216" x="589" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-61" edge="1" parent="1" source="1GLfdaThtfdqlqExpZcu-59" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="1GLfdaThtfdqlqExpZcu-60" value="&amp;lt;&amp;lt;value&amp;gt;&amp;gt;&lt;div&gt;[battery_temperature &amp;gt; 85]&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="710.5" y="980" as="sourcePoint" />
+            <mxPoint x="870.5" y="980" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-62" parent="1" style="ellipse;html=1;fillColor=#000000;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="141.5" y="920" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-63" edge="1" parent="1" source="1GLfdaThtfdqlqExpZcu-62" style="endArrow=open;html=1;rounded=0;align=center;verticalAlign=top;endFill=0;labelBackgroundColor=none;endSize=6;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="1GLfdaThtfdqlqExpZcu-59" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="522.5" y="772" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-64" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="Initial State" vertex="1">
+          <mxGeometry height="30" width="80" x="59" y="915" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-66" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="BatteryManagement : StateMachineDevice" vertex="1">
+          <mxGeometry height="30" width="247" x="39.5" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="1GLfdaThtfdqlqExpZcu-67" edge="1" parent="1" source="1GLfdaThtfdqlqExpZcu-60" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="1GLfdaThtfdqlqExpZcu-59" value="&amp;lt;&amp;lt;value&amp;gt;&amp;gt;&lt;div&gt;[battery_temperature &amp;lt; 75]&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1236.5" y="668" as="sourcePoint" />
+            <mxPoint x="820.5" y="668" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-114" parent="1" style="html=1;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" value="&lt;div&gt;&lt;div&gt;&lt;b&gt;blinker_light_off&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="65.5" width="124" x="229" y="243.25" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-115" parent="1" style="html=1;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" value="&lt;div&gt;&lt;b&gt;blinker_light_on&lt;/b&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="66.5" width="115" x="712" y="243.25" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-116" edge="1" parent="1" source="8KQYnS9azm9p5yxz7s2p-114" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="8KQYnS9azm9p5yxz7s2p-115" value="&lt;div&gt;&amp;lt;&amp;lt;button, value&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;[Right_arrow and ScooterStateMachine : are_blinkers_available]&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="96" y="684" as="sourcePoint" />
+            <mxPoint x="256" y="684" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-117" parent="1" style="ellipse;html=1;fillColor=#000000;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="132" y="266" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-118" edge="1" parent="1" source="8KQYnS9azm9p5yxz7s2p-117" style="endArrow=open;html=1;rounded=0;align=center;verticalAlign=top;endFill=0;labelBackgroundColor=none;endSize=6;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="8KQYnS9azm9p5yxz7s2p-114" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="216" y="236" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-119" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="Initial State" vertex="1">
+          <mxGeometry height="30" width="80" x="52" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-121" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="RightBlinker : SideBlinkers" vertex="1">
+          <mxGeometry height="30" width="200" x="29" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-122" edge="1" parent="1" source="8KQYnS9azm9p5yxz7s2p-115" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="8KQYnS9azm9p5yxz7s2p-114" value="&lt;div&gt;&amp;lt;&amp;lt;button, value&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;[Right_arrow and ScooterStateMachine : are_blinkers_available]&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="606" y="374" as="sourcePoint" />
+            <mxPoint x="206" y="374" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-123" parent="1" style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=17;verticalAlign=top;align=left;fontFamily=Helvetica;fontSize=13;fontColor=default;fontStyle=0;spacing=8;strokeColor=default;fillColor=default;" value="&lt;div&gt;Dans le &lt;i&gt;entering_action&lt;/i&gt;&amp;nbsp;de l&#39;état initial, on réinitialise la machine d&#39;état.&amp;nbsp;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="100" width="170" x="520" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-124" parent="1" style="html=1;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" value="&lt;div&gt;&lt;div&gt;&lt;b&gt;charging_complete&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="216" x="219" y="1090" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-125" edge="1" parent="1" source="1GLfdaThtfdqlqExpZcu-59" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="8KQYnS9azm9p5yxz7s2p-124" value="&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;&amp;lt;&amp;lt;value&amp;gt;&amp;gt;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;[battery_level &amp;gt;= 99]&lt;/span&gt;&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1236.5" y="703" as="sourcePoint" />
+            <mxPoint x="820.5" y="703" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-126" edge="1" parent="1" source="8KQYnS9azm9p5yxz7s2p-124" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" target="1GLfdaThtfdqlqExpZcu-59" value="&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;&amp;lt;&amp;lt;value&amp;gt;&amp;gt;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;[battery_level &amp;lt; 95]&lt;/span&gt;&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="750.5" y="860" as="sourcePoint" />
+            <mxPoint x="750.5" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-127" parent="1" style="html=1;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" value="&lt;div&gt;&lt;div&gt;&lt;b&gt;charging_terminaded&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="216" x="219" y="760" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-128" edge="1" parent="1" source="1GLfdaThtfdqlqExpZcu-59" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="8KQYnS9azm9p5yxz7s2p-127" value="&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;&amp;lt;&amp;lt;button&amp;gt;&amp;gt;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;[F]&lt;/span&gt;&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="632.5" y="720" as="sourcePoint" />
+            <mxPoint x="632.5" y="870" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-130" edge="1" parent="1" source="8KQYnS9azm9p5yxz7s2p-127" style="endArrow=open;html=1;rounded=0;align=center;verticalAlign=top;endFill=0;labelBackgroundColor=none;endSize=6;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" target="8KQYnS9azm9p5yxz7s2p-133" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="221.5" y="642" as="sourcePoint" />
+            <mxPoint x="221.5" y="545" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-133" parent="1" style="ellipse;html=1;shape=endState;fillColor=strokeColor;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="312" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-154" parent="1" style="html=1;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" value="&lt;div&gt;&lt;div&gt;&lt;b&gt;free_wheel&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="313" x="888.25" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-155" parent="1" style="html=1;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" value="&lt;b&gt;accelerating&lt;/b&gt;" vertex="1">
+          <mxGeometry height="70" width="154" x="1530" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-156" edge="1" parent="1" source="8KQYnS9azm9p5yxz7s2p-154" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="8KQYnS9azm9p5yxz7s2p-155" value="&amp;lt;&amp;lt;button, value&amp;gt;&amp;gt;&lt;div&gt;[Up_arrow and ScooterStateMachine : is_scooting_available]&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1041" y="1130" as="sourcePoint" />
+            <mxPoint x="1201" y="1130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-157" parent="1" style="ellipse;html=1;fillColor=#000000;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="1034.75" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-158" edge="1" parent="1" source="8KQYnS9azm9p5yxz7s2p-157" style="endArrow=open;html=1;rounded=0;align=center;verticalAlign=top;endFill=0;labelBackgroundColor=none;endSize=6;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="8KQYnS9azm9p5yxz7s2p-154" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1065" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-159" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="Initial State" vertex="1">
+          <mxGeometry height="30" width="80" x="952.25" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-160" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="RideManagement : StateMachineDevice" vertex="1">
+          <mxGeometry height="30" width="233" x="887" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-161" edge="1" parent="1" source="8KQYnS9azm9p5yxz7s2p-155" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="8KQYnS9azm9p5yxz7s2p-154" value="&amp;lt;&amp;lt;button&amp;gt;&amp;gt;&lt;div&gt;None&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" x="0.002" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1567" y="818" as="sourcePoint" />
+            <mxPoint x="1151" y="818" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-163" parent="1" style="html=1;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" value="&lt;div&gt;&lt;div&gt;&lt;b&gt;breaking&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="313" x="888.25" y="960" as="geometry" />
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-164" edge="1" parent="1" source="8KQYnS9azm9p5yxz7s2p-154" style="html=1;verticalAlign=bottom;labelBackgroundColor=default;endArrow=open;endFill=0;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="8KQYnS9azm9p5yxz7s2p-163" value="&amp;lt;&amp;lt;button, value&amp;gt;&amp;gt;&lt;div&gt;[Down_arrow and &lt;br&gt;ScooterStateMachine : is_scooting_available]&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1567" y="853" as="sourcePoint" />
+            <mxPoint x="1151" y="853" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-165" edge="1" parent="1" source="8KQYnS9azm9p5yxz7s2p-163" style="html=1;verticalAlign=bottom;labelBackgroundColor=default;endArrow=open;endFill=0;rounded=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" target="8KQYnS9azm9p5yxz7s2p-154" value="&lt;div&gt;&amp;lt;&amp;lt;button, value&amp;gt;&amp;gt;&lt;div&gt;None&lt;/div&gt;&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1081" y="1010" as="sourcePoint" />
+            <mxPoint x="1081" y="870" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8KQYnS9azm9p5yxz7s2p-171" edge="1" parent="1" source="8KQYnS9azm9p5yxz7s2p-155" style="html=1;verticalAlign=bottom;labelBackgroundColor=default;endArrow=open;endFill=0;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="8KQYnS9azm9p5yxz7s2p-163" value="&amp;lt;&amp;lt;button, value&amp;gt;&amp;gt;&lt;div&gt;[Down_arrow and&amp;nbsp;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212)); color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;ScooterStateMachine : is_scooting_available&lt;/span&gt;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212)); color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;]&lt;/span&gt;&lt;/div&gt;">
+          <mxGeometry relative="1" width="160" x="0.0043" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1400" y="853" as="sourcePoint" />
+            <mxPoint x="1151" y="853" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aT7lmHtNnRs7tFSMVhwK-2" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" value="Terminal State" vertex="1">
+          <mxGeometry height="30" width="100" x="199" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="aT7lmHtNnRs7tFSMVhwK-4" edge="1" parent="1" source="8KQYnS9azm9p5yxz7s2p-123" style="endArrow=none;dashed=1;html=1;rounded=0;fontFamily=Helvetica;fontSize=12;fontColor=default;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="8KQYnS9azm9p5yxz7s2p-127" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="440" y="630" as="sourcePoint" />
+            <mxPoint x="490" y="580" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aT7lmHtNnRs7tFSMVhwK-5" edge="1" parent="1" source="1GLfdaThtfdqlqExpZcu-19" style="endArrow=none;dashed=1;html=1;rounded=0;fontFamily=Helvetica;fontSize=12;fontColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="1000" y="530" as="sourcePoint" />
+            <mxPoint x="1310" y="790" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aT7lmHtNnRs7tFSMVhwK-6" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;rounded=0;fontFamily=Helvetica;fontSize=12;fontColor=default;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="670" y="450" as="sourcePoint" />
+            <mxPoint x="850" y="394" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aT7lmHtNnRs7tFSMVhwK-7" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;rounded=0;fontFamily=Helvetica;fontSize=12;fontColor=default;entryX=-0.003;entryY=0.05;entryDx=0;entryDy=0;entryPerimeter=0;" target="1GLfdaThtfdqlqExpZcu-19" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="650" y="300" as="sourcePoint" />
+            <mxPoint x="862" y="404" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aT7lmHtNnRs7tFSMVhwK-8" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;rounded=0;fontFamily=Helvetica;fontSize=12;fontColor=default;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="1GLfdaThtfdqlqExpZcu-29" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="580" y="240" as="sourcePoint" />
+            <mxPoint x="670" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aT7lmHtNnRs7tFSMVhwK-9" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;rounded=0;fontFamily=Helvetica;fontSize=12;fontColor=default;entryX=0.001;entryY=0.065;entryDx=0;entryDy=0;entryPerimeter=0;" target="1GLfdaThtfdqlqExpZcu-29" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="580" y="80" as="sourcePoint" />
+            <mxPoint x="920" y="191" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
