@@ -44,7 +44,7 @@ class Scooter():
 class Battery():
     def __init__(self:Self):
         self.__temperature = 0
-        self.__power = 0
+        self.__power = 100
 
     @property
     def temperature(self:Self) -> float:
