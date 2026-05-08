@@ -1,32 +1,4 @@
-
-class Battery():
-    def __init__(self:Self):
-        self.__temperature = 0
-        self.__power = 0
-
-    @property
-    def temperature(self:Self) -> float:
-        return self.__temperature
-
-    @temperature.setter
-    def temperature(self:Self, value:float) -> None:
-        if not isinstance(value, float):
-            raise TypeError("Battery temperature must be a float")
-        else:
-            self.__temperature = value
-
-    @property
-    def power(self:Self) -> float:
-        return self.__power
-
-    @power.setter
-    def power(self:Self, value:float) -> None:
-        if not isinstance(value, float):
-            raise TypeError("Battery charge must be a float")
-        elif value < 0 or value > 100:
-            raise ValueError("Battery charge must be between 0 and 100")
-        else:
-            self.__power = value
+from __future__ import annotations
 from typing import Self
 
 class Scooter():
@@ -67,3 +39,33 @@ class Scooter():
 
     def decelerate(self:Self, delta_time:float) -> None:
         self.speed = max(0, self.speed - delta_time*(Scooter.Cr + Scooter.Kb*Scooter.Ab + Scooter.Ca*self.speed**2))
+
+
+class Battery():
+    def __init__(self:Self):
+        self.__temperature = 0
+        self.__power = 100
+
+    @property
+    def temperature(self:Self) -> float:
+        return self.__temperature
+
+    @temperature.setter
+    def temperature(self:Self, value:float) -> None:
+        if not isinstance(value, float):
+            raise TypeError("Battery temperature must be a float")
+        else:
+            self.__temperature = value
+
+    @property
+    def power(self:Self) -> float:
+        return self.__power
+
+    @power.setter
+    def power(self:Self, value:float) -> None:
+        if not isinstance(value, float):
+            raise TypeError("Battery charge must be a float")
+        elif value < 0 or value > 100:
+            raise ValueError("Battery charge must be between 0 and 100")
+        else:
+            self.__power = value
