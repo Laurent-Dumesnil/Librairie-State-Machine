@@ -19,28 +19,43 @@ class LessThenCondition(AbstractValueCondition):
             return True
         else:
             return False
-
+        
 class KeyPressCondition(Condition):
-    def __init__(self, console: Console, expected_key_value):
-        self.__console = console
-        self.__expected_key_value = expected_key_value.upper()
+    def __init__(self, scooter_state_machine, expected_key_value):
+        self.__scooter_state_machine = scooter_state_machine
+        self.__expected_key_value = expected_key_value
+        super().__init__()
 
     @override
     def _compare(self):
         super()._compare()
-        if self.__console.actual_key_pressed == self.__expected_key_value:
+        if self.__expected_key_value in self.__scooter_state_machine.key_pressed:
+            return True
+        return False
+
+class ActualKeyPressCondition(Condition):
+    def __init__(self, scooter_state_machine, expected_key_value):
+        self.__scooter_state_machine = scooter_state_machine
+        self.__expected_key_value = expected_key_value
+        super().__init__()
+
+    @override
+    def _compare(self):
+        super()._compare()
+        if self.__expected_key_value in self.__scooter_state_machine.actual_key_pressed:
             return True
         return False
     
-class NotKeyPressCondition(Condition):
-    def __init__(self, console: Console, not_expected_key_value):
-        self.__console = console
-        self.__not_expected_key_value = not_expected_key_value.upper()
+class ActualNotKeyPressCondition(Condition):
+    def __init__(self, scooter_state_machine, not_expected_key_value):
+        self.__scooter_state_machine = scooter_state_machine
+        self.__not_expected_key_value = not_expected_key_value
+        super().__init__()
 
     @override
     def _compare(self):
         super()._compare()
-        if self.__not_expected_key_value not in self.__console.actual_key_pressed:
+        if self.__not_expected_key_value in self.__scooter_state_machine.actual_key_pressed:
             return True
         return False
 
@@ -72,13 +87,29 @@ class Scooting(State):
     def _do_entering_action(self):
         print("SCOOTING")
 
+class PowerOffState(State):
+    def __init__(self, name, enabled, scooter_state_machine):
+        self.__scooter_state_machine = scooter_state_machine
+        super().__init__(name, enabled=enabled)
+
+    @override
+    def _do_entering_action(self):
+        print("POWER_OFF")
+
+    @override
+    def _do_in_state_action(self):
+        pass
+        #print(f"Touches clavier : {self.__scooter_state_machine.key_pressed}                         ", end="\r", flush=True)
+
+
 class ScooterStateMachine(StateMachineDevice):
     def __init__(self, console):
+        self.__console = console
         self.__scooter = Scooter()
         self.__plugged_in = False
 
         #States
-        power_off_state = ActionState("power_off")
+        power_off_state = PowerOffState("power_off", True, self.__console)
         unlocking_state = MonitoredState("unlocking")
         powering_up_state = MonitoredState("powerring_up")
         idle_state = MonitoredState("idle")
@@ -97,27 +128,27 @@ class ScooterStateMachine(StateMachineDevice):
 
         #Transitions
         power_off_state.add_transition(ConditionalTransition(plugged_in_condition, unlocking_state))
-        power_off_state.add_transition(ConditionalTransition(AllConditions([KeyPressCondition(console, "P"), plugged_out_condition]), unlocking_state))
+        power_off_state.add_transition(ConditionalTransition(AllConditions([ActualKeyPressCondition(console, "p"), plugged_out_condition]), unlocking_state))
         charging_state.add_transition(ConditionalTransition(ReaderCondition(False, lambda:self.__plugged_in), power_off_state)) 
         #À vérifier si ya meilleure solution
         charging_state.add_transition(ConditionalTransition(ReaderCondition(True, lambda:charging_state.BatteryManagement.current_state.terminal), charging_failed_state)) 
         charging_failed_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, charging_failed_state), powering_down_state)) 
-        unlocking_state.add_transition(ConditionalTransition(NotKeyPressCondition(console, "P"), power_off_state))
+        unlocking_state.add_transition(ConditionalTransition(ActualNotKeyPressCondition(console, "p"), power_off_state))
         unlocking_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, unlocking_state), powering_up_state))
         powering_up_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, powering_up_state), idle_state))
-        powering_up_state.add_transition(ConditionalTransition(KeyPressCondition(console, "F"), intygrity_failed_state))
+        powering_up_state.add_transition(ConditionalTransition(KeyPressCondition(console, "f"), intygrity_failed_state))
         intygrity_failed_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, intygrity_failed_state), powering_down_state))
-        idle_state.add_transition(ConditionalTransition(KeyPressCondition(console, "P"), locking_state))
+        idle_state.add_transition(ConditionalTransition(ActualKeyPressCondition(console, "p"), locking_state))
         idle_state.add_transition(ConditionalTransition(AnyConditions([DelaySinceEnteredCondition(30.0, idle_state), ]), powering_down_state))
         idle_state.add_transition(ConditionalTransition(power_less_then_condition, powering_down_state))
-        idle_state.add_transition(ConditionalTransition(KeyPressCondition(console, "A"), scooting_state))
+        idle_state.add_transition(ConditionalTransition(KeyPressCondition(console, "a"), scooting_state))
         scooting_state.add_transition(ConditionalTransition(AnyConditions([power_less_then_condition, speed_less_then_condition]), idle_state)) 
-        locking_state.add_transition(ConditionalTransition(NotKeyPressCondition(console, "P"), idle_state)) 
+        locking_state.add_transition(ConditionalTransition(ActualNotKeyPressCondition(console, "p"), idle_state)) 
         locking_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, locking_state), powering_down_state)) 
         powering_down_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, powering_down_state), power_off_state))
 
         #Actions
-        power_off_state.add_entering_action(self._on_power_off)
+        #power_off_state.add_entering_action(self._on_power_off)
         unlocking_state.add_entering_action(self._on_unlocking)
         powering_up_state.add_entering_action(self._on_powering_up)
         powering_down_state.add_entering_action(self._on_powering_down)
@@ -150,8 +181,16 @@ class ScooterStateMachine(StateMachineDevice):
         
         super().__init__(StateMachineDevice.Layout(layout))
 
-    def _on_power_off(self):
-        print("POWER OFF")
+    @property
+    def key_pressed(self):
+        return self.__console.key_pressed
+
+    @property
+    def actual_key_pressed(self):
+        return self.__console.actual_key_pressed
+
+    # def _on_power_off(self):
+    #     print("POWER OFF")
     def _on_unlocking(self):
         print("UNLOCKING")
     def _on_powering_up(self):
@@ -165,7 +204,7 @@ class ScooterStateMachine(StateMachineDevice):
     def _on_locking(self):
         print("LOCKING")
     def _on_charing_failed(self):
-        print("CHARGING FAILED")
+        print("CHARGING FAILED")    
 
 def main():
     console = Console()
