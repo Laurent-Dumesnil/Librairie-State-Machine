@@ -6,7 +6,6 @@ class Scooter():
     Pm = 120.0
     Er = 120.0
     Aa = 0.75
-    Ab = 0.5
     Ka = 1.1
     Vv = 15.0
     Ca = 0.0037
@@ -14,7 +13,7 @@ class Scooter():
     Kb = 5.0
 
     def __init__(self:Self):
-        self.__speed = 0
+        self.__speed = 100
         self.__battery = Battery()
 
     @property
@@ -36,9 +35,10 @@ class Scooter():
     
     def accelerate(self:Self, delta_time:float) -> None:
         self.speed += delta_time*(Scooter.Ka*Scooter.Aa*(1-self.speed/Scooter.Vv)-Scooter.Ca*self.speed**2)
+        print(f'speed: {self.__speed}')
 
-    def decelerate(self:Self, delta_time:float) -> None:
-        self.speed = max(0, self.speed - delta_time*(Scooter.Cr + Scooter.Kb*Scooter.Ab + Scooter.Ca*self.speed**2))
+    def decelerate(self:Self, delta_time:float, breaking_strength:float = 0) -> None:
+        self.speed = max(0, self.speed - delta_time*(Scooter.Cr + Scooter.Kb*breaking_strength + Scooter.Ca*self.speed**2))
 
 
 class Battery():
