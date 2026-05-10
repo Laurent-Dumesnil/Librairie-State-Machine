@@ -43,13 +43,34 @@ class Scooter():
 
 class Battery():
     Ps = 0.05
-
+    Pi = 2.5 # ici ou dans Scooter les constantes de la batterie?
+    Aa = 0.75
+    Er = 120.0
+    Pm = 120.0
+    Te = 5.0e-8
+    Td = 5.0e-4
+    Ta = 20.0
     def __init__(self:Self):
         self.__temperature = 0
         self.__power = 0
+        self.__energy = 0
 
     @property
-    def temperature(self:Self) -> float:
+    def energy(self:Self) -> float:
+        return self.__energy
+
+    #TODO Changer les valeurs  
+    @energy.setter
+    def energy(self:Self, value:float) -> None: 
+        if not isinstance(value, float):
+            raise TypeError("Battery energy must be a float")
+        elif value < 0 or value > 100:
+            raise ValueError("Battery energy must be between 0 and 100")
+        else:
+            self.__energy = value
+
+    @property
+    def temperature(self:Self) -> float: # En tout temps elle est calculée.
         return self.__temperature
 
     @temperature.setter
@@ -59,47 +80,38 @@ class Battery():
         else:
             self.__temperature = value
 
-    @property
+    @property #  La puissance net c'est ce qui influence l'energie 
     def power(self:Self) -> float:
         return self.__power
 
-    @power.setter # devrait pas être private ?
+    @power.setter
     def power(self:Self, value:float) -> None:
         if not isinstance(value, float):
-            raise TypeError("Battery charge must be a float")
+            raise TypeError("Battery power must be a float")
         elif value < 0 or value > 100:
-            raise ValueError("Battery charge must be between 0 and 100")
+            raise ValueError("Battery power must be between 0 and 100")
         else:
             self.__power = value
 
-    # def charge(self:Self, state : State):
-    #     if not isinstance(state, State):
-    #         raise TypeError("State must be a State")
-        
-    #     if state.name is "charging_on":
-    #         self.__power = Scooter.Pm*Scooter.
-    #     elif state.name is "cooling":
-    #         # 
-    #     elif state.name is "charging_complete":
-    #         # 
-    #     else:
-    #         raise TypeError("State must be a State")
-        
-    def charging_while_power_off(self:Self):
-        p_net = -Battery.Ps
-        self.power(p_net)
+    def update(self:Self, delta_time:float) -> None: # delta_time: temps entre les deux tics
+        self.energy = max(0, min(self.energy + delta_time * self.power))
+        self.temperature = self.temperature + delta_time * (Battery.Te * abs(self.power)**2 - Battery.Td*(Battery.temperature - Battery.Ta))
 
-    def charging_while_charging_on():
-        pass
+    # def set_power_device_off(self:Self):
+    #     self.power = -Battery.Ps
 
-    def charging_while_cooling():
-        pass
+    # def set_power_based_usage(self:Self):
+    #     self.power = -Battery.Pi
 
-    def charging_while_charging_complete():
-        pass
+    # def set_power_device_charging(self:Self):
+    #     ... # self.power = TODO mettre la bonne formule
 
-    def charging_while_other():
-        pass
+    # def set_power_device_accelerating(self:Self):
+    #     self.power = -(Battery.Pi + Battery.Pm * Battery.Aa)
+
+    # def set_power_device_breaking(self:Self):
+    #     self.power = Battery.Er * Battery.Aa * Battery.Vt - Battery.Pi
+
 
 
 
