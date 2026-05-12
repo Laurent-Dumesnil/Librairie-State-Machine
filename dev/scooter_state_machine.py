@@ -24,7 +24,7 @@ class DelaySinceValueCondition(Condition):
 
     @override
     def _compare(self):
-        print(f'\rtemps: {self.__elapsed_timer.elapsed} seuil: {self.__activation_threshold} vitesse modele: {self.__value()}', end="")
+        #print(f'\rtemps: {self.__elapsed_timer.elapsed} seuil: {self.__activation_threshold} vitesse modele: {self.__value()}', end="")
         if self.__value() > self.__activation_threshold:
             self.__enabled = False
             return False
@@ -259,7 +259,7 @@ class ScooterStateMachine(StateMachineDevice):
         #States
         # power_off_state = PowerOffState("power_off", True, self.__console)
         power_off_state = ActionState("power_off")
-        power_off_state.add_entering_action(self._on_power_off)
+        #power_off_state.add_entering_action(self._on_power_off)
         power_off_state.add_in_state_action(self._plug_charging_cable)
         unlocking_state = MonitoredState("unlocking")
         powering_up_state = MonitoredState("powerring_up")
@@ -269,8 +269,8 @@ class ScooterStateMachine(StateMachineDevice):
         powering_down_state = MonitoredState("powering_down")
         intygrity_failed_state = MonitoredState("intygrity_failed")
         charging_state = Charging("charging", console)
-        charging_state.add_entering_action(self._on_charging)
-        charging_state.add_in_state_action(self._unplug_charging_cable)
+        #charging_state.add_entering_action(self._on_charging)
+        #charging_state.add_in_state_action(self._unplug_charging_cable)
         scooting_state = Scooting("scooting", ridemanagement)
 
         #Conditions
@@ -303,13 +303,13 @@ class ScooterStateMachine(StateMachineDevice):
 
         #Actions
         #power_off_state.add_entering_action(self._on_power_off)
-        unlocking_state.add_entering_action(self._on_unlocking)
-        powering_up_state.add_entering_action(self._on_powering_up)
-        powering_down_state.add_entering_action(self._on_powering_down)
-        idle_state.add_entering_action(self._on_idle)
-        intygrity_failed_state.add_entering_action(self._on_integrity_failed)
-        locking_state.add_entering_action(self._on_locking)
-        charging_failed_state.add_entering_action(self._on_charing_failed)
+        # unlocking_state.add_entering_action(self._on_unlocking)
+        # powering_up_state.add_entering_action(self._on_powering_up)
+        # powering_down_state.add_entering_action(self._on_powering_down)
+        # idle_state.add_entering_action(self._on_idle)
+        # intygrity_failed_state.add_entering_action(self._on_integrity_failed)
+        # locking_state.add_entering_action(self._on_locking)
+        # charging_failed_state.add_entering_action(self._on_charing_failed)
 
         layout = (power_off_state, 
                   unlocking_state, 
@@ -371,8 +371,10 @@ class ScooterStateMachine(StateMachineDevice):
             self.__plugged_in = False
 
 def main():
-    scooter = Scooter()
+    from ElectricScooterPanel import ElectricScooterPanel
     console = Console()
+    panel = ElectricScooterPanel(console)
+    scooter = Scooter(panel)
     app = TrackingApplication()
     ride_management = Scooting.RideManagement(console,scooter)
     scooter_state_machine = ScooterStateMachine(console, scooter, ride_management)

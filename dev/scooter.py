@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Self
-from state_machine_utilities import State
+from ElectricScooterPanel import ElectricScooterPanel
 
 ER = 120.0
 
@@ -23,9 +23,10 @@ TD = 5.0e-4
 TA = 20.0
 
 class Scooter:
-    def __init__(self:Self) -> None:
+    def __init__(self:Self, panel:ElectricScooterPanel) -> None:
         self.__speed = 100.0
         self.__battery = Battery()
+        self.__panel = panel
 
     @property
     def speed(self:Self) -> float:
@@ -37,6 +38,7 @@ class Scooter:
     
     def accelerate(self:Self, delta_time:float) -> None:
         self.__speed += delta_time*(KA*AA*(1-self.speed/VV)-CA*self.speed**2)
+        #self.__panel.speed_indicator.draw_led(50)
 
     def decelerate(self:Self, delta_time:float, breaking_strength:float = 0) -> None:
         self.__speed = max(0, self.speed - delta_time*(CR + KB*breaking_strength + CA*self.speed**2))
