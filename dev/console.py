@@ -929,7 +929,7 @@ def main() -> None:
         with Console() as console:
 
             # Initialisation de la fenêtre
-            console.beep_until(440)
+            #console.beep_until(440)
             console.window_size = (100, 30)
             console.background_color = Console.Color.BLACK
             console.clear()
