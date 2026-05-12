@@ -31,19 +31,6 @@ class KeyPressCondition(Condition):
         if self.__expected_key_value in self.__scooter_state_machine.key_pressed:
             return True
         return False
-    
-class NotKeyPressCondition(Condition):
-    def __init__(self, scooter_state_machine, not_expected_key_value):
-        self.__scooter_state_machine = scooter_state_machine
-        self.__not_expected_key_value = not_expected_key_value
-        super().__init__()
-
-    @override
-    def _compare(self):
-        super()._compare()
-        if self.__not_expected_key_value in self.__scooter_state_machine.key_pressed:
-            return True
-        return False
 
 class ActualKeyPressCondition(Condition):
     def __init__(self, scooter_state_machine, expected_key_value):
@@ -217,7 +204,7 @@ class ScooterStateMachine(StateMachineDevice):
         idle_state.add_transition(ConditionalTransition(AnyConditions([DelaySinceEnteredCondition(30.0, idle_state), ]), powering_down_state))
         idle_state.add_transition(ConditionalTransition(power_less_then_condition, powering_down_state))
         idle_state.add_transition(ConditionalTransition(KeyPressCondition(console, "a"), scooting_state))
-        scooting_state.add_transition(ConditionalTransition(AllConditions([AnyConditions([power_less_then_condition, speed_less_then_condition]), AllConditions([NotKeyPressCondition(console, "a"), DelaySinceEnteredCondition(1.5, scooting_state)])]), idle_state)) 
+        scooting_state.add_transition(ConditionalTransition(AllConditions([AnyConditions([power_less_then_condition, speed_less_then_condition]), AllConditions([ActualKeyReleasedCondition(console, "a"), DelaySinceEnteredCondition(1.5, scooting_state)])]), idle_state)) 
         locking_state.add_transition(ConditionalTransition(ActualKeyReleasedCondition(console, "p"), idle_state)) 
         locking_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, locking_state), powering_down_state)) 
         powering_down_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, powering_down_state), power_off_state))
