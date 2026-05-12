@@ -115,18 +115,22 @@ class Scooting(MonitoredState):
 
         def __accelerate(self:Self) -> None:
             self.__scooter.accelerate(self.__timer.elapsed)
-            print(f'\rVitesse du scooter : {self.__scooter.speed}', end="", sep="")
+            self.__scooter.battery.set_power_device_accelerating(self.__timer.elapsed)
+            print(f'\rVitesse du scooter : {self.__scooter.speed}\nPuissance de la batterie: {self.__scooter.battery.energy}', end="", sep="")
 
         def __decelerate(self:Self) -> None:
             self.__scooter.decelerate(self.__timer.elapsed)
-            print(f'\rVitesse du scooter : {self.__scooter.speed}', end="", sep="")
+            self.__scooter.battery.set_power_based_usage(self.__timer.elapsed)
+            print(f'\rVitesse du scooter : {self.__scooter.speed}\nPuissance de la batterie: {self.__scooter.battery.energy}', end="", sep="")
 
         def __breaking(self:Self) -> None:
             self.__scooter.decelerate(self.__timer.elapsed, 0.5)
-            print(f'\rVitesse du scooter : {self.__scooter.speed}', end="", sep="")
+            self.__scooter.battery.set_power_device_breaking(self.__timer.elapsed, self.__scooter.speed)
+            print(f'\rVitesse du scooter : {self.__scooter.speed}\nPuissance de la batterie: {self.__scooter.battery.energy}', end="", sep="")
 
         def __cruise(self:Self) -> None:
-            print(f'\rVitesse du scooter : {self.__scooter.speed}', end="", sep="")
+            self.__scooter.battery.set_power_based_usage(self.__timer.elapsed)
+            print(f'\rVitesse du scooter : {self.__scooter.speed}\nPuissance de la batterie: {self.__scooter.battery.energy}', end="", sep="")
 
     def __init__(self, name, ridemanagement:RideManagement):
         self.__ridemanagement = ridemanagement
@@ -185,7 +189,7 @@ class ScooterStateMachine(StateMachineDevice):
         #Conditions
         plugged_in_condition = ReaderCondition(True, lambda:self.__plugged_in)
         plugged_out_condition = ReaderCondition(False, lambda:self.__plugged_in)
-        power_less_than_condition = LessThanCondition(0.03, lambda:self.__scooter.battery.power)
+        power_less_than_condition = LessThanCondition(0.03, lambda:self.__scooter.battery.energy)
         speed_less_than_condition = LessThanCondition(0.5/3.6, lambda:self.__scooter.speed)
 
         #Transitions
