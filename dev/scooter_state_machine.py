@@ -24,15 +24,17 @@ class DelaySinceValueCondition(Condition):
 
     @override
     def _compare(self):
-        if self.__value() >= self.__activation_threshold:
+        print(f'\rtemps: {self.__elapsed_timer.elapsed} seuil: {self.__activation_threshold} vitesse modele: {self.__value()}', end="")
+        if self.__value() > self.__activation_threshold:
+            self.__enabled = False
+            return False
+
+        elif self.__value() <= self.__activation_threshold and not self.__enabled:
+            self.__enabled = True
             self.reset()
             return False
 
-        if not self.__enabled:
-            self.__enabled = True
-            self.__elapsed_timer.reset()
-
-        if self.__elapsed_timer.elapsed >= self.__duration:
+        elif self.__elapsed_timer.elapsed >= self.__duration and self.__enabled:
             self.__enabled = False
             return True
 
@@ -98,6 +100,7 @@ class Charging(ActionState):
             self.__charging_terminated = ActionState("Charging Terminated", terminal=True)
             self.__charging_complete = ActionState("Charging Complete")
             self.__charging_on = ActionState("Charging On")
+            self.__charging_off = ActionState("Charging Off")
             self.__cooling = ActionState("Cooling")
 
             self.__charging_on.add_transition(ConditionalTransition(ReaderCondition(True, lambda: self.__battery.energy_level >= 99), self.__charging_complete))
@@ -115,7 +118,11 @@ class Charging(ActionState):
             
             if initialized : 
                 self.reset()
-                
+
+        @property
+        def charging_off(self:Self) -> ActionState:
+            return self.__charging_off
+        
         def __charging(self:Self) -> None:
             self.__battery.set_power_device_charging(self.__delta_time)
 
@@ -129,20 +136,25 @@ class Charging(ActionState):
             
         def __read_f(self:Self) -> bool:
             return "f" in self.__console.actual_key_pressed
-        
+
     def __init__(self:Self, name:str, batteryManagement:BatteryManagement):
         self.__battery_management = batteryManagement
         super().__init__(name)
 
+    @property
+    def charging_error(self:Self) -> bool:
+        return self.__battery_management.current_state.terminal
+    
     @override
     def _do_entering_action(self) -> None:
         print("CHARGING")
         self.__battery_management.reset()
         self.__battery_management.enabled = True
 
-    # @override
-    # def _do_exiting_action(self) -> None:
-    #     self.__battery_management._transit_to(self.__battery_management.end_state)
+    @override
+    def _do_exiting_action(self) -> None:
+        if not self.charging_error:
+            self.__battery_management._transit_to(self.__battery_management.charging_off)
 
 class Scooting(MonitoredState):
     
@@ -180,7 +192,7 @@ class Scooting(MonitoredState):
             super().__init__(layout, initialized, name, enabled)
         
         @property
-        def end_state(self:Self) -> None:
+        def end_state(self:Self) -> ActionState:
             return self.__end_state
         
         def __read_up_arrow(self:Self) -> bool:
@@ -195,21 +207,17 @@ class Scooting(MonitoredState):
         def __accelerate(self:Self) -> None:
             self.__scooter.accelerate(self.__timer.elapsed)
             self.__scooter.battery.set_power_device_accelerating(self.__timer.elapsed)
-            print(f'\rVitesse du scooter : {self.__scooter.speed}\nPuissance de la batterie: {self.__scooter.battery.energy_level}', end="", sep="")
 
         def __decelerate(self:Self) -> None:
             self.__scooter.decelerate(self.__timer.elapsed)
             self.__scooter.battery.set_power_based_usage(self.__timer.elapsed)
-            print(f'\rVitesse du scooter : {self.__scooter.speed}\nPuissance de la batterie: {self.__scooter.battery.energy_level}', end="", sep="")
 
         def __breaking(self:Self) -> None:
             self.__scooter.decelerate(self.__timer.elapsed, 0.5)
             self.__scooter.battery.set_power_device_breaking(self.__timer.elapsed, self.__scooter.speed)
-            print(f'\rVitesse du scooter : {self.__scooter.speed}\nPuissance de la batterie: {self.__scooter.battery.energy_level}', end="", sep="")
 
         def __cruise(self:Self) -> None:
             self.__scooter.battery.set_power_based_usage(self.__timer.elapsed)
-            print(f'\rVitesse du scooter : {self.__scooter.speed}\nPuissance de la batterie: {self.__scooter.battery.energy_level}', end="", sep="")
 
     def __init__(self, name, ridemanagement:RideManagement):
         self.__ridemanagement = ridemanagement
@@ -277,7 +285,7 @@ class ScooterStateMachine(StateMachineDevice):
         power_off_state.add_transition(ConditionalTransition(AllConditions([ActualKeyPressCondition(console, "p"), plugged_out_condition]), unlocking_state))
         charging_state.add_transition(ConditionalTransition(ReaderCondition(False, lambda:self.__plugged_in), power_off_state)) 
         #À vérifier si ya meilleure solution
-        charging_state.add_transition(ConditionalTransition(ReaderCondition(True, lambda:charging_state.BatteryManagement.current_state.terminal), charging_failed_state)) 
+        charging_state.add_transition(ConditionalTransition(ReaderCondition(True, lambda:charging_state.charging_error), charging_failed_state)) 
         charging_failed_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, charging_failed_state), powering_down_state)) 
         unlocking_state.add_transition(ConditionalTransition(ActualKeyReleasedCondition(console, "p"), power_off_state))
         unlocking_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, unlocking_state), powering_up_state))
@@ -288,7 +296,7 @@ class ScooterStateMachine(StateMachineDevice):
         idle_state.add_transition(ConditionalTransition(AnyConditions([DelaySinceEnteredCondition(30.0, idle_state), ]), powering_down_state))
         idle_state.add_transition(ConditionalTransition(power_less_than_condition, powering_down_state))
         idle_state.add_transition(ConditionalTransition(KeyPressCondition(console, "a"), scooting_state))
-        scooting_state.add_transition(ConditionalTransition(AllConditions([AnyConditions([power_less_than_condition, speed_less_than_condition]), AllConditions([ActualKeyReleasedCondition(console, "a"), delay_since_min_speed])]), idle_state)) 
+        scooting_state.add_transition(ConditionalTransition(AllConditions([AllConditions([ActualKeyReleasedCondition(console, "a"), delay_since_min_speed]) ,AnyConditions([power_less_than_condition, speed_less_than_condition])]), idle_state)) 
         locking_state.add_transition(ConditionalTransition(ActualKeyReleasedCondition(console, "p"), idle_state)) 
         locking_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, locking_state), powering_down_state)) 
         powering_down_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, powering_down_state), power_off_state))
