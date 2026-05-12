@@ -18,27 +18,17 @@ class Scooter():
 
     @property
     def speed(self:Self) -> float:
-        return self.__speed
-    
-    @speed.setter
-    def speed(self:Self, value:float) -> None:
-        if not isinstance(value, float):
-            raise TypeError("Speed must be a float")
-        elif value < 0:
-            raise ValueError("Speed must be greater than 0")
-        else:
-            self.__speed = value
+        return self.__speed   
 
     @property
     def battery(self:Self) -> Battery:
         return self.__battery
     
     def accelerate(self:Self, delta_time:float) -> None:
-        self.speed += delta_time*(Scooter.Ka*Scooter.Aa*(1-self.speed/Scooter.Vv)-Scooter.Ca*self.speed**2)
-        print(f'speed: {self.__speed}')
+        self.__speed += delta_time*(Scooter.Ka*Scooter.Aa*(1-self.speed/Scooter.Vv)-Scooter.Ca*self.speed**2)
 
     def decelerate(self:Self, delta_time:float, breaking_strength:float = 0) -> None:
-        self.speed = max(0, self.speed - delta_time*(Scooter.Cr + Scooter.Kb*breaking_strength + Scooter.Ca*self.speed**2))
+        self.__speed = max(0, self.speed - delta_time*(Scooter.Cr + Scooter.Kb*breaking_strength + Scooter.Ca*self.speed**2))
 
 
 class Battery():

@@ -6,6 +6,7 @@ from tracking_device import TrackingApplication
 from blinker_device import BlinkerDevice
 from console import Console
 from scooter import Scooter
+from elapsed_timer import ElapsedTimer
 
 ##À finir ca na pas été testé
 class LessThanCondition(AbstractValueCondition):
@@ -67,13 +68,14 @@ class Charging(ActionState):
 class Scooting(ActionState):
     
     class RideManagement(StateMachineDevice):
-        def __init__(self:Self,console:Console, scooter:Scooter, initialized:bool = True, name:str = None, enabled:bool = False) -> None:
-            self.__delta_time = 0
+        def __init__(self:Self, console:Console, scooter:Scooter, initialized:bool = False, name:str = None, enabled:bool = False) -> None:
+            self.__timer = ElapsedTimer(ElapsedTimer.Mode.ACCUMULATED)
             self.__scooter = scooter
             self.__console = console
             self.__free_wheel_state = ActionState("Free Wheel")
             self.__accelerating_state = ActionState("Accelerating")
             self.__breaking_state = ActionState("Breaking")
+            self.__end_state = State("Ending State", terminal=True)
 
             self.__free_wheel_state.add_transition(ConditionalTransition(ReaderCondition(True, self.__read_up_arrow),self.__accelerating_state))
             self.__free_wheel_state.add_transition(ConditionalTransition(ReaderCondition(True, self.__read_down_arrow),self.__breaking_state))
@@ -82,54 +84,65 @@ class Scooting(ActionState):
             self.__breaking_state.add_transition(ConditionalTransition(ReaderCondition(False, self.__read_down_arrow), self.__free_wheel_state))
 
             self.__accelerating_state.add_in_state_action(self.__accelerate)
-            self.__accelerating_state.add_entering_action(self._on_accelerate)
             self.__breaking_state.add_in_state_action(self.__breaking)
             self.__free_wheel_state.add_in_state_action(self.__decelerate)
+
             self.__free_wheel_state.add_entering_action(self._on_free_wheel)
+            self.__accelerating_state.add_entering_action(self._on_accelerate)
+            self.__breaking_state.add_entering_action(self._on_breaking)
 
             layout = self.Layout((self.__free_wheel_state, self.__accelerating_state, self.__breaking_state))
             super().__init__(layout, initialized, name, enabled)
-
-
+        
         @property
-        def free_wheel_state(self:Self) -> None:
-            return self.__free_wheel_state
-
-        @override
-        def _do_tracking(self:Self, elapsed_time: float) -> None:
-            self.__delta_time = elapsed_time
+        def end_state(self:Self) -> None:
+            return self.__end_state
         
         def __read_up_arrow(self:Self) -> bool:
             return True if self.__console.SpecialKey.UP_ARROW in self.__console.actual_key_pressed else False
     
         def __read_down_arrow(self:Self) -> bool:
-            return True if self.__console.SpecialKey.UP_ARROW in self.__console.actual_key_pressed else False
+            return True if self.__console.SpecialKey.DOWN_ARROW in self.__console.actual_key_pressed else False
         
         def _on_accelerate(self):
-            print("ACCELERATE")
+            self.__timer.reset()
+            print(f"\rACCELERATE\n", end="", sep="")
 
         def _on_free_wheel(self):
-            print("FREE WHEEL")
+            self.__timer.reset()
+            print(f"\rFREE WHEEL\n", end="", sep="")
+
+        def _on_breaking(self):
+            self.__timer.reset()
+            print(f'\rBREAKING\n', end="", sep="")
 
         def __accelerate(self:Self) -> None:
-            self.__scooter.accelerate(self.__delta_time)
+            self.__scooter.accelerate(self.__timer.elapsed)
+            print(f'\rVitesse du scooter : {self.__scooter.speed}', end="", sep="")
 
         def __decelerate(self:Self) -> None:
-            print("DECELERATE")
-            self.__scooter.decelerate(self.__delta_time)
+            self.__scooter.decelerate(self.__timer.elapsed)
+            print(f'\rVitesse du scooter : {self.__scooter.speed}', end="", sep="")
 
         def __breaking(self:Self) -> None:
-            self.__scooter.decelerate(self.__delta_time, 0.5)
+            self.__scooter.decelerate(self.__timer.elapsed, 0.5)
+            print(f'\rVitesse du scooter : {self.__scooter.speed}', end="", sep="")
 
     def __init__(self, name, ridemanagement:RideManagement):
         self.__ridemanagement = ridemanagement
         super().__init__(name)
     
     @override
-    def _do_entering_action(self):
+    def _do_entering_action(self) -> None:
         print("SCOOTING")
+        self.__ridemanagement.reset()
         self.__ridemanagement.enabled = True
-        self.__ridemanagement._transit_to(self.__ridemanagement.free_wheel_state)
+        
+
+    @override
+    def _do_exiting_action(self) -> None:
+        self.__ridemanagement._transit_to(self.__ridemanagement.end_state)
+        
 
 # class PowerOffState(State):
 #     def __init__(self, name, enabled, scooter_state_machine):
