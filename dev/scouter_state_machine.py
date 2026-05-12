@@ -78,7 +78,7 @@ class Charging(ActionState):
         battery_management = Charging.BatteryManagement(console)
         super().__init__(name)
 
-class Scooting(ActionState):
+class Scooting(MonitoredState):
     
     class RideManagement(StateMachineDevice):
         def __init__(self:Self, console:Console, scooter:Scooter, initialized:bool = False, name:str = None, enabled:bool = False) -> None:
@@ -150,7 +150,6 @@ class Scooting(ActionState):
         print("SCOOTING")
         self.__ridemanagement.reset()
         self.__ridemanagement.enabled = True
-        
 
     @override
     def _do_exiting_action(self) -> None:
