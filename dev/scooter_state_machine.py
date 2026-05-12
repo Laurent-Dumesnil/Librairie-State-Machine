@@ -1,12 +1,46 @@
-from typing import override, Self
+from typing import override, Self, Callable
 from state_machine_device import StateMachineDevice
 from state_machine_utilities import MonitoredState, ActionState, State, DelaySinceEnteredCondition, ConditionalTransition
-from condition import Condition, ReaderCondition, AllConditions, AnyConditions, AbstractValueCondition
+from condition import Condition, ReaderCondition, AllConditions, AnyConditions, AbstractValueCondition, ElapsedTimerCondition
 from tracking_device import TrackingApplication
 from blinker_device import BlinkerDevice
 from console import Console
 from scooter import Scooter
 from elapsed_timer import ElapsedTimer
+
+class DelaySinceValueCondition(Condition):
+    """
+    Condition qui part un ElapsedTimer quand une valeur atteint un certain seuil.
+    paramètre value doit être un property pour lire la valeur provenant d'une classe du modèle
+    paramètre activation threshold c'est le seuil en bas duquel le ElapsedTimer commence à compter.
+    """
+    def __init__(self, activation_threshold:float, value:Callable[[], float], duration:float):
+        self.__activation_threshold = activation_threshold 
+        self.__value = value
+        self.__duration = duration
+        self.__elapsed_timer = ElapsedTimer(ElapsedTimer.Mode.ACCUMULATED)
+        self.__enabled = False
+        super().__init__()
+
+    @override
+    def _compare(self):
+        if self.__value() >= self.__activation_threshold:
+            self.reset()
+            return False
+
+        if not self.__enabled:
+            self.__enabled = True
+            self.__elapsed_timer.reset()
+
+        if self.__elapsed_timer.elapsed >= self.__duration:
+            self.__enabled = False
+            return True
+
+        return False
+    
+    def reset(self:Self) -> None:
+        """Réinitialise le elapsed timer."""
+        self.__elapsed_timer.reset()
 
 ##À finir ca na pas été testé
 class LessThanCondition(AbstractValueCondition):
@@ -191,6 +225,7 @@ class ScooterStateMachine(StateMachineDevice):
         plugged_out_condition = ReaderCondition(False, lambda:self.__plugged_in)
         power_less_than_condition = LessThanCondition(0.03, lambda:self.__scooter.battery.energy)
         speed_less_than_condition = LessThanCondition(0.5/3.6, lambda:self.__scooter.speed)
+        delay_since_min_speed = DelaySinceValueCondition(0.5/3.6, lambda:self.__scooter.speed, 1.5)
 
         #Transitions
         power_off_state.add_transition(ConditionalTransition(plugged_in_condition, charging_state))
@@ -208,7 +243,7 @@ class ScooterStateMachine(StateMachineDevice):
         idle_state.add_transition(ConditionalTransition(AnyConditions([DelaySinceEnteredCondition(30.0, idle_state), ]), powering_down_state))
         idle_state.add_transition(ConditionalTransition(power_less_than_condition, powering_down_state))
         idle_state.add_transition(ConditionalTransition(KeyPressCondition(console, "a"), scooting_state))
-        scooting_state.add_transition(ConditionalTransition(AllConditions([AnyConditions([power_less_than_condition, speed_less_than_condition]), AllConditions([ActualKeyReleasedCondition(console, "a"), DelaySinceEnteredCondition(1.5, scooting_state)])]), idle_state)) 
+        scooting_state.add_transition(ConditionalTransition(AllConditions([AnyConditions([power_less_than_condition, speed_less_than_condition]), AllConditions([ActualKeyReleasedCondition(console, "a"), delay_since_min_speed])]), idle_state)) 
         locking_state.add_transition(ConditionalTransition(ActualKeyReleasedCondition(console, "p"), idle_state)) 
         locking_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, locking_state), powering_down_state)) 
         powering_down_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, powering_down_state), power_off_state))
