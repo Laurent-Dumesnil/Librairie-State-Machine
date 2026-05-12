@@ -69,27 +69,33 @@ class Scooting(MonitoredState):
     
     class RideManagement(StateMachineDevice):
         def __init__(self:Self, console:Console, scooter:Scooter, initialized:bool = False, name:str = None, enabled:bool = False) -> None:
-            self.__timer = ElapsedTimer(ElapsedTimer.Mode.ACCUMULATED)
+            self.__timer = ElapsedTimer(ElapsedTimer.Mode.INTERVAL)
             self.__scooter = scooter
             self.__console = console
             self.__free_wheel_state = ActionState("Free Wheel")
             self.__accelerating_state = ActionState("Accelerating")
             self.__breaking_state = ActionState("Breaking")
+            self.__cruise_control_state = ActionState("Cruise Control")
             self.__end_state = State("Ending State", terminal=True)
 
             self.__free_wheel_state.add_transition(ConditionalTransition(ReaderCondition(True, self.__read_up_arrow),self.__accelerating_state))
             self.__free_wheel_state.add_transition(ConditionalTransition(ReaderCondition(True, self.__read_down_arrow),self.__breaking_state))
+            self.__free_wheel_state.add_transition(ConditionalTransition(ReaderCondition(True, self.__read_c), self.__cruise_control_state))
             self.__accelerating_state.add_transition(ConditionalTransition(ReaderCondition(True, self.__read_down_arrow),self.__breaking_state))
             self.__accelerating_state.add_transition(ConditionalTransition(ReaderCondition(False, self.__read_up_arrow), self.__free_wheel_state))
             self.__breaking_state.add_transition(ConditionalTransition(ReaderCondition(False, self.__read_down_arrow), self.__free_wheel_state))
+            self.__cruise_control_state.add_transition(ConditionalTransition(ReaderCondition(True, self.__read_up_arrow),self.__accelerating_state))
+            self.__cruise_control_state.add_transition(ConditionalTransition(ReaderCondition(True, self.__read_down_arrow),self.__breaking_state))
+
+            self.__accelerating_state.add_entering_action(self.__timer.reset)
+            self.__breaking_state.add_entering_action(self.__timer.reset)
+            self.__breaking_state.add_entering_action(self.__timer.reset)
+            self.__cruise_control_state.add_entering_action(self.__timer.reset)
 
             self.__accelerating_state.add_in_state_action(self.__accelerate)
             self.__breaking_state.add_in_state_action(self.__breaking)
             self.__free_wheel_state.add_in_state_action(self.__decelerate)
-
-            self.__free_wheel_state.add_entering_action(self._on_free_wheel)
-            self.__accelerating_state.add_entering_action(self._on_accelerate)
-            self.__breaking_state.add_entering_action(self._on_breaking)
+            self.__cruise_control_state.add_in_state_action(self.__cruise)
 
             layout = self.Layout((self.__free_wheel_state, self.__accelerating_state, self.__breaking_state))
             super().__init__(layout, initialized, name, enabled)
@@ -104,17 +110,8 @@ class Scooting(MonitoredState):
         def __read_down_arrow(self:Self) -> bool:
             return True if self.__console.SpecialKey.DOWN_ARROW in self.__console.actual_key_pressed else False
         
-        def _on_accelerate(self):
-            self.__timer.reset()
-            print(f"\rACCELERATE\n", end="", sep="")
-
-        def _on_free_wheel(self):
-            self.__timer.reset()
-            print(f"\rFREE WHEEL\n", end="", sep="")
-
-        def _on_breaking(self):
-            self.__timer.reset()
-            print(f'\rBREAKING\n', end="", sep="")
+        def __read_c(self:Self) -> bool:
+            return True if "c" in self.__console.key_pressed else False
 
         def __accelerate(self:Self) -> None:
             self.__scooter.accelerate(self.__timer.elapsed)
@@ -126,6 +123,9 @@ class Scooting(MonitoredState):
 
         def __breaking(self:Self) -> None:
             self.__scooter.decelerate(self.__timer.elapsed, 0.5)
+            print(f'\rVitesse du scooter : {self.__scooter.speed}', end="", sep="")
+
+        def __cruise(self:Self) -> None:
             print(f'\rVitesse du scooter : {self.__scooter.speed}', end="", sep="")
 
     def __init__(self, name, ridemanagement:RideManagement):
@@ -185,8 +185,8 @@ class ScooterStateMachine(StateMachineDevice):
         #Conditions
         plugged_in_condition = ReaderCondition(True, lambda:self.__plugged_in)
         plugged_out_condition = ReaderCondition(False, lambda:self.__plugged_in)
-        power_less_then_condition = LessThanCondition(0.03, lambda:self.__scooter.battery.power)
-        speed_less_then_condition = LessThanCondition(0.01, lambda:self.__scooter.speed)
+        power_less_than_condition = LessThanCondition(0.03, lambda:self.__scooter.battery.power)
+        speed_less_than_condition = LessThanCondition(0.5/3.6, lambda:self.__scooter.speed)
 
         #Transitions
         power_off_state.add_transition(ConditionalTransition(plugged_in_condition, charging_state))
@@ -202,9 +202,9 @@ class ScooterStateMachine(StateMachineDevice):
         intygrity_failed_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, intygrity_failed_state), powering_down_state))
         idle_state.add_transition(ConditionalTransition(ActualKeyPressCondition(console, "p"), locking_state))
         idle_state.add_transition(ConditionalTransition(AnyConditions([DelaySinceEnteredCondition(30.0, idle_state), ]), powering_down_state))
-        idle_state.add_transition(ConditionalTransition(power_less_then_condition, powering_down_state))
+        idle_state.add_transition(ConditionalTransition(power_less_than_condition, powering_down_state))
         idle_state.add_transition(ConditionalTransition(KeyPressCondition(console, "a"), scooting_state))
-        scooting_state.add_transition(ConditionalTransition(AllConditions([AnyConditions([power_less_then_condition, speed_less_then_condition]), AllConditions([ActualKeyReleasedCondition(console, "a"), DelaySinceEnteredCondition(1.5, scooting_state)])]), idle_state)) 
+        scooting_state.add_transition(ConditionalTransition(AllConditions([AnyConditions([power_less_than_condition, speed_less_than_condition]), AllConditions([ActualKeyReleasedCondition(console, "a"), DelaySinceEnteredCondition(1.5, scooting_state)])]), idle_state)) 
         locking_state.add_transition(ConditionalTransition(ActualKeyReleasedCondition(console, "p"), idle_state)) 
         locking_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, locking_state), powering_down_state)) 
         powering_down_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, powering_down_state), power_off_state))
