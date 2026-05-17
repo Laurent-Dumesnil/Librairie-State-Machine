@@ -624,7 +624,8 @@ class StateEntryCountCondition(MonitoredStateCondition):
     """
     def __init__(self:Self, expected_count:int, monitored_state:MonitoredState | None = None, invert:bool = False):
         super().__init__(monitored_state, invert)
-        self.__expected_count:int = expected_count
+        self.__expected_count:int 
+        self.expected_count = expected_count
         self.__reference_count:int = 0
         if monitored_state:
             self._update_from_setting_new_monitored_state(monitored_state)
@@ -638,6 +639,13 @@ class StateEntryCountCondition(MonitoredStateCondition):
             int: Nombre d'entrées attendu.
         """
         return self.__expected_count
+    
+    @expected_count.setter
+    def expected_count(self, value):
+        if isinstance(value, int):
+            self.__expected_count = value
+        else:
+            raise TypeError("expected count must be int type")
 
     @override
     def _update_from_setting_new_monitored_state(self, monitored_state:MonitoredState|None) -> None:

@@ -71,7 +71,6 @@ class StateMachineDevice(TrackingDevice) :
 
             # self._initial_state : State - si on initialise pas, on aura des problemes
             self._states : tuple[State, ...] = states
-            self._initial_state = states[0]
         
         def __contains__(self: Self, state:State) -> bool:
             """Vérifie si un état appartient au layout.
@@ -91,7 +90,7 @@ class StateMachineDevice(TrackingDevice) :
             Returns:
                 State: L'état initial (premier élément fourni).
             """
-            return self._initial_state 
+            return self._states[0] 
 
 
     def __init__(self: Self, layout: Layout, initialized: bool = False, name: str | None = None, enabled: bool = True):
@@ -119,19 +118,25 @@ class StateMachineDevice(TrackingDevice) :
         """
         return self.__current_state
     
+    @current_state.setter
+    def current_state(self, value):
+        if isinstance(value, State):
+            self.__current_state = value
+
+    
     def __transit_by(self, transition: Transition) -> None :
         """Effectue une transition en utilisant l'objet Transition fourni.
 
         Args:
             transition (Transition): Transition à exécuter.
         """
-        if self.__current_state is not None:
+        if self.__current_state is not None and self.enabled:
             self.__current_state._execute_exiting_action()
             transition._execute_transiting_action()
 
-            self.__current_state = transition.next_state
-            if self.__current_state is not None:
-                self.__current_state._execute_entering_action()
+        self.__current_state = transition.next_state
+        if self.enabled:
+            self.__current_state._execute_entering_action()
 
     def _transit_to(self, state: State) -> None :
         """Force la transition vers l'état fourni sans objet Transition.
@@ -139,12 +144,12 @@ class StateMachineDevice(TrackingDevice) :
         Args:
             state (State): État cible.
         """
-        if self.__current_state is not None:
+        if self.__current_state is not None and self.enabled:
             self.__current_state._execute_exiting_action()
 
-            self.__current_state = state
-            if self.__current_state is not None:
-                self.__current_state._execute_entering_action()
+        self.__current_state = state
+        if self.enabled:
+            self.__current_state._execute_entering_action()
 
     @override
     def _do_tracking(self, elapsed_time: float) -> None:
