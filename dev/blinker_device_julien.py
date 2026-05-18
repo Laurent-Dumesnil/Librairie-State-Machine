@@ -62,12 +62,14 @@ class BlinkerDevice(StateMachineDevice):
         ...
     def turn_on(self, **kwargs) -> None:
         if len(kwargs) == 0:
+           self._activate_blinker()
            self._transit_to(self.__on_state) 
         elif set(kwargs) == {"duration"}:
             if not isinstance(kwargs["duration"], float):
                 raise TypeError("Duration must be float type")
             if kwargs["duration"] < 0:
                 raise ValueError("Duration must be positive")
+            self._activate_blinker()
             self.__transit_by(ConditionalTransition(ElapsedTimerCondition(kwargs["duration"])))
         else:
             raise TypeError("turn_on() got an unexpected keyword argument")
@@ -80,12 +82,14 @@ class BlinkerDevice(StateMachineDevice):
         ...
     def turn_off(self, **kwargs) -> None:
         if len(kwargs) == 0:
+           self._activate_blinker()
            self._transit_to(self.__off_state) 
         elif set(kwargs) == {"duration"}:
             if not isinstance(kwargs["duration"], float):
                 raise TypeError("Duration must be float type")
             if kwargs["duration"] < 0:
                 raise ValueError("Duration must be positive")
+            self._activate_blinker()
             self.__transit_by(ConditionalTransition(ElapsedTimerCondition(kwargs["duration"])))
         else:
             raise TypeError("turn_off() got an unexpected keyword argument")
