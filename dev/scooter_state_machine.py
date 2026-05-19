@@ -267,7 +267,7 @@ class ScooterStateMachine(StateMachineDevice):
         locking_state = MonitoredState("locking")
         charging_failed_state = MonitoredState("charging_failed")
         powering_down_state = MonitoredState("powering_down")
-        intygrity_failed_state = MonitoredState("intygrity_failed")
+        integrity_failed_state = MonitoredState("intygrity_failed")
         charging_state = Charging("charging", console)
         #charging_state.add_entering_action(self._on_charging)
         #charging_state.add_in_state_action(self._unplug_charging_cable)
@@ -290,8 +290,8 @@ class ScooterStateMachine(StateMachineDevice):
         unlocking_state.add_transition(ConditionalTransition(ActualKeyReleasedCondition(console, "p"), power_off_state))
         unlocking_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, unlocking_state), powering_up_state))
         powering_up_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, powering_up_state), idle_state))
-        powering_up_state.add_transition(ConditionalTransition(KeyPressCondition(console, "f"), intygrity_failed_state))
-        intygrity_failed_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, intygrity_failed_state), powering_down_state))
+        powering_up_state.add_transition(ConditionalTransition(KeyPressCondition(console, "f"), integrity_failed_state))
+        integrity_failed_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, integrity_failed_state), powering_down_state))
         idle_state.add_transition(ConditionalTransition(ActualKeyPressCondition(console, "p"), locking_state))
         idle_state.add_transition(ConditionalTransition(AnyConditions([DelaySinceEnteredCondition(30.0, idle_state), ]), powering_down_state))
         idle_state.add_transition(ConditionalTransition(power_less_than_condition, powering_down_state))
@@ -317,7 +317,7 @@ class ScooterStateMachine(StateMachineDevice):
                   idle_state, locking_state, 
                   charging_failed_state, 
                   powering_down_state, 
-                  intygrity_failed_state, 
+                  integrity_failed_state, 
                   charging_state, 
                   scooting_state
                 )

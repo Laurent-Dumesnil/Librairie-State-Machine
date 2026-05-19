@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Self, Callable
 from ElectricScooterPanel import ElectricScooterPanel
+from enum import Enum
 
 ER = 120.0
 
@@ -78,51 +79,49 @@ class Battery():
             raise TypeError("elapsed_time must be float or callable type")
 
     def set_power_device_off(self:Self, elapsed_time: float | Callable[[], float]) -> None:
-        if isinstance(elapsed_time, float):
+        if isinstance(elapsed_time, float) or callable(elapsed_time):
             self.__power = -PS
             self.__update_battery(elapsed_time)
-        elif callable(elapsed_time):
-            self.__power = -PS
-            self.__update_battery(elapsed_time())
         else:
             raise TypeError("elapsed_time must be float or callable type")
         
     def set_power_based_usage(self:Self, elapsed_time: float | Callable[[], float]) -> None:
-        if isinstance(elapsed_time, float):
+        if isinstance(elapsed_time, float) or callable(elapsed_time):
             self.__power = -PI
             self.__update_battery(elapsed_time)
-        elif callable(elapsed_time):
-            self.__power = -PI
-            self.__update_battery(elapsed_time())
         else:
             raise TypeError("elapsed_time must be float or callable type")
 
     def set_power_device_charging(self:Self, elapsed_time: float | Callable[[], float]) -> None:
-        if isinstance(elapsed_time, float):
+        if isinstance(elapsed_time, float) or callable(elapsed_time):
             self.__power = PM * AT - PI
             self.__update_battery(elapsed_time)
-        elif callable(elapsed_time):
-            self.__power = PM * AT - PI
-            self.__update_battery(elapsed_time())
         else:
             raise TypeError("elapsed_time must be float or callable type")
 
     def set_power_device_accelerating(self:Self, elapsed_time: float | Callable[[], float]) -> None:
-        if isinstance(elapsed_time, float):
+        if isinstance(elapsed_time, float) or callable(elapsed_time):
             self.__power = -(PI + PM * AA)
             self.__update_battery(elapsed_time)
-        elif callable(elapsed_time):
-            self.__power = -(PI + PM * AA)
-            self.__update_battery(elapsed_time())
         else:
             raise TypeError("elapsed_time must be float or callable type")
 
     def set_power_device_breaking(self:Self, elapsed_time: float | Callable[[], float], speed:float | Callable[[], float]) -> None:
-        if isinstance(elapsed_time, float) and isinstance(speed, float):
+        if isinstance(elapsed_time, float) or callable(elapsed_time):
             self.__power = ER * AB * speed - PI
             self.__update_battery(elapsed_time)
-        elif callable(elapsed_time) and callable(speed):
-            self.__power = ER * AB * speed() - PI
-            self.__update_battery(elapsed_time())
         else:
             raise TypeError("elapsed_time must be float or callable type")
+        
+
+# def main():
+#     battery = Battery()
+#     def value():
+#         return 4
+    
+#     battery.set_power_based_usage(2)
+
+# if __name__ == "__main__":
+#     main()        
+        
+
