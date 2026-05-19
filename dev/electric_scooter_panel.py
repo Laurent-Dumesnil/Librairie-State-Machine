@@ -30,7 +30,7 @@ class BarLed():
             self.__list_led.append(SimpleLed(self.__console, (self.__pos[0] + 2 * current_pos, self.__pos[1]), self.__size_of_leds))
 
     def draw_led(self:Self, percent_on:float) -> None:
-        led_to_open = int(round(percent_on*len(self.__list_led)/100))
+        led_to_open = int(percent_on*len(self.__list_led)/100)
         for i, led in enumerate(self.__list_led):
             if i < led_to_open:
                 led.draw_led(self.__list_color[i])

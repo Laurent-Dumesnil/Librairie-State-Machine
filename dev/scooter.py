@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import Self, Callable
-from ElectricScooterPanel import ElectricScooterPanel
+from abc import ABC, abstractmethod
+from electric_scooter_panel import ElectricScooterPanel, SimpleLed, BarLed
+from console import Console
 
 ER = 120.0
 
@@ -23,14 +25,28 @@ TD = 5.0e-4
 TA = 20.0
 
 class Scooter:
-    def __init__(self:Self) -> None:
+    def __init__(self:Self, panel:ElectricScooterPanel) -> None:
         self.__speed = 0.0
         self.__battery = Battery()
-        #self.__panel = panel
+        self.top_left_blinker = Light(panel.top_left_blinker)
+        self.top_right_blinker = Light(panel.top_right_blinker)
+        self.bottom_left_blinker = Light(panel.bottom_left_blinker)
+        self.bottom_right_blinker = Light(panel.bottom_right_blinker)
+        self.headlight = Light(panel.headlight)
+        self.rearlight = Light(panel.rearlight)
+        self.left_indicator = Light(panel.left_indicator)
+        self.right_indicator = Light(panel.right_indicator)
+        self.speed_indicator = BarLight(panel.speed_indicator)
+        self.charge_indicator = BarLight(panel.charge_indicator)
+        self.temp_indicator = BarLight(panel.temp_indicator)
 
     @property
     def speed(self:Self) -> float:
-        return self.__speed   
+        return self.__speed
+    
+    @property
+    def speed_percent(self:Self) -> float:
+        return self.__speed*100/9.25
 
     @property
     def battery(self:Self) -> Battery:
@@ -39,11 +55,11 @@ class Scooter:
     def accelerate(self:Self, delta_time:float | Callable[[], float]) -> None:
         if isinstance(delta_time, float):
             self.__speed += delta_time*(KA*AA*(1-self.speed/VV)-CA*self.speed**2)
-            #self.__panel.speed_indicator.draw_led(50)
         elif callable(delta_time):
             self.__speed += delta_time()*(KA*AA*(1-self.speed/VV)-CA*self.speed**2)
         else:
             raise TypeError("delta_time must be float or callable type")
+        print(self.speed_percent)
 
     def decelerate(self:Self, delta_time:float | Callable[[], float], breaking_strength:float = 0.0) -> None:
         if isinstance(delta_time, float):
@@ -52,6 +68,7 @@ class Scooter:
              self.__speed = max(0, self.speed - delta_time()*(CR + KB*breaking_strength + CA*self.speed**2))
         else:
             raise TypeError("delta_time must be float or callable type")
+    
 
 class Battery():
     def __init__(self:Self) -> None:
@@ -126,3 +143,21 @@ class Battery():
             self.__update_battery(elapsed_time())
         else:
             raise TypeError("elapsed_time must be float or callable type")
+
+class Light():
+    def __init__(self:Self, light:SimpleLed) -> None:
+        self.__light = light
+
+    def colorize(self:Self, color:Console.Color|None = None) -> None:
+        if color is None:
+            self.__light.draw_led(Console.Color.DARK_GREY)
+        else:
+            self.__light.draw_led(color)
+
+class BarLight():
+    def __init__(self:Self, light:BarLed) -> None:
+        self.__light = light
+
+    def colorize(self:Self, percent_on:float) -> None:
+        self.__light.draw_led(percent_on)
+     

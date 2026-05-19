@@ -1,6 +1,6 @@
 from scooter import Scooter
 from console import Console
-from ElectricScooterPanel import ElectricScooterPanel
+from dev.electric_scooter_panel import ElectricScooterPanel
 from tracking_device import TrackingApplication
 from scooter_state_machine import ScooterStateMachine, Scooting, Charging
 

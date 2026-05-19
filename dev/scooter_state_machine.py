@@ -371,7 +371,7 @@ class ScooterStateMachine(StateMachineDevice):
             self.__plugged_in = False
 
 def main():
-    from ElectricScooterPanel import ElectricScooterPanel
+    from dev.electric_scooter_panel import ElectricScooterPanel
     console = Console()
     panel = ElectricScooterPanel(console)
     scooter = Scooter(panel)

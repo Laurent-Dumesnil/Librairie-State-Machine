@@ -7,7 +7,7 @@ from blinker_device_julien import BlinkerDevice
 from console_reader import ConsoleReader
 from console import Console
 from scooter import Scooter
-from ElectricScooterPanel import ElectricScooterPanel
+from electric_scooter_panel import ElectricScooterPanel
 from elapsed_timer import ElapsedTimer
 
 Number: TypeAlias = int | float
@@ -61,23 +61,26 @@ class Scooting(MonitoredState):
             self.__elapsed_time = value
 
         def __accelerate(self:Self) -> None:
-            print(f'\rACCELERATE{self.__scooter.speed}  KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                        ")
+            #print(f'\rACCELERATE{self.__scooter.speed}  KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                        ")
             self.__scooter.accelerate(lambda:self.elapsed_time)
             self.__scooter.battery.set_power_device_accelerating(lambda:self.elapsed_time)
+            self.__scooter.speed_indicator.colorize(self.__scooter.speed_percent)
 
         def __breaking(self:Self) -> None:
-            print(f'\rDECELERATE{self.__scooter.speed}  KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                        ")
+            #print(f'\rDECELERATE{self.__scooter.speed}  KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                        ")
             self.__scooter.decelerate(lambda:self.elapsed_time, 0.5)
             self.__scooter.battery.set_power_device_breaking(lambda:self.elapsed_time, lambda:self.__scooter.speed)
+            self.__scooter.speed_indicator.colorize(self.__scooter.speed_percent)
 
         def __cruise(self:Self) -> None:
             print("CRUISE")
             self.__scooter.battery.set_power_based_usage(lambda:self.__elapsed_time)
 
         def _in_free_wheel(self):
-            print(f'\rFREE WHEEL{self.__scooter.speed} KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                          ")
+            #print(f'\rFREE WHEEL{self.__scooter.speed} KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                          ")
             self.__scooter.decelerate(lambda:self.elapsed_time, 0.0)
             self.__scooter.battery.set_power_based_usage(lambda:self.elapsed_time)
+            self.__scooter.speed_indicator.colorize(self.__scooter.speed_percent)
 
         def start(self: Self) -> None:
             self.enabled = True
@@ -161,7 +164,7 @@ class Charging(MonitoredState):
     
     @override
     def _do_entering_action(self) -> None:
-        print("CHARGING")
+        #print("CHARGING")
         self.__battery_management.reset()
         self.__battery_management.enabled = True
 
@@ -280,14 +283,14 @@ class ScooterStateMachine(StateMachineDevice):
         #############################################
         def make_off_state():
             def light_off():
-                print("front light off")
+                self.__scooter.headlight.colorize()
             off_state = MonitoredState("off_state")
             off_state.add_entering_action(light_off)
             return off_state
         
         def make_on_state():
             def light_on():
-                print("front light on")
+                self.__scooter.headlight.colorize(Console.Color.GREY)
             on_state = MonitoredState("on_state")
             on_state.add_entering_action(light_on)
             return on_state
@@ -339,15 +342,15 @@ class ScooterStateMachine(StateMachineDevice):
         powering_down_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, powering_down_state), power_off_state))
 
         # #Actions
-        power_off_state.add_entering_action(self._on_power_off)
-        power_off_state.add_exiting_action(self._exit_power_off)
-        unlocking_state.add_entering_action(self._on_unlocking)
-        powering_up_state.add_entering_action(self._on_powering_up)
-        powering_down_state.add_entering_action(self._on_powering_down)
-        idle_state.add_entering_action(self._on_idle)
-        intygrity_failed_state.add_entering_action(self._on_integrity_failed)
-        locking_state.add_entering_action(self._on_locking)
-        charging_failed_state.add_entering_action(self._on_charing_failed)
+        #power_off_state.add_entering_action(self._on_power_off)
+        #power_off_state.add_exiting_action(self._exit_power_off)
+        #unlocking_state.add_entering_action(self._on_unlocking)
+        #powering_up_state.add_entering_action(self._on_powering_up)
+        #powering_down_state.add_entering_action(self._on_powering_down)
+        #idle_state.add_entering_action(self._on_idle)
+        #intygrity_failed_state.add_entering_action(self._on_integrity_failed)
+        #locking_state.add_entering_action(self._on_locking)
+        #charging_failed_state.add_entering_action(self._on_charing_failed)
 
         layout = (power_off_state, 
                   unlocking_state, 
@@ -408,9 +411,10 @@ class ScooterStateMachine(StateMachineDevice):
 def main():
     app = TrackingApplication()
     console = Console()
+    console.cursor_visible = False
     console_reader = ConsoleReader("console_reader", console)
-    #panel = ElectricScooterPanel(console)
-    model = Scooter()
+    panel = ElectricScooterPanel(console)
+    model = Scooter(panel)
    
     controler = ScooterStateMachine(console_reader, model)
 
