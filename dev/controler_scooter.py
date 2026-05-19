@@ -23,7 +23,7 @@ class Scooting(MonitoredState):
             self.__accelerating_state = ActionState("Accelerating")
             self.__breaking_state = ActionState("Breaking")
             self.__end_state = State("Ending State", terminal=True)
-            #self.__cruise_control_state = ActionState("Cruise Control")
+            self.__cruise_control_state = ActionState("Cruise Control")
 
             ########################################
             #               TRANSITIONS
@@ -37,9 +37,9 @@ class Scooting(MonitoredState):
             #######################################
             #           CRUISE CONTROL
             #######################################
-            #self.__free_wheel_state.add_transition(ConditionalTransition(KeyPressCondition("c", lambda:self.__console_reader.actual_key_pressed), self.__cruise_control_state))
-            #self.__cruise_control_state.add_transition(ConditionalTransition(ReaderCondition(Console.SpecialKey.LEFT_ARROW, lambda:self.__console_reader.actual_key_pressed),self.__accelerating_state))
-            #self.__cruise_control_state.add_transition(ConditionalTransition(KeyPressCondition(Console.SpecialKey.LEFT_ARROW, lambda:self.__console_reader.actual_key_pressed),self.__breaking_state))
+            self.__free_wheel_state.add_transition(ConditionalTransition(KeyPressCondition("c", lambda:self.__console_reader.actual_key_pressed), self.__cruise_control_state))
+            self.__cruise_control_state.add_transition(ConditionalTransition(ReaderCondition(Console.SpecialKey.LEFT_ARROW, lambda:self.__console_reader.actual_key_pressed),self.__accelerating_state))
+            self.__cruise_control_state.add_transition(ConditionalTransition(KeyPressCondition(Console.SpecialKey.LEFT_ARROW, lambda:self.__console_reader.actual_key_pressed),self.__breaking_state))
 
             ##########################################
             #               ACTIONS
@@ -47,7 +47,7 @@ class Scooting(MonitoredState):
             self.__accelerating_state.add_in_state_action(self.__accelerate)
             self.__free_wheel_state.add_in_state_action(self._in_free_wheel)
             self.__breaking_state.add_in_state_action(self.__breaking)
-            #self.__cruise_control_state.add_in_state_action(self.__cruise)
+            self.__cruise_control_state.add_in_state_action(self.__cruise)
 
             layout = self.Layout((self.__free_wheel_state, self.__accelerating_state, self.__breaking_state, self.__end_state))
             super().__init__(layout, initialized, name, enabled)
@@ -55,32 +55,35 @@ class Scooting(MonitoredState):
         @property
         def elapsed_time(self):
             return self.__elapsed_time
-        
-        @elapsed_time.setter
-        def elapsed_time(self, value):
-            self.__elapsed_time = value
 
         def __accelerate(self:Self) -> None:
             #print(f'\rACCELERATE{self.__scooter.speed}  KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                        ")
-            self.__scooter.accelerate(lambda:self.elapsed_time)
-            self.__scooter.battery.set_power_device_accelerating(lambda:self.elapsed_time)
+            self.__scooter.accelerate(self.elapsed_time)
+            self.__scooter.battery.set_power_device_accelerating(self.elapsed_time)
             self.__scooter.speed_indicator.colorize(self.__scooter.speed_percent)
+            self.__scooter.charge_indicator.colorize(self.__scooter.battery.energy_level_percent)
+            self.__scooter.temp_indicator.colorize(self.__scooter.battery.temp_percent)
 
         def __breaking(self:Self) -> None:
             #print(f'\rDECELERATE{self.__scooter.speed}  KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                        ")
             self.__scooter.decelerate(lambda:self.elapsed_time, 0.5)
-            self.__scooter.battery.set_power_device_breaking(lambda:self.elapsed_time, lambda:self.__scooter.speed)
+            self.__scooter.battery.set_power_device_breaking(lambda:self.elapsed_time, self.__scooter.speed)
             self.__scooter.speed_indicator.colorize(self.__scooter.speed_percent)
+            self.__scooter.charge_indicator.colorize(self.__scooter.battery.energy_level_percent)
+            self.__scooter.temp_indicator.colorize(self.__scooter.battery.temp_percent)
 
         def __cruise(self:Self) -> None:
-            print("CRUISE")
             self.__scooter.battery.set_power_based_usage(lambda:self.__elapsed_time)
+            self.__scooter.charge_indicator.colorize(self.__scooter.battery.energy_level_percent)
+            self.__scooter.temp_indicator.colorize(self.__scooter.battery.temp_percent)
 
         def _in_free_wheel(self):
             #print(f'\rFREE WHEEL{self.__scooter.speed} KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                          ")
             self.__scooter.decelerate(lambda:self.elapsed_time, 0.0)
             self.__scooter.battery.set_power_based_usage(lambda:self.elapsed_time)
             self.__scooter.speed_indicator.colorize(self.__scooter.speed_percent)
+            self.__scooter.charge_indicator.colorize(self.__scooter.battery.energy_level_percent)
+            self.__scooter.temp_indicator.colorize(self.__scooter.battery.temp_percent)
 
         def start(self: Self) -> None:
             self.enabled = True
@@ -342,15 +345,15 @@ class ScooterStateMachine(StateMachineDevice):
         powering_down_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, powering_down_state), power_off_state))
 
         # #Actions
-        #power_off_state.add_entering_action(self._on_power_off)
-        #power_off_state.add_exiting_action(self._exit_power_off)
-        #unlocking_state.add_entering_action(self._on_unlocking)
-        #powering_up_state.add_entering_action(self._on_powering_up)
-        #powering_down_state.add_entering_action(self._on_powering_down)
-        #idle_state.add_entering_action(self._on_idle)
-        #intygrity_failed_state.add_entering_action(self._on_integrity_failed)
-        #locking_state.add_entering_action(self._on_locking)
-        #charging_failed_state.add_entering_action(self._on_charing_failed)
+        power_off_state.add_entering_action(self._on_power_off)
+        power_off_state.add_exiting_action(self._exit_power_off)
+        unlocking_state.add_entering_action(self._on_unlocking)
+        powering_up_state.add_entering_action(self._on_powering_up)
+        powering_down_state.add_entering_action(self._on_powering_down)
+        idle_state.add_entering_action(self._on_idle)
+        intygrity_failed_state.add_entering_action(self._on_integrity_failed)
+        locking_state.add_entering_action(self._on_locking)
+        charging_failed_state.add_entering_action(self._on_charing_failed)
 
         layout = (power_off_state, 
                   unlocking_state, 

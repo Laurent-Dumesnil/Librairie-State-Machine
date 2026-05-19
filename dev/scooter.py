@@ -5,6 +5,7 @@ from electric_scooter_panel import ElectricScooterPanel, SimpleLed, BarLed
 from console import Console
 
 ER = 120.0
+PMax = 1.5e6
 
 PI = 2.5
 PM = 120.0
@@ -59,7 +60,6 @@ class Scooter:
             self.__speed += delta_time()*(KA*AA*(1-self.speed/VV)-CA*self.speed**2)
         else:
             raise TypeError("delta_time must be float or callable type")
-        print(self.speed_percent)
 
     def decelerate(self:Self, delta_time:float | Callable[[], float], breaking_strength:float = 0.0) -> None:
         if isinstance(delta_time, float):
@@ -74,11 +74,19 @@ class Battery():
     def __init__(self:Self) -> None:
         self.__temperature = 30.0
         self.__power = 0.0
-        self.__energy_level = ER
+        self.__energy_level = PMax
 
     @property
     def energy_level(self:Self) -> float:
         return self.__energy_level
+    
+    @property
+    def energy_level_percent(self:Self):
+        return self.__energy_level*100/PMax
+    
+    @property
+    def temp_percent(self:Self) -> None:
+        return self.__temperature*100/85
 
     @property
     def temperature(self:Self) -> float:
@@ -86,10 +94,10 @@ class Battery():
 
     def __update_battery(self:Self, elapsed_time: float | Callable[[], float]) -> None:
         if isinstance(elapsed_time, float):
-            self.__energy_level = max(0, min(self.energy_level + elapsed_time * self.__power, PM))
+            self.__energy_level = max(0, min(self.energy_level + (elapsed_time * self.__power), PMax))
             self.__temperature = self.__temperature + elapsed_time * (TE * abs(self.__power)**2 - TD*(self.__temperature - TA))
         elif callable(elapsed_time):
-            self.__energy_level = max(0, min(self.energy_level + elapsed_time() * self.__power, PM))
+            self.__energy_level = max(0, min(self.energy_level + (elapsed_time() * self.__power), PMax))
             self.__temperature = self.__temperature + elapsed_time() * (TE * abs(self.__power)**2 - TD*(self.__temperature - TA))
         else:
             raise TypeError("elapsed_time must be float or callable type")

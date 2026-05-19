@@ -54,7 +54,7 @@ class ElectricScooterPanel():
         self.right_indicator:SimpleLed = SimpleLed(self.__console, (64,4),(6,1))
         self.speed_indicator:BarLed = BarLed(self.__console, (20,6), (1,2), 25, [Console.Color.GREEN]*25)
         self.charge_indicator:BarLed = BarLed(self.__console, (20,10), (1,2), 25, [Console.Color.BLUE]*5+[Console.Color.LIGHT_BLUE]*5+[Console.Color.CYAN]*5+[Console.Color.LIGHT_CYAN]*5+[Console.Color.WHITE]*5)
-        self.temp_indicator:BarLed = BarLed(self.__console, (20,14), (1,2), 25, [Console.Color.MAGENTA]*5+[Console.Color.LIGHT_MAGENTA]*5+[Console.Color.BLUE]*5+[Console.Color.LIGHT_BLUE]*5+[Console.Color.CYAN]*5)
+        self.temp_indicator:BarLed = BarLed(self.__console, (20,14), (1,2), 25, [Console.Color.LIGHT_BLUE]*5+[Console.Color.LIGHT_MAGENTA]*5+[Console.Color.MAGENTA]*5+[Console.Color.RED]*5+[Console.Color.WHITE]*5)
         self.list_simpleled = [self.top_left_blinker, 
                                self.bottom_left_blinker, 
                                self.top_right_blinker, 
