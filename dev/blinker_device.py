@@ -1,4 +1,4 @@
-from typing import Self, TypeAlias, Callable, overload, Any
+from typing import Self, TypeAlias, Callable, overload, Any, override
 from state_machine_device import StateMachineDevice
 from state_machine_utilities import MonitoredState, ConditionalTransition, DelaySinceEnteredCondition, StateValueCondition
 from tracking_device import TrackingDevice
@@ -228,16 +228,19 @@ class BlinkerDevice(StateMachineDevice) :
         
     def __validate_kwargs_blink(self:Self, kwargs_blink: dict[str, Any]) -> None:
         if "cycle_duration" in kwargs_blink:
-            if kwargs_blink["cycle_duration"] < 0 or not isinstance(kwargs_blink["cycle_duration"], float):
+            float(kwargs_blink["cycle_duration"])
+            if kwargs_blink["cycle_duration"] < 0:
                 raise ValueError("cycle_duration must be a float greater than 0")
         if "percent_on" in kwargs_blink:
-            if kwargs_blink["percent_on"] < 0 or kwargs_blink["percent_on"] > 1 or not isinstance(kwargs_blink["percent_on"], float):
+            float(kwargs_blink["percent_on"])
+            if kwargs_blink["percent_on"] < 0 or kwargs_blink["percent_on"] > 1:
                 raise ValueError("percent_on must be a float between 0 and 1")
         if "begin_on" in kwargs_blink:
             if not isinstance(kwargs_blink["begin_on"], bool):
                 raise ValueError("begin_on must be a bool")
         if "total_duration" in kwargs_blink:
-            if kwargs_blink["total_duration"] < 0 or not isinstance(kwargs_blink["total_duration"], float):
+            float(kwargs_blink["total_duration"])
+            if kwargs_blink["total_duration"] < 0:
                 raise ValueError("total_duration must be a float greater than 0")
         if "end_off" in kwargs_blink:
             if not isinstance(kwargs_blink["end_off"], bool):
@@ -465,12 +468,20 @@ class SideBlinkersDevice(TrackingDevice):
             rng(**kwargs)
         elif side is SideBlinkersDevice.Side.LEFT_RECIPROCAL:
             self.__left_blinker.blink(**kwargs)
-            self.__right_blinker.blink(**kwargs)
+            begin_opposite = not kwargs["begin_on"]
+            del kwargs["begin_on"]
+            self.__right_blinker.blink(**kwargs, begin_on=begin_opposite)
         elif side is SideBlinkersDevice.Side.RIGHT_RECIPROCAL:
-            self.__left_blinker.blink(**kwargs)
             self.__right_blinker.blink(**kwargs)
+            begin_opposite = not kwargs["begin_on"]
+            del kwargs["begin_on"]
+            self.__left_blinker.blink(**kwargs, begin_on=begin_opposite)
         else:
             raise ValueError(f"{side} n'est pas une donnée valide")
+        
+    @override
+    def _do_tracking(self, elapsed_time):
+        return super()._do_tracking(elapsed_time)
 
 
     

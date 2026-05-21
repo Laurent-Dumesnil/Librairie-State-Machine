@@ -3,12 +3,14 @@ from state_machine_device import StateMachineDevice
 from state_machine_utilities import MonitoredState, ActionState, State, DelaySinceEnteredCondition, ConditionalTransition
 from condition import Condition, ReaderCondition, AllConditions, AnyConditions, AbstractValueCondition, ElapsedTimerCondition
 from tracking_device import TrackingApplication
-from blinker_device_julien import BlinkerDevice
+from blinker_device import BlinkerDevice, SideBlinkersDevice
+#from blinker_device_julien import BlinkerDevice, SideBlinkersDevice
 from console_reader import ConsoleReader
 from console import Console
-from scooter import Scooter
+from scooter import Scooter, Light
 from electric_scooter_panel import ElectricScooterPanel
 from elapsed_timer import ElapsedTimer
+from functools import partial
 
 Number: TypeAlias = int | float
 KeyboardValue: TypeAlias = str | Console.SpecialKey
@@ -38,16 +40,24 @@ class Scooting(MonitoredState):
             #           CRUISE CONTROL
             #######################################
             self.__free_wheel_state.add_transition(ConditionalTransition(KeyPressCondition("c", lambda:self.__console_reader.actual_key_pressed), self.__cruise_control_state))
-            self.__cruise_control_state.add_transition(ConditionalTransition(ReaderCondition(Console.SpecialKey.LEFT_ARROW, lambda:self.__console_reader.actual_key_pressed),self.__accelerating_state))
-            self.__cruise_control_state.add_transition(ConditionalTransition(KeyPressCondition(Console.SpecialKey.LEFT_ARROW, lambda:self.__console_reader.actual_key_pressed),self.__breaking_state))
+            self.__cruise_control_state.add_transition(ConditionalTransition(KeyPressCondition(Console.SpecialKey.UP_ARROW, lambda:self.__console_reader.actual_key_pressed),self.__accelerating_state))
+            self.__cruise_control_state.add_transition(ConditionalTransition(KeyPressCondition(Console.SpecialKey.DOWN_ARROW, lambda:self.__console_reader.actual_key_pressed),self.__breaking_state))
 
             ##########################################
-            #               ACTIONS
+            #               IN ACTIONS
             ##########################################
-            self.__accelerating_state.add_in_state_action(self.__accelerate)
-            self.__free_wheel_state.add_in_state_action(self._in_free_wheel)
-            self.__breaking_state.add_in_state_action(self.__breaking)
-            self.__cruise_control_state.add_in_state_action(self.__cruise)
+            self.__accelerating_state.add_in_state_action(self.__in_accelerate)
+            self.__free_wheel_state.add_in_state_action(self.__in_free_wheel)
+            self.__breaking_state.add_in_state_action(self.__in_breaking)
+            self.__cruise_control_state.add_in_state_action(self.__in_cruise)
+
+            ##########################################
+            #          ENTER/EXIT ACTIONS
+            ##########################################
+            self.__breaking_state.add_entering_action(self.__enter_breaking)
+            self.__breaking_state.add_exiting_action(self.__exit_breaking)
+            self.__cruise_control_state.add_entering_action(self.__enter_cruise)
+            self.__cruise_control_state.add_exiting_action(self.__exit_cruise)
 
             layout = self.Layout((self.__free_wheel_state, self.__accelerating_state, self.__breaking_state, self.__end_state))
             super().__init__(layout, initialized, name, enabled)
@@ -56,7 +66,7 @@ class Scooting(MonitoredState):
         def elapsed_time(self):
             return self.__elapsed_time
 
-        def __accelerate(self:Self) -> None:
+        def __in_accelerate(self:Self) -> None:
             #print(f'\rACCELERATE{self.__scooter.speed}  KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                        ")
             self.__scooter.accelerate(self.elapsed_time)
             self.__scooter.battery.set_power_device_accelerating(self.elapsed_time)
@@ -64,7 +74,7 @@ class Scooting(MonitoredState):
             self.__scooter.charge_indicator.colorize(self.__scooter.battery.energy_level_percent)
             self.__scooter.temp_indicator.colorize(self.__scooter.battery.temp_percent)
 
-        def __breaking(self:Self) -> None:
+        def __in_breaking(self:Self) -> None:
             #print(f'\rDECELERATE{self.__scooter.speed}  KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                        ")
             self.__scooter.decelerate(lambda:self.elapsed_time, 0.5)
             self.__scooter.battery.set_power_device_breaking(lambda:self.elapsed_time, self.__scooter.speed)
@@ -72,12 +82,12 @@ class Scooting(MonitoredState):
             self.__scooter.charge_indicator.colorize(self.__scooter.battery.energy_level_percent)
             self.__scooter.temp_indicator.colorize(self.__scooter.battery.temp_percent)
 
-        def __cruise(self:Self) -> None:
+        def __in_cruise(self:Self) -> None:
             self.__scooter.battery.set_power_based_usage(lambda:self.__elapsed_time)
             self.__scooter.charge_indicator.colorize(self.__scooter.battery.energy_level_percent)
             self.__scooter.temp_indicator.colorize(self.__scooter.battery.temp_percent)
 
-        def _in_free_wheel(self):
+        def __in_free_wheel(self):
             #print(f'\rFREE WHEEL{self.__scooter.speed} KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                          ")
             self.__scooter.decelerate(lambda:self.elapsed_time, 0.0)
             self.__scooter.battery.set_power_based_usage(lambda:self.elapsed_time)
@@ -85,11 +95,25 @@ class Scooting(MonitoredState):
             self.__scooter.charge_indicator.colorize(self.__scooter.battery.energy_level_percent)
             self.__scooter.temp_indicator.colorize(self.__scooter.battery.temp_percent)
 
+        def __enter_breaking(self:Self) -> None:
+            self.__scooter.rearlight.colorize(Console.Color.LIGHT_RED)
+
+        def __exit_breaking(self:Self) -> None:
+            self.__scooter.rearlight.colorize(Console.Color.RED)
+
+        def __enter_cruise(self:Self) -> None:
+            self.__scooter.right_indicator.colorize(Console.Color.LIGHT_GREEN)
+
+        def __exit_cruise(self:Self) -> None:
+            self.__scooter.right_indicator.colorize()
+
         def start(self: Self) -> None:
+            self.__scooter.rearlight.colorize(Console.Color.RED)
             self.enabled = True
             self._transit_to(self.__free_wheel_state)
 
         def stop(self:Self):
+            self.__scooter.rearlight.colorize()
             self._transit_to(self.__end_state)
             self.enabled = False
 
@@ -284,25 +308,37 @@ class ScooterStateMachine(StateMachineDevice):
         #############################################
         #               LIGHTS FACTORY
         #############################################
-        def make_off_state():
+        def make_off_state(light:Light):
             def light_off():
-                self.__scooter.headlight.colorize()
+                light.colorize()
             off_state = MonitoredState("off_state")
             off_state.add_entering_action(light_off)
             return off_state
         
-        def make_on_state():
+        def make_on_state(light:Light, color:Console.Color):
             def light_on():
-                self.__scooter.headlight.colorize(Console.Color.GREY)
+                light.colorize(color)
             on_state = MonitoredState("on_state")
             on_state.add_entering_action(light_on)
             return on_state
         
-        self.__front_light = BlinkerDevice(make_off_state, make_on_state)
+        self.__left_blinker_on = False
+        self.__right_blinker_on = False
+        self.__left_arrow_consumed = False
+        self.__right_arrow_consumed = False
+        
+        self.__front_light = BlinkerDevice(partial(make_off_state, self.__scooter.headlight), partial(make_on_state,self.__scooter.headlight, Console.Color.WHITE))
+        self.__left_blinkers = SideBlinkersDevice(partial(make_off_state, self.__scooter.top_left_blinker), 
+                                            partial(make_on_state,self.__scooter.top_left_blinker, Console.Color.LIGHT_YELLOW),
+                                            partial(make_off_state, self.__scooter.bottom_left_blinker), 
+                                            partial(make_on_state,self.__scooter.bottom_left_blinker, Console.Color.LIGHT_YELLOW))
+        self.__right_blinkers = SideBlinkersDevice(partial(make_off_state, self.__scooter.top_right_blinker), 
+                                            partial(make_on_state,self.__scooter.top_right_blinker, Console.Color.LIGHT_YELLOW),
+                                            partial(make_off_state, self.__scooter.bottom_right_blinker), 
+                                            partial(make_on_state,self.__scooter.bottom_right_blinker, Console.Color.LIGHT_YELLOW))
 
         #States
         power_off_state = ActionState("power_off")
-        power_off_state.add_in_state_action(self._plug_charging_cable)
         unlocking_state = MonitoredState("unlocking")
         powering_up_state = MonitoredState("powerring_up")
         idle_state = MonitoredState("idle")
@@ -345,12 +381,17 @@ class ScooterStateMachine(StateMachineDevice):
         powering_down_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, powering_down_state), power_off_state))
 
         # #Actions
+        power_off_state.add_in_state_action(self._plug_charging_cable)
         power_off_state.add_entering_action(self._on_power_off)
         power_off_state.add_exiting_action(self._exit_power_off)
         unlocking_state.add_entering_action(self._on_unlocking)
         powering_up_state.add_entering_action(self._on_powering_up)
         powering_down_state.add_entering_action(self._on_powering_down)
         idle_state.add_entering_action(self._on_idle)
+        idle_state.add_in_state_action(partial(self._toggle_left_blinkers, SideBlinkersDevice.Side.LEFT_RECIPROCAL))
+        idle_state.add_in_state_action(partial(self._toggle_right_blinkers, SideBlinkersDevice.Side.RIGHT_RECIPROCAL))
+        scooting_state.add_in_state_action(self._toggle_left_blinkers)
+        scooting_state.add_in_state_action(self._toggle_right_blinkers)
         intygrity_failed_state.add_entering_action(self._on_integrity_failed)
         locking_state.add_entering_action(self._on_locking)
         charging_failed_state.add_entering_action(self._on_charing_failed)
@@ -370,6 +411,8 @@ class ScooterStateMachine(StateMachineDevice):
         self.add_sub_device(self.__console_reader)
         self.add_sub_device(self.__ridemanagement)
         self.add_sub_device(self.__front_light)
+        self.add_sub_device(self.__left_blinkers)
+        self.add_sub_device(self.__right_blinkers)
     
     @property
     def plugged_in(self):
@@ -403,13 +446,39 @@ class ScooterStateMachine(StateMachineDevice):
     def _on_charging(self):
         print("CHARGING")  
 
-    def _plug_charging_cable(self):
+    def _plug_charging_cable(self:Self) -> None:
         if "i" in self.__console_reader.actual_key_pressed:
             self.__plugged_in = True
 
-    def _unplug_charging_cable(self):
+    def _unplug_charging_cable(self:Self) -> None:
         if "o" in self.__console_reader.actual_key_pressed:
             self.__plugged_in = False
+
+    def _toggle_left_blinkers(self:Self, mode:SideBlinkersDevice.Side = SideBlinkersDevice.Side.BOTH) -> None:
+        if Console.SpecialKey.LEFT_ARROW in self.__console_reader.actual_key_pressed and not self.__left_blinker_on and not self.__left_arrow_consumed:
+            self.__left_arrow_consumed = True
+            self.__left_blinker_on = True
+            self.__left_blinkers.blink(side = mode, cycle_duration = 1, percent_on = 0.5 , begin_on = True)
+        elif Console.SpecialKey.LEFT_ARROW in self.__console_reader.actual_key_pressed and self.__left_blinker_on and not self.__left_arrow_consumed:
+            self.__left_arrow_consumed = True
+            self.__left_blinker_on = False
+            self.__left_blinkers.turn_off(side = SideBlinkersDevice.Side.BOTH)
+
+        if Console.SpecialKey.LEFT_ARROW not in self.__console_reader.actual_key_pressed:
+            self.__left_arrow_consumed = False
+
+    def _toggle_right_blinkers(self:Self, mode:SideBlinkersDevice.Side = SideBlinkersDevice.Side.BOTH) -> None:
+        if Console.SpecialKey.RIGHT_ARROW in self.__console_reader.actual_key_pressed and not self.__right_blinker_on and not self.__right_arrow_consumed:
+            self.__right_arrow_consumed = True
+            self.__right_blinker_on = True
+            self.__right_blinkers.blink(side = mode, cycle_duration = 1, percent_on = 0.5 , begin_on = True)
+        elif Console.SpecialKey.RIGHT_ARROW in self.__console_reader.actual_key_pressed and self.__right_blinker_on and not self.__right_arrow_consumed:
+            self.__right_arrow_consumed = True
+            self.__right_blinker_on = False
+            self.__right_blinkers.turn_off(side = SideBlinkersDevice.Side.BOTH)
+
+        if Console.SpecialKey.RIGHT_ARROW not in self.__console_reader.actual_key_pressed:
+            self.__right_arrow_consumed = False
 
 def main():
     app = TrackingApplication()
