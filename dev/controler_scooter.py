@@ -459,40 +459,43 @@ class ScooterStateMachine(StateMachineDevice):
             self.__plugged_in = False
 
     def _toggle_left_blinkers(self:Self, mode:SideBlinkersDevice.Side = SideBlinkersDevice.Side.BOTH) -> None:
-        if Console.SpecialKey.LEFT_ARROW in self.__console_reader.actual_key_pressed and not self.__left_blinker_on and not self.__left_arrow_consumed:
-            self.__left_arrow_consumed = True
-            self.__left_blinker_on = True
-            self.__left_blinkers.blink(side = mode, cycle_duration = 1, percent_on = 0.5 , begin_on = True)
-        elif Console.SpecialKey.LEFT_ARROW in self.__console_reader.actual_key_pressed and self.__left_blinker_on and not self.__left_arrow_consumed:
-            self.__left_arrow_consumed = True
-            self.__left_blinker_on = False
-            self.__left_blinkers.turn_off(side = SideBlinkersDevice.Side.BOTH)
+        if Console.SpecialKey.LEFT_ARROW in self.__console_reader.actual_key_pressed and not self.__left_arrow_consumed:
+                self.__left_arrow_consumed = True
+                if not self.__left_blinker_on:
+                    self.__left_blinker_on = True
+                    self.__left_blinkers.blink(side = mode, cycle_duration = 1, percent_on = 0.5 , begin_on = True)
+                else:
+                    self.__left_blinker_on = False
+                    self.__left_blinkers.turn_off(side = SideBlinkersDevice.Side.BOTH)
+                return
 
         if Console.SpecialKey.LEFT_ARROW not in self.__console_reader.actual_key_pressed:
             self.__left_arrow_consumed = False
 
     def _toggle_right_blinkers(self:Self, mode:SideBlinkersDevice.Side = SideBlinkersDevice.Side.BOTH) -> None:
-        if Console.SpecialKey.RIGHT_ARROW in self.__console_reader.actual_key_pressed and not self.__right_blinker_on and not self.__right_arrow_consumed:
+        if Console.SpecialKey.RIGHT_ARROW in self.__console_reader.actual_key_pressed and not self.__right_arrow_consumed:
             self.__right_arrow_consumed = True
-            self.__right_blinker_on = True
-            self.__right_blinkers.blink(side = mode, cycle_duration = 1, percent_on = 0.5 , begin_on = True)
-        elif Console.SpecialKey.RIGHT_ARROW in self.__console_reader.actual_key_pressed and self.__right_blinker_on and not self.__right_arrow_consumed:
-            self.__right_arrow_consumed = True
-            self.__right_blinker_on = False
-            self.__right_blinkers.turn_off(side = SideBlinkersDevice.Side.BOTH)
+            if not self.__right_blinker_on:
+                self.__right_blinker_on = True
+                self.__right_blinkers.blink(side = mode, cycle_duration = 1, percent_on = 0.5 , begin_on = True)
+            else:
+                self.__right_blinker_on = False
+                self.__right_blinkers.turn_off(side = SideBlinkersDevice.Side.BOTH)
+            return
 
         if Console.SpecialKey.RIGHT_ARROW not in self.__console_reader.actual_key_pressed:
             self.__right_arrow_consumed = False
     
     def _toggle_headlight(self:Self) -> None:
-        if Console.SpecialKey.SPACE in self.__console_reader.actual_key_pressed and not self.__headlight_on and not self.__spacebar_consumed:
-            self.__spacebar_consumed = True
-            self.__headlight_on = True
-            self.__headlight.turn_on()
-        elif Console.SpecialKey.SPACE in self.__console_reader.actual_key_pressed and self.__headlight_on and not self.__spacebar_consumed:
-            self.__spacebar_consumed = True
-            self.__headlight_on = False
-            self.__headlight.turn_off()
+        if  Console.SpecialKey.SPACE in self.__console_reader.actual_key_pressed and not self.__spacebar_consumed:
+             self.__spacebar_consumed = True
+             if not self.__headlight_on:
+                self.__headlight_on = True
+                self.__headlight.turn_on()
+             else:
+                self.__headlight_on = False
+                self.__headlight.turn_off()
+             return
 
         if Console.SpecialKey.SPACE not in self.__console_reader.actual_key_pressed:
             self.__spacebar_consumed = False
