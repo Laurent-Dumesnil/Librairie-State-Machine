@@ -324,10 +324,12 @@ class ScooterStateMachine(StateMachineDevice):
         
         self.__left_blinker_on = False
         self.__right_blinker_on = False
+        self.__headlight_on = False
         self.__left_arrow_consumed = False
+        self.__spacebar_consumed = False
         self.__right_arrow_consumed = False
         
-        self.__front_light = BlinkerDevice(partial(make_off_state, self.__scooter.headlight), partial(make_on_state,self.__scooter.headlight, Console.Color.WHITE))
+        self.__headlight = BlinkerDevice(partial(make_off_state, self.__scooter.headlight), partial(make_on_state,self.__scooter.headlight, Console.Color.WHITE))
         self.__left_blinkers = SideBlinkersDevice(partial(make_off_state, self.__scooter.top_left_blinker), 
                                             partial(make_on_state,self.__scooter.top_left_blinker, Console.Color.LIGHT_YELLOW),
                                             partial(make_off_state, self.__scooter.bottom_left_blinker), 
@@ -383,18 +385,23 @@ class ScooterStateMachine(StateMachineDevice):
         # #Actions
         power_off_state.add_in_state_action(self._plug_charging_cable)
         power_off_state.add_entering_action(self._on_power_off)
-        power_off_state.add_exiting_action(self._exit_power_off)
         unlocking_state.add_entering_action(self._on_unlocking)
         powering_up_state.add_entering_action(self._on_powering_up)
         powering_down_state.add_entering_action(self._on_powering_down)
         idle_state.add_entering_action(self._on_idle)
+        intygrity_failed_state.add_entering_action(self._on_integrity_failed)
+        locking_state.add_entering_action(self._on_locking)
+        charging_failed_state.add_entering_action(self._on_charing_failed)
+
+        #Light Actions
         idle_state.add_in_state_action(partial(self._toggle_left_blinkers, SideBlinkersDevice.Side.LEFT_RECIPROCAL))
         idle_state.add_in_state_action(partial(self._toggle_right_blinkers, SideBlinkersDevice.Side.RIGHT_RECIPROCAL))
         scooting_state.add_in_state_action(self._toggle_left_blinkers)
         scooting_state.add_in_state_action(self._toggle_right_blinkers)
-        intygrity_failed_state.add_entering_action(self._on_integrity_failed)
-        locking_state.add_entering_action(self._on_locking)
-        charging_failed_state.add_entering_action(self._on_charing_failed)
+        power_off_state.add_in_state_action(self._toggle_headlight)
+        charging_state.add_in_state_action(self._toggle_headlight)
+        idle_state.add_in_state_action(self._toggle_headlight)
+        scooting_state.add_in_state_action(self._toggle_headlight)
 
         layout = (power_off_state, 
                   unlocking_state, 
@@ -410,7 +417,7 @@ class ScooterStateMachine(StateMachineDevice):
         super().__init__(StateMachineDevice.Layout(layout), initialized=True)
         self.add_sub_device(self.__console_reader)
         self.add_sub_device(self.__ridemanagement)
-        self.add_sub_device(self.__front_light)
+        self.add_sub_device(self.__headlight)
         self.add_sub_device(self.__left_blinkers)
         self.add_sub_device(self.__right_blinkers)
     
@@ -425,10 +432,7 @@ class ScooterStateMachine(StateMachineDevice):
 
     def _on_power_off(self):
         print("POWER OFF")
-        self.__front_light.blink(cycle_duration=5.0, percent_on=0.5, begin_on=True)
-        #self.__front_light.turn_off()
-    def _exit_power_off(self):
-        self.__front_light.enabled = False
+        #self.__headlight.turn_off()
     def _on_unlocking(self):
         print("UNLOCKING")
     def _on_powering_up(self):
@@ -479,6 +483,19 @@ class ScooterStateMachine(StateMachineDevice):
 
         if Console.SpecialKey.RIGHT_ARROW not in self.__console_reader.actual_key_pressed:
             self.__right_arrow_consumed = False
+    
+    def _toggle_headlight(self:Self) -> None:
+        if Console.SpecialKey.SPACE in self.__console_reader.actual_key_pressed and not self.__headlight_on and not self.__spacebar_consumed:
+            self.__spacebar_consumed = True
+            self.__headlight_on = True
+            self.__headlight.turn_on()
+        elif Console.SpecialKey.SPACE in self.__console_reader.actual_key_pressed and self.__headlight_on and not self.__spacebar_consumed:
+            self.__spacebar_consumed = True
+            self.__headlight_on = False
+            self.__headlight.turn_off()
+
+        if Console.SpecialKey.SPACE not in self.__console_reader.actual_key_pressed:
+            self.__spacebar_consumed = False
 
 def main():
     app = TrackingApplication()
