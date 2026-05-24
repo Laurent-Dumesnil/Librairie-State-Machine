@@ -29,14 +29,14 @@ class Scooter:
     def __init__(self:Self, panel:ElectricScooterPanel) -> None:
         self.__speed = 0.0
         self.__battery = Battery()
-        self.top_left_blinker = Light(panel.top_left_blinker)
-        self.top_right_blinker = Light(panel.top_right_blinker)
-        self.bottom_left_blinker = Light(panel.bottom_left_blinker)
-        self.bottom_right_blinker = Light(panel.bottom_right_blinker)
-        self.headlight = Light(panel.headlight)
-        self.rearlight = Light(panel.rearlight)
-        self.left_indicator = Light(panel.left_indicator)
-        self.right_indicator = Light(panel.right_indicator)
+        self.top_left_blinker = Light(panel.top_left_blinker, Console.Color.YELLOW)
+        self.top_right_blinker = Light(panel.top_right_blinker, Console.Color.YELLOW)
+        self.bottom_left_blinker = Light(panel.bottom_left_blinker, Console.Color.YELLOW)
+        self.bottom_right_blinker = Light(panel.bottom_right_blinker, Console.Color.YELLOW)
+        self.headlight = Light(panel.headlight, Console.Color.WHITE)
+        self.rearlight = Light(panel.rearlight, Console.Color.LIGHT_RED)
+        self.left_indicator = Light(panel.left_indicator, Console.Color.BLUE)
+        self.right_indicator = Light(panel.right_indicator, Console.Color.LIGHT_GREEN)
         self.speed_indicator = BarLight(panel.speed_indicator)
         self.charge_indicator = BarLight(panel.charge_indicator)
         self.temp_indicator = BarLight(panel.temp_indicator)
@@ -138,19 +138,40 @@ class Battery():
             raise TypeError("elapsed_time must be float or callable type")
 
 class Light():
-    def __init__(self:Self, light:SimpleLed) -> None:
+    def __init__(self:Self, light:SimpleLed, default_color:Console.Color) -> None:
         self.__light = light
+        self.__color = default_color
 
-    def colorize(self:Self, color:Console.Color|None = None) -> None:
-        if color is None:
-            self.__light.draw_led(Console.Color.DARK_GREY)
-        else:
-            self.__light.draw_led(color)
+    @property
+    def color(self:Self) -> Console.Color:
+        return self.__color
+    
+    @color.setter
+    def color(self:Self, color:Console.Color):
+        self.__color = color
+
+    def close(self:Self) -> None:
+        self.__light.draw_led(Console.Color.DARK_GREY)
+
+    def colorize(self:Self) -> None:
+        self.__light.draw_led(self.__color)
 
 class BarLight():
     def __init__(self:Self, light:BarLed) -> None:
         self.__light = light
+        self.__percent_on = 0
 
-    def colorize(self:Self, percent_on:float) -> None:
-        self.__light.draw_led(percent_on)
+    @property
+    def percent_on(self:Self) -> float:
+        return self.__percent_on
+    
+    @percent_on.setter
+    def percent_on(self:Self, percent_on:float):
+        self.__percent_on = percent_on
+
+    def close(self:Self) -> None:
+        self.__light.draw_led(0)
+
+    def colorize(self:Self) -> None:
+        self.__light.draw_led(self.__percent_on)
      
