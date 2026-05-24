@@ -1,11 +1,10 @@
 from __future__ import annotations
 from typing import Self, Callable
-from abc import ABC, abstractmethod
 from electric_scooter_panel import ElectricScooterPanel, SimpleLed, BarLed
 from console import Console
 
 ER = 120.0
-PMax = 1.5e6
+PMAX = 1.5e6
 
 PI = 2.5
 PM = 120.0
@@ -61,85 +60,77 @@ class Scooter:
         elif callable(delta_time):
             self.__speed += delta_time()*(KA*AA*(1-self.speed/VV)-CA*self.speed**2)
         else:
-            raise TypeError("delta_time must be float or callable type")
+            raise TypeError("delta_time must be a float or callable")
 
     def decelerate(self:Self, delta_time:float | Callable[[], float], breaking_strength:float = 0.0) -> None:
+        if not isinstance(breaking_strength, float):
+            raise TypeError("breaking_strength must be a float")
+        
         if isinstance(delta_time, float):
             self.__speed = max(0, self.speed - delta_time*(CR + KB*breaking_strength + CA*self.speed**2))
         elif callable(delta_time):
-             self.__speed = max(0, self.speed - delta_time()*(CR + KB*breaking_strength + CA*self.speed**2))
+            self.__speed = max(0, self.speed - delta_time()*(CR + KB*breaking_strength + CA*self.speed**2))
         else:
-            raise TypeError("delta_time must be float or callable type")
+            raise TypeError("delta_time must be a float or callable")
     
 
-class Battery():
+class Battery:
     def __init__(self:Self) -> None:
         self.__temperature = 30.0
         self.__power = 0.0
-        self.__energy_level = PMax
+        self.__energy_level = PMAX
 
     @property
     def energy_level(self:Self) -> float:
         return self.__energy_level
     
     @property
-    def energy_level_percent(self:Self):
-        return self.__energy_level*100/PMax
+    def energy_level_percent(self:Self) -> float:
+        return self.__energy_level*100/PMAX
     
-    @property
-    def temp_percent(self:Self) -> None:
-        return self.__temperature*100/85
-
     @property
     def temperature(self:Self) -> float:
         return self.__temperature
-
+    
+    @property
+    def temp_percent(self:Self) -> float:
+        return self.__temperature*100/85
+    
     def __update_battery(self:Self, elapsed_time: float | Callable[[], float]) -> None:
         if isinstance(elapsed_time, float):
-            self.__energy_level = max(0, min(self.energy_level + (elapsed_time * self.__power), PMax))
+            self.__energy_level = max(0, min(self.energy_level + (elapsed_time * self.__power), PMAX))
             self.__temperature = self.__temperature + elapsed_time * (TE * abs(self.__power)**2 - TD*(self.__temperature - TA))
         elif callable(elapsed_time):
-            self.__energy_level = max(0, min(self.energy_level + (elapsed_time() * self.__power), PMax))
+            self.__energy_level = max(0, min(self.energy_level + (elapsed_time() * self.__power), PMAX))
             self.__temperature = self.__temperature + elapsed_time() * (TE * abs(self.__power)**2 - TD*(self.__temperature - TA))
         else:
-            raise TypeError("elapsed_time must be float or callable type")
+            raise TypeError("elapsed_time must be a float or callable")
 
     def set_power_device_off(self:Self, elapsed_time: float | Callable[[], float]) -> None:
-        if isinstance(elapsed_time, float) or callable(elapsed_time):
-            self.__power = -PS
-            self.__update_battery(elapsed_time)
-        else:
-            raise TypeError("elapsed_time must be float or callable type")
+        self.__power = -PS
+        self.__update_battery(elapsed_time)
         
     def set_power_based_usage(self:Self, elapsed_time: float | Callable[[], float]) -> None:
-        if isinstance(elapsed_time, float) or callable(elapsed_time):
-            self.__power = -PI
-            self.__update_battery(elapsed_time)
-        else:
-            raise TypeError("elapsed_time must be float or callable type")
+        self.__power = -PI
+        self.__update_battery(elapsed_time)
 
     def set_power_device_charging(self:Self, elapsed_time: float | Callable[[], float]) -> None:
-        if isinstance(elapsed_time, float) or callable(elapsed_time):
-            self.__power = PM * AT - PI
-            self.__update_battery(elapsed_time)
-        else:
-            raise TypeError("elapsed_time must be float or callable type")
+        self.__power = PM * AT - PI
+        self.__update_battery(elapsed_time)
 
     def set_power_device_accelerating(self:Self, elapsed_time: float | Callable[[], float]) -> None:
-        if isinstance(elapsed_time, float) or callable(elapsed_time):
-            self.__power = -(PI + PM * AA)
-            self.__update_battery(elapsed_time)
-        else:
-            raise TypeError("elapsed_time must be float or callable type")
+        self.__power = -(PI + PM * AA)
+        self.__update_battery(elapsed_time)
 
     def set_power_device_breaking(self:Self, elapsed_time: float | Callable[[], float], speed:float | Callable[[], float]) -> None:
-        if isinstance(elapsed_time, float) or callable(elapsed_time):
+        if isinstance(speed, float):
             self.__power = ER * AB * speed - PI
-            self.__update_battery(elapsed_time)
         else:
-            raise TypeError("elapsed_time must be float or callable type")
+            raise TypeError("speed must be a float")
+        self.__update_battery(elapsed_time)
 
-class Light():
+
+class Light:
     def __init__(self:Self, light:SimpleLed, default_color:Console.Color) -> None:
         self.__light = light
         self.__color = default_color
@@ -150,7 +141,7 @@ class Light():
         return self.__color
     
     @color.setter
-    def color(self:Self, color:Console.Color):
+    def color(self:Self, color:Console.Color) -> None:
         self.__color = color
 
     @property
@@ -158,7 +149,7 @@ class Light():
         return self.__off_color
     
     @off_color.setter
-    def off_color(self:Self, color:Console.Color):
+    def off_color(self:Self, color:Console.Color) -> None:
         self.__off_color = color
 
     def close(self:Self) -> None:
@@ -167,18 +158,24 @@ class Light():
     def colorize(self:Self) -> None:
         self.__light.draw_led(self.__color)
 
-class BarLight():
+
+class BarLight:
     def __init__(self:Self, light:BarLed) -> None:
         self.__light = light
-        self.__percent_on = 0
+        self.__percent_on = 0.0
 
     @property
     def percent_on(self:Self) -> float:
         return self.__percent_on
     
     @percent_on.setter
-    def percent_on(self:Self, percent_on:float):
-        self.__percent_on = percent_on
+    def percent_on(self:Self, percent_on:float) -> None:
+        if percent_on < 0.0 or percent_on > 100.0:
+            raise ValueError("percent_on must be between 0 and 100")
+        elif isinstance(percent_on, float):
+            self.__percent_on = percent_on
+        else:
+            raise TypeError("percent_on must be a float")
 
     def close(self:Self) -> None:
         self.__light.draw_led(0)
