@@ -34,7 +34,9 @@ class Scooter:
         self.bottom_left_blinker = Light(panel.bottom_left_blinker, Console.Color.YELLOW)
         self.bottom_right_blinker = Light(panel.bottom_right_blinker, Console.Color.YELLOW)
         self.headlight = Light(panel.headlight, Console.Color.WHITE)
-        self.rearlight = Light(panel.rearlight, Console.Color.LIGHT_RED)
+        self.rearlight = Light(panel.rearlight, Console.Color.RED)
+        self.left_side_light = Light(panel.left_side_light, Console.Color.LIGHT_BLUE)
+        self.right_side_light = Light(panel.right_side_light, Console.Color.LIGHT_BLUE)
         self.left_indicator = Light(panel.left_indicator, Console.Color.BLUE)
         self.right_indicator = Light(panel.right_indicator, Console.Color.LIGHT_GREEN)
         self.speed_indicator = BarLight(panel.speed_indicator)
@@ -141,6 +143,7 @@ class Light():
     def __init__(self:Self, light:SimpleLed, default_color:Console.Color) -> None:
         self.__light = light
         self.__color = default_color
+        self.__off_color = Console.Color.DARK_GREY
 
     @property
     def color(self:Self) -> Console.Color:
@@ -150,8 +153,16 @@ class Light():
     def color(self:Self, color:Console.Color):
         self.__color = color
 
+    @property
+    def off_color(self:Self) -> Console.Color:
+        return self.__off_color
+    
+    @off_color.setter
+    def off_color(self:Self, color:Console.Color):
+        self.__off_color = color
+
     def close(self:Self) -> None:
-        self.__light.draw_led(Console.Color.DARK_GREY)
+        self.__light.draw_led(self.__off_color)
 
     def colorize(self:Self) -> None:
         self.__light.draw_led(self.__color)
