@@ -1,10 +1,9 @@
 from typing import override, Self, Callable, TypeAlias
 from state_machine_device import StateMachineDevice
 from state_machine_utilities import MonitoredState, ActionState, State, DelaySinceEnteredCondition, ConditionalTransition, ActionTransition
-from condition import Condition, ReaderCondition, AllConditions, AnyConditions, AbstractValueCondition, ElapsedTimerCondition
+from condition import ReaderCondition, AllConditions, AnyConditions, AbstractValueCondition
 from tracking_device import TrackingApplication
 from blinker_device import BlinkerDevice, SideBlinkersDevice
-#from blinker_device_julien import BlinkerDevice, SideBlinkersDevice
 from console_reader import ConsoleReader
 from console import Console
 from scooter import Scooter, Light, BarLight
@@ -67,7 +66,6 @@ class Scooting(MonitoredState):
             return self.__elapsed_time
 
         def __in_accelerate(self:Self) -> None:
-            #print(f'\rACCELERATE{self.__scooter.speed}  KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                        ")
             self.__scooter.accelerate(self.elapsed_time)
             self.__scooter.battery.set_power_device_accelerating(self.elapsed_time)
             self.__scooter.speed_indicator.percent_on = self.__scooter.speed_percent
@@ -78,7 +76,6 @@ class Scooting(MonitoredState):
             self.__scooter.temp_indicator.colorize()
 
         def __in_breaking(self:Self) -> None:
-            #print(f'\rDECELERATE{self.__scooter.speed}  KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                        ")
             self.__scooter.decelerate(lambda:self.elapsed_time, 0.5)
             self.__scooter.battery.set_power_device_breaking(lambda:self.elapsed_time, self.__scooter.speed)
             self.__scooter.speed_indicator.percent_on = self.__scooter.speed_percent
@@ -96,8 +93,7 @@ class Scooting(MonitoredState):
             self.__scooter.charge_indicator.colorize()
             self.__scooter.temp_indicator.colorize()
 
-        def __in_free_wheel(self):
-            #print(f'\rFREE WHEEL{self.__scooter.speed} KEY_PRESSED: {self.__console_reader.actual_key_pressed}', end="                          ")
+        def __in_free_wheel(self:Self) -> None:
             self.__scooter.decelerate(lambda:self.elapsed_time, 0.0)
             self.__scooter.battery.set_power_based_usage(lambda:self.elapsed_time)
             self.__scooter.speed_indicator.percent_on = self.__scooter.speed_percent
@@ -123,35 +119,41 @@ class Scooting(MonitoredState):
             self.__scooter.right_indicator.off_color = Console.Color.DARK_GREY
             self.__scooter.right_indicator.close()
 
-        def start(self: Self) -> None:
+        @override
+        def _enabling(self:Self) -> None:
             self.__scooter.rearlight.color = Console.Color.RED
-            self.enabled = True
             self._transit_to(self.__free_wheel_state)
 
-        def stop(self:Self):
+        @override
+        def _disabling(self:Self) -> None:
             self.__scooter.rearlight.close()
             self.__scooter.charge_indicator.close()
             self.__scooter.temp_indicator.close()
             self._transit_to(self.__end_state)
-            self.enabled = False
 
         @override
-        def _do_tracking(self, elapsed_time):
+        def _do_tracking(self:Self, elapsed_time:float) -> None:
             super()._do_tracking(elapsed_time)
             self.__elapsed_time = elapsed_time
 
-    def __init__(self, name, ridemanagement: RideManagement):
-        self.__ridemanagement = ridemanagement
+    def __init__(self:Self, name:str, console_reader:ConsoleReader, scooter:Scooter) -> None:
+        self.__ridemanagement = self.RideManagement(console_reader, scooter)
         super().__init__(name)
+        self.__timer = ElapsedTimer(mode= ElapsedTimer.Mode.INTERVAL)
+
+    @override
+    def _do_in_state_action(self:Self) -> None:
+        self.__ridemanagement.track(self.__timer.elapsed)
+        return super()._do_in_state_action()
     
     @override
     def _do_entering_action(self:Self) -> None:
         super()._do_entering_action()
-        self.__ridemanagement.start()
+        self.__ridemanagement.enabled = True
 
     @override
     def _do_exiting_action(self:Self) -> None:
-        self.__ridemanagement.stop()
+        self.__ridemanagement.enabled = False
 
 class Charging(MonitoredState):
     class BatteryManagement(StateMachineDevice):
@@ -166,23 +168,22 @@ class Charging(MonitoredState):
             self.__charging_off = ActionState("Charging Off")
             self.__cooling = ActionState("Cooling")
 
-            self.__charging_on.add_transition(ConditionalTransition(ReaderCondition(True, lambda: self.__battery.energy_level >= 99), self.__charging_complete))
+            self.__charging_on.add_transition(ConditionalTransition(ReaderCondition(True, lambda: self.__battery.energy_level_percent >= 99), self.__charging_complete))
             self.__charging_on.add_transition(ConditionalTransition(ReaderCondition(True, lambda: self.__battery.temperature > 85), self.__cooling))
-            self.__charging_on.add_transition(ConditionalTransition(KeyPressCondition("f", lambda:self.__console_reader.key_pressed), self.__charging_terminated))
-            self.__charging_complete.add_transition(ConditionalTransition(KeyPressCondition("f", lambda:self.__console_reader.key_pressed), self.__charging_terminated))
-            self.__cooling.add_transition(ConditionalTransition(KeyPressCondition("f", lambda:self.__console_reader.key_pressed), self.__charging_terminated))
-            self.__charging_complete.add_transition(ConditionalTransition(ReaderCondition(True, lambda:self.__battery.energy_level < 95), self.__charging_on))
+            self.__charging_complete.add_transition(ConditionalTransition(ReaderCondition(True, lambda:self.__battery.energy_level_percent < 95), self.__charging_on))
             self.__cooling.add_transition(ConditionalTransition(ReaderCondition(True, lambda: self.__battery.temperature < 75), self.__charging_on))
 
             self.__charging_on.add_in_state_action(self.__charging)
             self.__charging_complete.add_in_state_action(self.__discharging)
             self.__cooling.add_in_state_action(self.__discharging)
+
                 
             layout = self.Layout((self.__charging_on, self.__charging_complete, self.__cooling, self.__charging_terminated))
+
+            for state in layout._states:
+                state.add_transition(ConditionalTransition(KeyPressCondition("f", lambda:self.__console_reader.key_pressed), self.__charging_terminated))
+
             super().__init__(layout, initialized, name, enabled)
-            
-            # if initialized : 
-            #     self.reset()
 
         @property
         def charging_off(self:Self) -> ActionState:
@@ -190,7 +191,6 @@ class Charging(MonitoredState):
         
         def __charging(self:Self) -> None:
             self.__battery.set_power_device_charging(self.__delta_time)
-            print("f")
             self.__scooter.charge_indicator.percent_on = self.__scooter.battery.energy_level_percent
             self.__scooter.temp_indicator.percent_on = self.__scooter.battery.temp_percent
 
@@ -204,27 +204,25 @@ class Charging(MonitoredState):
             super()._do_tracking(elapsed_time) 
             self.__delta_time = elapsed_time
         
-        # def start(self:Self) -> None:
-        #     self.reset()
-        #     self.enabled = True
-        #     self._transit_to(self.__charging_on)
-
-        # def stop(self:Self) -> None:
-        #     self.enabled = False
-        #     self._transit_to(self.__charging_off)
         @override
-        def _enabling(self):
+        def _enabling(self:Self) -> None:
             self.reset()
             self._transit_to(self.__charging_on)
 
         @override
-        def _disabling(self):
+        def _disabling(self:Self) -> None:
             if not self.current_state.terminal:
                 self._transit_to(self.__charging_off)
         
     def __init__(self:Self, name:str, console_reader:ConsoleReader, scooter:Scooter) -> None:
         self.__battery_management = Charging.BatteryManagement(console_reader, scooter, initialized=True, enabled=False)
         super().__init__(name)
+        self.__timer = ElapsedTimer(mode= ElapsedTimer.Mode.INTERVAL)
+
+    @override
+    def _do_in_state_action(self:Self) -> None:
+        self.__battery_management.track(self.__timer.elapsed)
+        return super()._do_in_state_action()
 
     @property
     def charging_error(self:Self) -> bool:
@@ -232,14 +230,13 @@ class Charging(MonitoredState):
     
     @override
     def _do_entering_action(self:Self) -> None:
+        self.__timer.reset()
         super()._do_entering_action()
-        # self.__battery_management.start()
         self.__battery_management.enabled = True
 
     @override
     def _do_exiting_action(self:Self) -> None:
         super()._do_exiting_action()
-        # self.__battery_management.stop()
         self.__battery_management.disabled = True
 
 class DelaySinceBelowThresholdCondition(ReaderCondition[Number]):
@@ -253,7 +250,7 @@ class DelaySinceBelowThresholdCondition(ReaderCondition[Number]):
             duration: Le temps en seconde depuis qu'on a atteint la expected_value
             invert: Si True, la condition est inversée.
     """
-    def __init__(self:Self, threshold:Number, value_reader:Callable[[], Number], duration:float, invert:bool=False):
+    def __init__(self:Self, threshold:Number, value_reader:Callable[[], Number], duration:float, invert:bool=False) -> None:
         self.__duration:Number
         self.duration = duration
         self.__elapsed_timer = ElapsedTimer(ElapsedTimer.Mode.ACCUMULATED)
@@ -265,7 +262,7 @@ class DelaySinceBelowThresholdCondition(ReaderCondition[Number]):
         return self.__duration
     
     @duration.setter
-    def duration(self, value):
+    def duration(self:Self, value:float) -> None:
         if not isinstance(value, float):
             raise TypeError("Must be float type")
         if value < 0:
@@ -273,7 +270,7 @@ class DelaySinceBelowThresholdCondition(ReaderCondition[Number]):
         self.__duration = value
 
     @override
-    def _compare(self) -> bool:
+    def _compare(self:Self) -> bool:
         actual_value = self.value_reader()
         if actual_value > self.expected_value:
             self.__enabled = False
@@ -295,7 +292,7 @@ class DelaySinceBelowThresholdCondition(ReaderCondition[Number]):
         self.__elapsed_timer.reset()
 
 class LessThanValueCondition(ReaderCondition[Number]):
-    def __init__(self:Self, target_value:Number, value_reader:Callable[[], Number], invert:bool=False):
+    def __init__(self:Self, target_value:Number, value_reader:Callable[[], Number], invert:bool=False) -> None:
         """
         Condition qui retourne True quand une valeur dynamique est plus petite que la target_value
         Args:
@@ -308,7 +305,7 @@ class LessThanValueCondition(ReaderCondition[Number]):
         super().__init__(expected_value=target_value, value_reader=value_reader, invert=invert)
 
     @override
-    def _compare(self) -> bool:
+    def _compare(self:Self) -> bool:
         return self.value_reader() < self.expected_value
 
 class KeyPressCondition(AbstractValueCondition[KeyboardValue]):
@@ -319,7 +316,7 @@ class KeyPressCondition(AbstractValueCondition[KeyboardValue]):
             key_reader: Callable qui retourne une liste de touche appuyé au clavier.
             invert: Si True, la condition est inversée donc vérifie si expected_key_value n'est pas dans le key_reader.
         """
-    def __init__(self:Self, expected_key_value: KeyboardValue, key_reader:Callable[[], list[KeyboardValue]], invert:bool=False):
+    def __init__(self:Self, expected_key_value: KeyboardValue, key_reader:Callable[[], list[KeyboardValue]], invert:bool=False) -> None:
         if not isinstance(expected_key_value, KeyboardValue):
             raise TypeError("Must be str or Console.SpecialKey type")
         super().__init__(expected_value=expected_key_value, invert=invert)
@@ -327,17 +324,17 @@ class KeyPressCondition(AbstractValueCondition[KeyboardValue]):
         self.key_reader = key_reader
 
     @property
-    def key_reader(self):
+    def key_reader(self:Self) -> Callable[[], list[KeyboardValue]]:
         return self.__key_reader
     
     @key_reader.setter
-    def key_reader(self, value):
+    def key_reader(self:Self, value:Callable[[], list[KeyboardValue]]):
         if not callable(value):
             raise TypeError("key_reader must be callable")
         self.__key_reader = value
 
     @override
-    def _compare(self):
+    def _compare(self:Self) -> bool:
         return self.expected_value in self.key_reader()
     
 
@@ -360,12 +357,10 @@ def make_on_state(light:Light|BarLight) -> MonitoredState:
     return on_state
 
 class ScooterStateMachine(StateMachineDevice):
-    def __init__(self: Self, console_reader:ConsoleReader, model:Scooter):
+    def __init__(self: Self, console_reader:ConsoleReader, model:Scooter) -> None:
         self.__console_reader = console_reader
         self.__scooter = model
         self.__plugged_in = False
-        self.__ridemanagement = Scooting.RideManagement(self.__console_reader, self.__scooter, initialized=False, enabled=False)
-        # self.__batterymanagement = Charging.BatteryManagement(self.__console_reader, self.__scooter, initialized=False, enabled=False)
         
         self.__left_blinker_on = False
         self.__right_blinker_on = False
@@ -405,7 +400,7 @@ class ScooterStateMachine(StateMachineDevice):
         integrity_failed_state = MonitoredState("integrity_failed")
         charging_state = Charging("charging",self.__console_reader, self.__scooter)
         charging_state.add_in_state_action(self._unplug_charging_cable)
-        scooting_state = Scooting("scooting", self.__ridemanagement)
+        scooting_state = Scooting("scooting",self.__console_reader, self.__scooter)
 
         # #Conditions
         plugged_in_condition = ReaderCondition(True, lambda:self.plugged_in)
@@ -418,7 +413,6 @@ class ScooterStateMachine(StateMachineDevice):
         power_off_state.add_transition(ConditionalTransition(plugged_in_condition, charging_state))
         power_off_state.add_transition(ConditionalTransition(AllConditions([KeyPressCondition("p", lambda:self.__console_reader.actual_key_pressed), plugged_out_condition]), unlocking_state))
         charging_state.add_transition(ConditionalTransition(ReaderCondition(False, lambda:self.plugged_in), power_off_state)) 
-        #À vérifier si ya meilleure solution
         charging_state.add_transition(ConditionalTransition(ReaderCondition(True, lambda:charging_state.charging_error), charging_failed_state))
         charging_error_transition = ActionTransition(DelaySinceEnteredCondition(3.0, charging_failed_state), powering_down_state)
         charging_error_transition.add_transiting_action(partial(self.set_power_off_context, "ChargingError"))
@@ -436,14 +430,24 @@ class ScooterStateMachine(StateMachineDevice):
         no_power_transition.add_transiting_action(partial(self.set_power_off_context, "NoPower"))
         idle_state.add_transition(no_power_transition)
         idle_state.add_transition(ConditionalTransition(KeyPressCondition("a", lambda:self.__console_reader.key_pressed), scooting_state))
-        #scooting_state.add_transition(ConditionalTransition(AllConditions([AllConditions([KeyPressCondition("a", lambda:self.key_pressed, invert=True), delay_since_min_speed]) ,AnyConditions([power_less_than_condition, speed_less_than_condition])]), idle_state))
         scooting_state.add_transition(ConditionalTransition(delay_since_min_speed, idle_state))
         locking_state.add_transition(ConditionalTransition(KeyPressCondition("p", lambda:self.__console_reader.actual_key_pressed, invert=True), idle_state)) 
         locking_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, locking_state), powering_down_state)) 
         powering_down_state.add_transition(ConditionalTransition(DelaySinceEnteredCondition(3.0, powering_down_state), power_off_state))
 
-        #Entering Actions
+        #In Actions
         power_off_state.add_in_state_action(self._plug_charging_cable)
+        power_off_state.add_in_state_action(self._in_power_off)
+        unlocking_state.add_in_state_action(self._in_set_power_based_usage)
+        powering_up_state.add_in_state_action(self._in_set_power_based_usage)
+        locking_state.add_in_state_action(self._in_set_power_based_usage)
+        powering_down_state.add_in_state_action(self._in_set_power_based_usage)
+        integrity_failed_state.add_in_state_action(self._in_set_power_based_usage)
+        charging_failed_state.add_in_state_action(self._in_set_power_based_usage)
+        idle_state.add_in_state_action(self._in_set_power_based_usage)
+
+
+        #Entering Actions
         power_off_state.add_entering_action(self._on_power_off)
         unlocking_state.add_entering_action(self._on_unlocking)
         powering_up_state.add_entering_action(self._on_powering_up)
@@ -462,7 +466,6 @@ class ScooterStateMachine(StateMachineDevice):
         #Light Actions
         idle_state.add_in_state_action(partial(self._toggle_left_blinkers, SideBlinkersDevice.Side.LEFT_RECIPROCAL))
         idle_state.add_in_state_action(partial(self._toggle_right_blinkers, SideBlinkersDevice.Side.RIGHT_RECIPROCAL))
-        idle_state.add_in_state_action(self._in_idle)
         scooting_state.add_in_state_action(self._toggle_left_blinkers)
         scooting_state.add_in_state_action(self._toggle_right_blinkers)
         power_off_state.add_in_state_action(self._toggle_headlight)
@@ -483,8 +486,6 @@ class ScooterStateMachine(StateMachineDevice):
         
         super().__init__(StateMachineDevice.Layout(layout), initialized=True)
         self.add_sub_device(self.__console_reader)
-        self.add_sub_device(self.__ridemanagement)
-        # self.add_sub_device(self.__batterymanagement)
         self.add_sub_device(self.__headlight)
         self.add_sub_device(self.__charge_indicator)
         self.add_sub_device(self.__temp_indicator)
@@ -515,6 +516,11 @@ class ScooterStateMachine(StateMachineDevice):
 
     def set_power_off_context(self:Self, context:str) -> None:
         self.power_off_context = context
+
+    @override
+    def _do_tracking(self:Self, elapsed_time:float) -> None:
+        self.__elapsed_time = elapsed_time
+        return super()._do_tracking(elapsed_time)
 
     def _on_power_off(self:Self) -> None:
         self.__scooter.left_side_light.off_color = Console.Color.DARK_GREY
@@ -662,9 +668,15 @@ class ScooterStateMachine(StateMachineDevice):
         self.__charge_indicator.turn_off()
         self.__temp_indicator.turn_off()
 
-    def _in_idle(self:Self) -> None:
+    def _in_power_off(self:Self) -> None:
         self.__scooter.charge_indicator.percent_on = self.__scooter.battery.energy_level_percent
         self.__scooter.temp_indicator.percent_on = self.__scooter.battery.temp_percent
+        self.__scooter.battery.set_power_device_off(self.__elapsed_time)
+
+    def _in_set_power_based_usage(self:Self) -> None:
+        self.__scooter.charge_indicator.percent_on = self.__scooter.battery.energy_level_percent
+        self.__scooter.temp_indicator.percent_on = self.__scooter.battery.temp_percent
+        self.__scooter.battery.set_power_based_usage(self.__elapsed_time)
 
     def _plug_charging_cable(self:Self) -> None:
         if "i" in self.__console_reader.actual_key_pressed:
@@ -716,7 +728,7 @@ class ScooterStateMachine(StateMachineDevice):
         if Console.SpecialKey.SPACE not in self.__console_reader.actual_key_pressed:
             self.__spacebar_consumed = False
 
-def main():
+def main() -> int:
     app = TrackingApplication()
     console = Console()
     console.cursor_visible = False
@@ -730,5 +742,7 @@ def main():
     app.add_device(console_reader)
     app.run_forever()
 
+    return 0
+
 if __name__ == "__main__":
-    main()
+    quit(main())

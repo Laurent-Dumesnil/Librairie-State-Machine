@@ -78,7 +78,7 @@ class Battery:
     def __init__(self:Self) -> None:
         self.__temperature = 30.0
         self.__power = 0.0
-        self.__energy_level = PMAX
+        self.__energy_level = PMAX/2
 
     @property
     def energy_level(self:Self) -> float:
@@ -105,7 +105,6 @@ class Battery:
             self.__temperature = self.__temperature + elapsed_time() * (TE * abs(self.__power)**2 - TD*(self.__temperature - TA))
         else:
             raise TypeError("elapsed_time must be a float or callable")
-        print(f"Energy level: {self.energy_level:.2f} J, Temperature: {self.temperature:.2f} °C")
 
     def set_power_device_off(self:Self, elapsed_time: float | Callable[[], float]) -> None:
         self.__power = -PS
@@ -124,10 +123,8 @@ class Battery:
         self.__update_battery(elapsed_time)
 
     def set_power_device_breaking(self:Self, elapsed_time: float | Callable[[], float], speed:float | Callable[[], float]) -> None:
-        if isinstance(speed, float):
-            self.__power = ER * AB * speed - PI
-        else:
-            raise TypeError("speed must be a float")
+        float(speed)
+        self.__power = ER * AB * speed - PI
         self.__update_battery(elapsed_time)
 
 
