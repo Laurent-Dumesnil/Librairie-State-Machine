@@ -176,7 +176,6 @@ class Charging(MonitoredState):
             self.__charging_on.add_in_state_action(self.__charging)
             self.__charging_complete.add_in_state_action(self.__discharging)
             self.__cooling.add_in_state_action(self.__discharging)
-
                 
             layout = self.Layout((self.__charging_on, self.__charging_complete, self.__cooling, self.__charging_terminated))
 
@@ -219,17 +218,17 @@ class Charging(MonitoredState):
         super().__init__(name)
         self.__timer = ElapsedTimer(mode= ElapsedTimer.Mode.INTERVAL)
 
-    @override
-    def _do_in_state_action(self:Self) -> None:
-        self.__battery_management.track(self.__timer.elapsed)
-        return super()._do_in_state_action()
-
     @property
     def charging_error(self:Self) -> bool:
         if self.__battery_management.current_state: 
             return self.__battery_management.current_state.terminal
         return False
     
+    @override
+    def _do_in_state_action(self:Self) -> None:
+        self.__battery_management.track(self.__timer.elapsed)
+        return super()._do_in_state_action()
+        
     @override
     def _do_entering_action(self:Self) -> None:
         self.__timer.reset()
@@ -448,7 +447,6 @@ class ScooterStateMachine(StateMachineDevice):
         charging_failed_state.add_in_state_action(self._in_set_power_based_usage)
         idle_state.add_in_state_action(self._in_set_power_based_usage)
 
-
         #Entering Actions
         power_off_state.add_entering_action(self._on_power_off)
         unlocking_state.add_entering_action(self._on_unlocking)
@@ -611,7 +609,6 @@ class ScooterStateMachine(StateMachineDevice):
         self.__left_indicator.blink(cycle_duration = 0.5, percent_on = 0.5, begin_on = True)
         self.__right_indicator.blink(cycle_duration = 0.5, percent_on = 0.5, begin_on = True)
         self.power_off_context = ""
-
 
     def _on_integrity_failed(self:Self) -> None:
         self.__scooter.left_side_light.off_color = Console.Color.DARK_GREY
