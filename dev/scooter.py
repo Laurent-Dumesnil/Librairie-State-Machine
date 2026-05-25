@@ -105,6 +105,7 @@ class Battery:
             self.__temperature = self.__temperature + elapsed_time() * (TE * abs(self.__power)**2 - TD*(self.__temperature - TA))
         else:
             raise TypeError("elapsed_time must be a float or callable")
+        print(f"Energy level: {self.energy_level:.2f} J, Temperature: {self.temperature:.2f} °C")
 
     def set_power_device_off(self:Self, elapsed_time: float | Callable[[], float]) -> None:
         self.__power = -PS
