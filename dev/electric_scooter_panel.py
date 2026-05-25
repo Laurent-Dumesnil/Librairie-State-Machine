@@ -67,10 +67,10 @@ class ElectricScooterPanel():
         self.__draw_all()
 
     def __draw_all(self:Self) -> None:
-        for led in self.__list_simpleled:
-            led.draw_led(self.__console.Color.DARK_GREY)
-        for led in self.__list_barled:
-            led.draw_led(0)
+        for simple_led in self.__list_simpleled:
+            simple_led.draw_led(self.__console.Color.DARK_GREY)
+        for bar_led in self.__list_barled:
+            bar_led.draw_led(0)
         self.__console.text_color = self.__console.Color.DARK_GREY
         self.__console.background_color = self.__console.Color.BLACK
         self.__console.write('Speed',(42,8))

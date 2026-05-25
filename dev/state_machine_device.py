@@ -49,7 +49,7 @@ class StateMachineDevice(TrackingDevice) :
             TypeError: Si un élément de ``states`` n'est pas une
                 instance de ``State``.
         """
-        def __init__(self: Self, states:tuple[State, ...]):
+        def __init__(self: Self, states:tuple[State, ...]) -> None:
             """Initialise le layout d'états.
 
             Args:
@@ -69,7 +69,6 @@ class StateMachineDevice(TrackingDevice) :
                 if not state.valid :
                     raise ValueError('All states must be valid.')
 
-            # self._initial_state : State - si on initialise pas, on aura des problemes
             self._states : tuple[State, ...] = states
         
         def __contains__(self: Self, state:State) -> bool:
@@ -84,7 +83,7 @@ class StateMachineDevice(TrackingDevice) :
             return state in self._states
 
         @property
-        def initial_state(self) -> State :
+        def initial_state(self: Self) -> State :
             """État initial du layout.
 
             Returns:
@@ -93,7 +92,7 @@ class StateMachineDevice(TrackingDevice) :
             return self._states[0] 
 
 
-    def __init__(self: Self, layout: Layout, initialized: bool = False, name: str | None = None, enabled: bool = True):
+    def __init__(self: Self, layout: Layout, initialized: bool = False, name: str | None = None, enabled: bool = True) -> None:
         """Initialise le StateMachineDevice.
 
         Args:
@@ -110,7 +109,7 @@ class StateMachineDevice(TrackingDevice) :
         super().__init__(name=name, enabled=enabled)
 
     @property
-    def current_state(self) -> State | None:
+    def current_state(self: Self) -> State | None:
         """État courant de la machine.
 
         Returns:
@@ -119,12 +118,12 @@ class StateMachineDevice(TrackingDevice) :
         return self.__current_state
     
     @current_state.setter
-    def current_state(self, value):
+    def current_state(self: Self, value: State) -> None:
         if isinstance(value, State):
             self.__current_state = value
 
     
-    def __transit_by(self, transition: Transition) -> None :
+    def __transit_by(self: Self, transition: Transition) -> None :
         """Effectue une transition en utilisant l'objet Transition fourni.
 
         Args:
@@ -134,11 +133,12 @@ class StateMachineDevice(TrackingDevice) :
             self.__current_state._execute_exiting_action()
             transition._execute_transiting_action()
 
-        self.__current_state = transition.next_state
-        if self.enabled:
-            self.__current_state._execute_entering_action()
+            self.__current_state = transition.next_state
 
-    def _transit_to(self, state: State) -> None :
+            if self.__current_state:
+                self.__current_state._execute_entering_action()
+
+    def _transit_to(self: Self, state: State) -> None :
         """Force la transition vers l'état fourni sans objet Transition.
 
         Args:
@@ -152,7 +152,7 @@ class StateMachineDevice(TrackingDevice) :
             self.__current_state._execute_entering_action()
 
     @override
-    def _do_tracking(self, elapsed_time: float) -> None:
+    def _do_tracking(self: Self, elapsed_time: float) -> None:
         """Effectue un cycle de tracking : initialise si besoin et
         exécute transitions / actions d'état.
 
@@ -174,7 +174,7 @@ class StateMachineDevice(TrackingDevice) :
                 self.__current_state._execute_in_state_action()
 
     @override
-    def _do_reset(self) -> None:
+    def _do_reset(self: Self) -> None:
         """Réinitialise la machine en positionnant l'état initial.
 
         Cette méthode ne déclenche pas d'action d'entrée.
@@ -204,7 +204,7 @@ class State(BaseComponent):
         TypeError: Si les paramètres booléens fournis ne sont pas de
             type ``bool`` (méthode ``is_bool``).
     """
-    def __init__(self:Self, name: str | None = None, /,*, enabled:bool = True, terminal:bool = False, do_in_state_action_when_entering:bool = False, do_in_state_action_when_exiting:bool = False):
+    def __init__(self:Self, name: str | None = None, /,*, enabled:bool = True, terminal:bool = False, do_in_state_action_when_entering:bool = False, do_in_state_action_when_exiting:bool = False) -> None:
         super().__init__(name=name, enabled=enabled)
         self.__terminal = self.is_bool(terminal)
         self.__do_in_state_action_when_entering = self.is_bool(do_in_state_action_when_entering)
@@ -230,7 +230,7 @@ class State(BaseComponent):
 
     @override
     @property
-    def valid(self) -> bool:
+    def valid(self: Self) -> bool:
         """Vérifie si l'état est cohérent.
 
         Returns:
@@ -248,21 +248,21 @@ class State(BaseComponent):
         return True
             
     @property
-    def terminal(self) -> bool:
+    def terminal(self: Self) -> bool:
         """Indique si l'état est terminal (pas de transitions)."""
         return self.__terminal
     
     @property
-    def do_in_state_action_when_entering(self) -> bool:
+    def do_in_state_action_when_entering(self: Self) -> bool:
         """Indique si l'action d'état doit être exécutée lors de l'entrée."""
         return self.__do_in_state_action_when_entering
     
     @property
-    def do_in_state_action_when_exiting(self) -> bool:
+    def do_in_state_action_when_exiting(self: Self) -> bool:
         """Indique si l'action d'état doit être exécutée lors de la sortie."""
         return self.__do_in_state_action_when_exiting
     
-    def is_transiting(self) -> Transition | None:
+    def is_transiting(self: Self) -> Transition | None:
         """Parcours les transitions et retourne la première active.
 
         Returns:
@@ -273,7 +273,7 @@ class State(BaseComponent):
                 return transition
         return None
 
-    def add_transition(self, transition: Transition | Iterable[Transition]) -> None:
+    def add_transition(self: Self, transition: Transition | Iterable[Transition]) -> None:
         """Ajoute une ou plusieurs transitions à l'état.
 
         Args:
@@ -291,7 +291,7 @@ class State(BaseComponent):
                     raise TypeError("Il faut ajouter uniquement des éléments de type Transition")
                 self.__transitions.append(t)
 
-    def _execute_entering_action(self) -> None:
+    def _execute_entering_action(self: Self) -> None:
         """Exécute les actions liées à l'entrée d'état.
 
         Appelle `_do_entering_action` puis, selon le drapeau,
@@ -301,11 +301,11 @@ class State(BaseComponent):
         if self.__do_in_state_action_when_entering:
             self._do_in_state_action()
 
-    def _execute_in_state_action(self) -> None:
+    def _execute_in_state_action(self: Self) -> None:
         """Exécute l'action d'état principale (appel interne)."""
         self._do_in_state_action()
 
-    def _execute_exiting_action(self) -> None:
+    def _execute_exiting_action(self: Self) -> None:
         """Exécute les actions liées à la sortie d'état.
 
         Selon le drapeau, exécute `_do_in_state_action` avant
@@ -315,21 +315,21 @@ class State(BaseComponent):
             self._do_in_state_action()
         self._do_exiting_action()
 
-    def _do_entering_action(self) -> None:
+    def _do_entering_action(self: Self) -> None:
         """Point d'extension pour l'action d'entrée d'état.
 
         Les sous-classes devraient surcharger cette méthode si nécessaire.
         """
         pass
 
-    def _do_in_state_action(self) -> None:
+    def _do_in_state_action(self: Self) -> None:
         """Point d'extension pour l'action exécutée en cours d'état.
 
         Les sous-classes peuvent surcharger cette méthode.
         """
         pass
 
-    def _do_exiting_action(self) -> None:
+    def _do_exiting_action(self: Self) -> None:
         """Point d'extension pour l'action de sortie d'état.
 
         Les sous-classes peuvent surcharger cette méthode.
@@ -350,7 +350,7 @@ class Transition(ABC, BaseComponent):
         enabled (bool): Si False, la transition est ignorée.
     """
 
-    def __init__(self : Self, next_state : State | None = None, name : str | None = None, enabled : bool = True):
+    def __init__(self: Self, next_state: State | None = None, name: str | None = None, enabled: bool = True) -> None:
         """Initialise la transition.
 
         Args:
@@ -363,7 +363,7 @@ class Transition(ABC, BaseComponent):
 
     @property
     @override
-    def valid(self : Self) -> bool:
+    def valid(self: Self) -> bool:
         """Indique si la transition est valide (référence d'état et validité).
 
         Returns:
@@ -381,11 +381,11 @@ class Transition(ABC, BaseComponent):
         """
         return self.__next_state
 
-    def _execute_transiting_action(self : Self) -> None:
+    def _execute_transiting_action(self: Self) -> None:
         """Appel interne pour exécuter l'action de transit."""
         self._do_transiting_action()
 
-    def _do_transiting_action(self : Self) -> None:
+    def _do_transiting_action(self: Self) -> None:
         """Point d'extension pour l'action exécutée lors du transit.
 
         Les sous-classes peuvent surcharger cette méthode.
@@ -393,7 +393,7 @@ class Transition(ABC, BaseComponent):
         pass
 
     @abstractmethod
-    def is_transiting(self : Self) -> bool:
+    def is_transiting(self: Self) -> bool:
         """Devrait être implémentée pour indiquer si la transition doit être prise.
 
         Returns:

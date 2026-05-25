@@ -122,7 +122,7 @@ class Battery:
         self.__power = -(PI + PM * AA)
         self.__update_battery(elapsed_time)
 
-    def set_power_device_breaking(self:Self, elapsed_time: float | Callable[[], float], speed:float | Callable[[], float]) -> None:
+    def set_power_device_breaking(self:Self, elapsed_time: float | Callable[[], float], speed:float) -> None:
         float(speed)
         self.__power = ER * AB * speed - PI
         self.__update_battery(elapsed_time)

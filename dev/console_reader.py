@@ -11,19 +11,19 @@ class ConsoleReader(TrackingDevice):
         super().__init__(name, enabled=enabled)
 
     @property
-    def key_pressed(self: Self) -> None:
+    def key_pressed(self: Self) -> list[KeyboardValue]:
         return self.__key_pressed
     
     @key_pressed.setter
-    def key_pressed(self, value):
+    def key_pressed(self: Self, value: list[KeyboardValue]) -> None:
         self.__key_pressed = value
     
     @property
-    def actual_key_pressed(self: Self) -> None:
+    def actual_key_pressed(self: Self) -> list[KeyboardValue]:
         return self.__actual_key_pressed
     
     @actual_key_pressed.setter
-    def actual_key_pressed(self, value):
+    def actual_key_pressed(self: Self, value: list[KeyboardValue]) -> None:
         self.__actual_key_pressed = value
 
     @override
@@ -34,7 +34,6 @@ class ConsoleReader(TrackingDevice):
 
     @override
     def _do_tracking(self: Self, elapsed_time: float) -> None:
-        super()._do_tracking(elapsed_time)
         self.__key_pressed = self.__console.key_pressed
         self.__actual_key_pressed = self.__console.actual_key_pressed
         

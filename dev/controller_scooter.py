@@ -16,7 +16,7 @@ KeyboardValue: TypeAlias = str | Console.SpecialKey
 
 class Scooting(MonitoredState):
     class RideManagement(StateMachineDevice):
-        def __init__(self:Self, console_reader:ConsoleReader, scooter:Scooter, initialized:bool = False, name:str = None, enabled:bool = False) -> None:
+        def __init__(self:Self, console_reader:ConsoleReader, scooter:Scooter, initialized:bool = False, name:str | None = None, enabled:bool = False) -> None:
             self.__elapsed_time = 0.0
             self.__scooter = scooter
             self.__console_reader = console_reader
@@ -211,7 +211,7 @@ class Charging(MonitoredState):
 
         @override
         def _disabling(self:Self) -> None:
-            if not self.current_state.terminal:
+            if self.current_state and not self.current_state.terminal:
                 self._transit_to(self.__charging_off)
         
     def __init__(self:Self, name:str, console_reader:ConsoleReader, scooter:Scooter) -> None:
@@ -226,7 +226,9 @@ class Charging(MonitoredState):
 
     @property
     def charging_error(self:Self) -> bool:
-        return self.__battery_management.current_state.terminal
+        if self.__battery_management.current_state: 
+            return self.__battery_management.current_state.terminal
+        return False
     
     @override
     def _do_entering_action(self:Self) -> None:
