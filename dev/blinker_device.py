@@ -23,7 +23,7 @@ class BlinkerDevice(StateMachineDevice) :
         on_state_factory (BlinkerStateFactory): Fabrique pour créer les états ON.
     """
 
-    def __init__(self : Self, off_state_factory : BlinkerStateFactory, on_state_factory : BlinkerStateFactory):
+    def __init__(self : Self, off_state_factory : BlinkerStateFactory, on_state_factory : BlinkerStateFactory, initialized):
         """
         Initialise le dispositif de clignotant.
 
@@ -76,7 +76,7 @@ class BlinkerDevice(StateMachineDevice) :
 
         tuple_states = (self.__off, self.__off_duration, self.__blink_off, self.__blink_stop_off, self.__on, self.__on_duration, self.__blink_on,self.__blink_stop_on, self.__blink_begin, self.__blink_stop_begin, self.__blink_stop_end)
         layout = StateMachineDevice.Layout(tuple_states)
-        super().__init__(layout, True)
+        super().__init__(layout, initialized=initialized)
 
     @property
     def is_off(self) -> bool :
