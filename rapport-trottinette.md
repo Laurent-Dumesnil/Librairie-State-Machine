@@ -60,8 +60,8 @@ Nous avons compléter tous les éléments demandés par le mandat. Par conséque
 
 #### Marie Joëlle
 
-1. 
-2.
+1. La partie que j'ai trouvé la plus intéressante est la phase 4, car c'est la première fois qu'on voyait vraiment à quoi servait tout ce qu'on avait construit avant. Faire clignoter un dispositif avec autant de contrôle en aussi peu de code, grâce à la machine d'états, c'était satisfaisant à voir fonctionner. La partie la plus difficile pour moi a été la phase 2, parce que comprendre comment le Layout devait être construit dans la classe enfant avant que le parent termine son initialisation était vraiment contre-intuitif au début. J'ai dû relire le diagramme de séquence plusieurs fois avant de comprendre.
+2.Le projet de la trottinette est très pertinent parce qu'il nous permet d'exploiter pleinement les parties de la bibliothèque. Par exemple, le fait d'avoir des états qui contiennent eux-mêmes une machine d'états nous a poussés à réfléchir à un niveau d'abstraction qu'on n'avait pas eu à considérer dans les phases précédentes. Contrairement à un projet plus simple, la trottinette a suffisamment de complexité pour justifier l'usage de toutes les couches qu'on a bâties, ce qui donne un bon aperçu de ce que la bibliothèque peut faire dans un vrai contexte applicatif.
 
 #### Isabela
 1. 
