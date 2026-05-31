@@ -40,8 +40,13 @@ Nous avons compléter tous les éléments demandés par le mandat. Par conséque
 
 #### Julien
 
-1. 
-2.
+1. Pour ma part, la partie que j’ai trouvée la plus intéressante est la classe StateMachineDevice, car elle m’a donné l’occasion de mettre en œuvre le patron de conception State. Ce concept m’a beaucoup inspiré, au point où je l’ai même réutilisé dans mon projet synthèse. J’ai aussi apprécié la réalisation de la classe BlinkerDevice, puisqu’il s’agissait de l’une des premières classes concrètes qui permettait de voir l’aboutissement de notre bibliothèque.
+
+La partie que j’ai trouvée la plus difficile a été de prendre connaissance du projet au départ, surtout en raison des différents niveaux d’abstraction présents dans la programmation de la bibliothèque. Il fallait bien comprendre le rôle de chaque classe et la manière dont elles interagissaient entre elles avant de pouvoir contribuer efficacement.
+
+2. La fin alternative nous a permis d’exploiter concrètement la bibliothèque que nous avions développée. Elle était pertinente, car elle nous amenait à réfléchir à l’architecture globale d’un projet utilisant cette bibliothèque, plutôt que de simplement programmer des classes de manière isolée.
+
+Le principal défi était de déterminer comment connecter ensemble les différents devices de la trottinette électrique, tout en répartissant clairement les responsabilités entre le contrôleur, la vue et le modèle.
 
 #### Yanis
 
