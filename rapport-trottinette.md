@@ -50,8 +50,12 @@ Nous avons compléter tous les éléments demandés par le mandat. Par conséque
 
 #### Laurent
 
-1. 
-2.
+1. De mon côté, la partie la plus difficile a été la première couche d’abstraction ainsi que la conception de la classe TrackingDevice. Plus précisément, il a fallu comprendre la façon dont la chaîne de responsabilité est construite, notamment grâce à la méthode do_valid(), qui délègue aux sous-dispositifs la responsabilité de valider leur propre état.
+La partie la plus intéressante a définitivement été la partie IV. L’exploitation de la bibliothèque à travers notre Blinker Device a été particulièrement satisfaisante. L’intégration du décorateur @overload, qui permet la surcharge de fonctions, nous a offert plus de flexibilité dans nos choix de développement.
+
+2. Bien que nous n’ayons pas pu mener à terme le projet initial, le projet d’intégration de la bibliothèque dans la conception d’une trottinette électrique nous a permis de mettre en valeur la généralisation dont nous avons fait preuve tout au long de la phase de création de cette dernière.
+L’utilisation du polymorphisme dans notre module RideManagement nous a permis de définir clairement les états, les transitions et les actions de notre trottinette. En utilisant les outils développés dans notre bibliothèque, nous avons pu concevoir un module à la fois clair, concis et facile à maintenir.
+
 
 #### Jérémie
 
