@@ -10,13 +10,29 @@ Isabelle Ndioukane, Marie Joëlle : 2363434
 Forest Martinez, Isabela : 2177448  
 
 ## États ayant une machine d’états
+On transforme les états `Charging`et `Scooting` en sous-classes de `MonitoredState` afin d'en hériter ses propriétés. On leur assigne, à chacune d'entre-elles, une machine d'états via une classe imbriquée héritée de `StateMachineDevice` (soit `BatteryManagement` et `RideManagement`). De cette façon, elles seront capables de disposer d'états, de transitions, de conditions et d'un layout. Dans le constructeur des états `Charging` et `Scooting`, on instancie la classe imbriquée en tant que variable privée. Par la suite, on redéfinit trois méthodes de `MonitoredState` :
+ 
+-  ` _do_in_state_action` suit l'état du dispositif en appelant la méthode `track` comme action pendant pendant l'exécution de l'état.
+- ` _do_entering_action` active la machine d'états interne comme action d'entrée de l'état.
+- ` _do_exiting_action` désactive la machine d'états interne comme action de sortie de l'état.
 
+Cette nouvelle abstraction apporte une séparation des responsabilités au sein de la machine d'états principale. Plutôt que de surcharger celle-ci avec tous les états liés au mouvement et à la recharge, on délègue ces comportements à des machines d'états internes encapsulées dans leurs états respectifs. Cela rend la machine d'états principale plus lisible et chaque sous-machine réutilisable.
+
+Pour rendre le concept générique, nous pouvons introduire une nouvelle abstraction `InnerStateMachine` héritant de `MonitoredState`. Celle-ci gèrerait automatiquement l'activation, la désactivation et le suivi de la machine d'états interne, ce qui permettra de ne plus avoir besoin de redéfinir les méthodes d'état à chaque définition de classe.
 ## Compréhension générale
-
+Le diagramme d'état de transition du scooter présente deux limitations techniques : 
+- Dans l'état `powering_down`, la valeur `custom_value` n'est jamais assignée par les transitions. Aucunes d'entre elles proviennent de l'énumérateur `PoweringDownMode` alors qu'il est explicitement écrit que le comportement de l'état dépend de ladite valeur.
+- L'usage de l'état `unlocking` n'est pas pertinent dans ce contexte. Sa seule utilité est de transiter l'état `power_off` vers `powering_up` après 3 secondes, ce qui aurait pu être réalisé en y ajoutant directement la condition dans la transition. De plus, la vérification d'accès est de toute façon prise en charge par `powering_up` via `integrity_failed`.
 ## Évaluation des objectifs
-
-## Ajout personnel
-
+Nous avons compléter tous les éléments demandés par le mandat. Par conséquent, aucune liste n'a été produite.
+## Ajout personnel 
+- L'ajout de l'option d'un Cruise Control permet de maintenir une vitesse constante de la trotinnette sans avoir à l'accélérer. Pour se faire, nous avons implémenté l'état `cruise_control_state` dans la machine d'états `RideManagement` en appuyant sur la touche 'c' depuis l'état `free_wheel_state`.
+- L'utilitaire `DelaySinceBelowThresholdCondition` devient `True` si une valeur reste sous un seuil donné pendant une durée déterminée. La logique est définie dans la méthode surchargée `_compare` selon trois cas :
+-- La valeur est au-dessus du seuil → `False`
+-- La valeur passe sous le seuil pour la première fois → démarre le timer, `False`
+-- Le timer dépasse la durée → `True`
+- L'utilitaire `LessThanValueCondition` devient `True` si la valeur dynamique examinée `value_reader` est plus petite que `target_value`. Cette condition est vérifiée via la méthode `compare`.
+- L'utilitaire `KeyPressCondition` devient `True` si la touche appuyé au clavier correspond à la touche voulu. `compare` vérifie si ladite touche fait partie de `key_reader`.
 ## Réponses aux 2 questions par chacun des étudiants de l'équipe
 
 1. Considérant les phases 1 à 4 de la bibliothèque, nommez les deux parties que vous avez trouvé le plus intéressant et le plus difficile.
