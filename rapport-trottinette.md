@@ -50,8 +50,9 @@ Le principal défi était de déterminer comment connecter ensemble les différe
 
 #### Yanis
 
-1. 
-2.
+1. En ce qui me concerne, la Partie I était la phase du projet la plus difficile à saisir conceptuellement. Au début, je ne comprenais pas la logique derrière l'implémentation de certaines méthodes dans les différentes classes définies par le mandat, tel que `do_valid()` ou `do_reset()`. Je n'arrivais pas à appréhender en quoi l'usage de la bibliothèque pouvait être pertinent pour mener à bien ce projet. Il m'a fallu avoir un grand effort d'abstraction pour comprendre en quoi ces classes seront efficaces à l'avenir.
+La phase qui m'a semblé la plus intéressante était la Partie III, car c'est à partir d'ici que le projet prenait forme. L'implémentation des multiples couches d'abstraction, qu'il s'agisse des états, des conditions ou des transitions, a permis de créer une machine d'états complexe simple à mettre en place et performante dans la multitude d'options offerte par la bibliothèque.
+2. Le projet de la trotinnette nous a permis de concrétiser nos acquis en matière d'abstraction en mettant en pratique l'ensemble des notions vues de la Partie I jusqu'à la Partie IV, dont la conception de la machine d'états principale du Scooter. L'ajout de machines d'états internes imbriquées à certains états tels que `BatteryManagement` et `RideManagement` a particulièrement été formateur pour la conception de structures autonomes et encapsulées hiérarchiquement. La gestion des multiples états et transitions des machines d'états a sollicité l'ensemble des fonctionnnalités offertes de la bibliothèque.
 
 #### Laurent
 
