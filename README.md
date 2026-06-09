@@ -78,8 +78,8 @@ Le panneau `ElectricScooterPanel` affiche en temps réel un tableau de bord colo
 **Prérequis :** Python 3.11+
 
 ```bash
-git clone https://github.com/votre-utilisateur/state-machine-scooter.git
-cd state-machine-scooter
+git clone https://github.com/Laurent-Dumesnil/Librairie-State-Machine.git
+cd Librairie-State-Machine
 
 pip install numpy matplotlib
 ```
@@ -148,20 +148,6 @@ Le scooter suit une machine à états principale avec les modes suivants :
 | `f` | Arrêter la charge manuellement |
 
 > Brancher le câble (`i`) depuis l'état `power_off` démarre automatiquement la recharge. La charge s'arrête automatiquement en cas de surchauffe (> 85°C) ou de batterie pleine (≥ 99%).
-
----
-
-### Tester le BlinkerDevice seul
-
-```bash
-python project_blinker.py
-```
-
-### Tester le TrackingDevice
-
-```bash
-python project_tracking_device.py
-```
 
 ---
 
