@@ -86,7 +86,7 @@ pip install numpy matplotlib
 
 ---
 
-## ⚙️ Utilisation
+## Utilisation
 
 ### Lancer la simulation du scooter
 
