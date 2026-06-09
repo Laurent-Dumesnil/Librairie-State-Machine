@@ -17,12 +17,12 @@ L'objectif principal était de concevoir une architecture réutilisable, découp
 La librairie est organisée en couches d'abstraction superposées :
 
 ```
-BaseComponent               ← Gestion du nom, état activé/désactivé, validation
-    └── TrackingDevice      ← Dispositif de suivi en flux tiré (pattern composite)
-            ├── StateMachineDevice  ← Machine à états générique
-            │       └── BlinkerDevice       ← Clignotant multifonctionnel
+BaseComponent                                       ← Gestion du nom, état activé/désactivé, validation
+    └── TrackingDevice                              ← Dispositif de suivi en flux tiré (pattern composite)
+            ├── StateMachineDevice                  ← Machine à états générique
+            │       └── BlinkerDevice               ← Clignotant multifonctionnel
             │               └── SideBlinkersDevice  ← Paire gauche/droite
-            └── TriggerDevice       ← Déclenchement périodique d'action
+            └── TriggerDevice                       ← Déclenchement périodique d'action
 ```
 
 La machine à états repose sur trois concepts fondamentaux : les **états** (`State`), les **transitions** (`Transition`) et les **conditions** (`Condition`). Chacun est extensible via des classes dérivées.
